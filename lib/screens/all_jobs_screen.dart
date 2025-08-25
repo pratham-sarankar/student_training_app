@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -47,76 +48,79 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header Title
-            Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: 16.h),
-                child: Text(
-                  'All Jobs',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+    return AnnotatedRegion(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Header Title
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 16.h),
+                  child: Text(
+                    'All Jobs',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1A1A1A),
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 16.h),
-            
-            // Search Bar
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: const Color(0xFFE5E5E5),
-                    width: 1.w,
-                  ),
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search jobs...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 14.sp,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey.shade500,
-                      size: 20.sp,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 12.h,
+              SizedBox(height: 16.h),
+              
+              // Search Bar
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: const Color(0xFFE5E5E5),
+                      width: 1.w,
                     ),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search jobs...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 14.sp,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.grey.shade500,
+                        size: 20.sp,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 12.h,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 10.h),
-            
-            // Jobs List
-            Expanded(
-              child: _isInitialized
-                  ? _buildJobsList()
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-            ),
-          ],
+              SizedBox(height: 10.h),
+              
+              // Jobs List
+              Expanded(
+                child: _isInitialized
+                    ? _buildJobsList()
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

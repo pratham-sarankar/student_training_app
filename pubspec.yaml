@@ -48,6 +48,11 @@ dependencies:
   # cloud_firestore: ^5.0.0
   shared_preferences: ^2.2.2
   cloud_firestore: ^6.0.0
+  
+  # Add these dependencies for better stability
+  flutter_secure_storage: ^9.0.0
+  connectivity_plus: ^5.0.2
+  device_info_plus: ^9.1.2
 
 dev_dependencies:
   flutter_test:
