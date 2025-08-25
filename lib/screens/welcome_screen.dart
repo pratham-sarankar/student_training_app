@@ -58,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                   'Your gateway to professional learning',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: const Color(0xFF666666),
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 0.1,
                     height: 1.2,
                   ),

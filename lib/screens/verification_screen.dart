@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
-import 'home_screen.dart';
+import 'main_screen.dart';
 
 class VerificationScreen extends StatefulWidget {
   final String type; // 'email' or 'phone'
@@ -77,7 +77,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       Future.delayed(const Duration(seconds: 1), () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
+            builder: (context) => const MainScreen(),
           ),
         );
       });
