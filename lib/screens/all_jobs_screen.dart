@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/job.dart';
+import '../services/job_service.dart';
 import 'job_details_screen.dart';
 
 class AllJobsScreen extends StatefulWidget {
@@ -11,68 +14,36 @@ class AllJobsScreen extends StatefulWidget {
 }
 
 class _AllJobsScreenState extends State<AllJobsScreen> {
-  final List<Map<String, dynamic>> _jobs = [
-    {
-      'title': 'Senior Flutter Developer',
-      'company': 'TechCorp Solutions',
-      'location': 'Bangalore',
-      'type': 'Full-time',
-      'salary': '₹12,00,000 - ₹18,00,000',
-      'category': 'Software Development',
-      'posted': '2 days ago',
-      'logo': 'TC',
-    },
-    {
-      'title': 'Data Analyst',
-      'company': 'DataFlow Inc',
-      'location': 'Mumbai',
-      'type': 'Full-time',
-      'salary': '₹8,00,000 - ₹12,00,000',
-      'category': 'Data Science',
-      'posted': '1 day ago',
-      'logo': 'DF',
-    },
-    {
-      'title': 'UI/UX Designer',
-      'company': 'Creative Studios',
-      'location': 'Delhi',
-      'type': 'Contract',
-      'salary': '₹10,00,000 - ₹15,00,000',
-      'category': 'Design',
-      'posted': '3 days ago',
-      'logo': 'CS',
-    },
-    {
-      'title': 'Marketing Manager',
-      'company': 'Growth Marketing',
-      'location': 'Hyderabad',
-      'type': 'Full-time',
-      'salary': '₹9,00,000 - ₹14,00,000',
-      'category': 'Marketing',
-      'posted': '5 days ago',
-      'logo': 'GM',
-    },
-    {
-      'title': 'Sales Representative',
-      'company': 'SalesForce Pro',
-      'location': 'Chennai',
-      'type': 'Full-time',
-      'salary': '₹6,00,000 - ₹10,00,000',
-      'category': 'Sales',
-      'posted': '1 week ago',
-      'logo': 'SP',
-    },
-    {
-      'title': 'Customer Success Manager',
-      'company': 'Support Hub',
-      'location': 'Pune',
-      'type': 'Full-time',
-      'salary': '₹7,00,000 - ₹12,00,000',
-      'category': 'Customer Service',
-      'posted': '4 days ago',
-      'logo': 'SH',
-    },
-  ];
+  final JobService _jobService = JobService();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeJobs();
+  }
+
+  Future<void> _initializeJobs() async {
+    try {
+      await _jobService.initializeSampleJobs();
+      setState(() {
+        _isInitialized = true;
+      });
+    } catch (e) {
+      print('Error initializing jobs: $e');
+      setState(() {
+        _isInitialized = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +80,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   ),
                 ),
                 child: TextField(
+                  controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Search jobs...',
                     hintStyle: TextStyle(
@@ -127,9 +99,8 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     ),
                   ),
                   onChanged: (value) {
-                    // TODO: Implement search functionality
                     setState(() {
-                      // Filter jobs based on search query
+                      _searchQuery = value;
                     });
                   },
                 ),
@@ -139,16 +110,11 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             
             // Jobs List
             Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                itemCount: _jobs.length,
-                itemBuilder: (context, index) {
-                  final job = _jobs[index];
-                  return Container(
-                    child: _buildJobCard(job),
-                  );
-                },
-              ),
+              child: _isInitialized
+                  ? _buildJobsList()
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
             ),
           ],
         ),
@@ -156,13 +122,133 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
     );
   }
 
-  Widget _buildJobCard(Map<String, dynamic> job) {
+  Widget _buildJobsList() {
+    if (_searchQuery.isEmpty) {
+      return StreamBuilder<List<Job>>(
+        stream: _jobService.getJobs(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error loading jobs: ${snapshot.error}',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          
+          final jobs = snapshot.data ?? [];
+          
+          if (jobs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.work_outline,
+                    size: 64.sp,
+                    color: Colors.grey.shade400,
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'No jobs available',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          
+          return ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemCount: jobs.length,
+            itemBuilder: (context, index) {
+              final job = jobs[index];
+              return Container(
+                child: _buildJobCard(job),
+              );
+            },
+          );
+        },
+      );
+    } else {
+      return StreamBuilder<List<Job>>(
+        stream: _jobService.searchJobs(_searchQuery),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error searching jobs: ${snapshot.error}',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          
+          final jobs = snapshot.data ?? [];
+          
+          if (jobs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 64.sp,
+                    color: Colors.grey.shade400,
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'No jobs found for "$_searchQuery"',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Try different keywords or check spelling',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          
+          return ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemCount: jobs.length,
+            itemBuilder: (context, index) {
+              final job = jobs[index];
+              return Container(
+                child: _buildJobCard(job),
+              );
+            },
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildJobCard(Job job) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => JobDetailsScreen(job: job),
+            builder: (context) => JobDetailsScreen(job: job.toMap()),
           ),
         );
       },
@@ -199,7 +285,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      job['logo'],
+                      job.logo,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontSize: 16.sp,
@@ -216,7 +302,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        job['title'],
+                        job.title,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF1A1A1A),
@@ -224,7 +310,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        job['company'],
+                        job.company,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF666666),
                           fontWeight: FontWeight.w500,
@@ -233,8 +319,6 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     ],
                   ),
                 ),
-                
-
               ],
             ),
             SizedBox(height: 16.h),
@@ -242,11 +326,11 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             // Job Details Row
             Row(
               children: [
-                _buildJobDetail(Icons.location_on_outlined, job['location']),
+                _buildJobDetail(Icons.location_on_outlined, job.location),
                 SizedBox(width: 16.w),
-                _buildJobDetail(Icons.work_outline, job['type']),
+                _buildJobDetail(Icons.work_outline, job.type),
                 SizedBox(width: 16.w),
-                _buildJobDetail(Icons.access_time, job['posted']),
+                _buildJobDetail(Icons.access_time, job.posted),
               ],
             ),
             SizedBox(height: 12.h),
@@ -259,7 +343,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Text(
-                job['salary'],
+                job.salary,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontSize: 12.sp,

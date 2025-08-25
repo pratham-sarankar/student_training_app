@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learn_work/services/auth_service.dart';
+import 'package:learn_work/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -47,30 +48,47 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // Load user data from Firebase Auth
-        final prefs = await SharedPreferences.getInstance();
+        // Try to load user data from Firestore first
+        final userService = UserService();
+        final userModel = await userService.getCurrentUserDataWithFallback();
         
-        setState(() {
-          _emailController.text = user.email ?? '';
+        if (userModel != null) {
+          // Load data from Firestore
+          setState(() {
+            _emailController.text = userModel.email;
+            _firstNameController.text = userModel.firstName;
+            _lastNameController.text = userModel.lastName;
+            _phoneController.text = userModel.phoneNumber ?? '';
+            _bioController.text = userModel.bio ?? '';
+            _selectedGender = userModel.gender ?? 'Prefer not to say';
+            _selectedDate = userModel.dateOfBirth;
+          });
+        } else {
+          // Fallback to Firebase Auth and SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
           
-          // Parse display name if it exists
-          if (user.displayName != null && user.displayName!.isNotEmpty) {
-            final nameParts = user.displayName!.split(' ');
-            if (nameParts.length >= 2) {
-              _firstNameController.text = nameParts[0];
-              _lastNameController.text = nameParts.sublist(1).join(' ');
-            } else if (nameParts.length == 1) {
-              _firstNameController.text = nameParts[0];
-              _lastNameController.text = '';
+          setState(() {
+            _emailController.text = user.email ?? '';
+            
+            // Parse display name if it exists
+            if (user.displayName != null && user.displayName!.isNotEmpty) {
+              final nameParts = user.displayName!.split(' ');
+              if (nameParts.length >= 2) {
+                _firstNameController.text = nameParts[0];
+                _lastNameController.text = nameParts.sublist(1).join(' ');
+              } else if (nameParts.length == 1) {
+                _firstNameController.text = nameParts[0];
+                _lastNameController.text = '';
+              }
             }
-          }
-          
-          // Load other profile data from SharedPreferences
-          _phoneController.text = prefs.getString('phoneNumber') ?? '';
-          _bioController.text = prefs.getString('bio') ?? '';
-          _selectedGender = prefs.getString('gender') ?? 'Prefer not to say';
-          _selectedDate = prefs.getString('dateOfBirth') != null ? DateTime.parse(prefs.getString('dateOfBirth')!) : null;
-        });
+            
+            // Load other profile data from SharedPreferences
+            _phoneController.text = prefs.getString('phoneNumber') ?? '';
+            _bioController.text = prefs.getString('bio') ?? '';
+            _selectedGender = prefs.getString('gender') ?? 'Prefer not to say';
+            _selectedDate = prefs.getString('dateOfBirth') != null ? DateTime.parse(prefs.getString('dateOfBirth')!) : null;
+          });
+        }
       }
     } catch (e) {
       print('Error loading profile data: $e');
@@ -593,11 +611,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
+          // Update profile in Firestore using UserService
+          final userService = UserService();
+          await userService.updateUserProfile(
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            phoneNumber: _phoneController.text.trim(),
+            bio: _bioController.text.trim(),
+            gender: _selectedGender,
+            dateOfBirth: _selectedDate,
+          );
+          
           // Update display name in Firebase Auth
           final fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}'.trim();
           await user.updateDisplayName(fullName);
           
-          // Save other profile data to SharedPreferences
+          // Save to SharedPreferences as backup
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('phoneNumber', _phoneController.text.trim());
           await prefs.setString('bio', _bioController.text.trim());

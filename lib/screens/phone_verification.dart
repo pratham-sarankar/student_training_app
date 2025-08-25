@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pinput/pinput.dart';
 import 'package:learn_work/screens/main_screen.dart';
 import 'package:learn_work/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -318,15 +319,92 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       ),
                     ),
                     SizedBox(height: 6.h),
-                    FTextField(
+                    Pinput(
                       controller: _otpController,
-                      hint: 'Enter 6-digit code',
+                      length: 6,
+                      focusNode: _otpFocusNode,
                       keyboardType: TextInputType.number,
-                      maxLength: 6,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                       ],
-                      focusNode: _otpFocusNode,
+                      defaultPinTheme: PinTheme(
+                        width: 48.w,
+                        height: 48.h,
+                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF1A1A1A),
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: const Color(0xFFE0E0E0),
+                            width: 1.5.w,
+                          ),
+                        ),
+                      ),
+                      focusedPinTheme: PinTheme(
+                        width: 48.w,
+                        height: 48.h,
+                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2.w,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                      ),
+                      submittedPinTheme: PinTheme(
+                        width: 48.w,
+                        height: 48.h,
+                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1.5.w,
+                          ),
+                        ),
+                      ),
+                      errorPinTheme: PinTheme(
+                        width: 48.w,
+                        height: 48.h,
+                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: Colors.red,
+                            width: 1.5.w,
+                          ),
+                        ),
+                      ),
+                      onCompleted: (pin) {
+                        // Auto-verify when all 6 digits are entered
+                        _verifyCode();
+                      },
+                      onChanged: (pin) {
+                        // Optional: Add any validation logic here
+                      },
                     ),
                   ],
                 ),
@@ -376,52 +454,6 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                
-                // Billing Error Warning
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: Colors.orange.withOpacity(0.3),
-                      width: 1.w,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.warning_amber_rounded,
-                            size: 18.sp,
-                            color: Colors.orange,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            'Firebase Billing Issue',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.orange,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Phone verification requires Firebase billing to be enabled. Contact your developer to fix this issue.',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.orange.shade700,
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                
                 // Verify Button
                 SizedBox(
                   width: double.infinity,

@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learn_work/screens/main_screen.dart';
+import 'package:learn_work/services/user_service.dart';
 import 'dart:async'; // Added for Timer
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool _isResendEnabled = true;
   int _resendCountdown = 60;
   Timer? _verificationCheckTimer;
+  bool _isVerificationInProgress = false; // Add flag to prevent duplicate verification
 
   @override
   void initState() {
@@ -54,13 +56,27 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 
   void _checkEmailVerification() async {
+    // Prevent duplicate verification checks
+    if (_isVerificationInProgress) return;
+    
     try {
+      _isVerificationInProgress = true;
+      
       // Reload the user to get the latest verification status
       await FirebaseAuth.instance.currentUser?.reload();
       final user = FirebaseAuth.instance.currentUser;
       
       if (user != null && user.emailVerified) {
-        // Email is verified, cancel timer and navigate
+        // Email is verified, update Firestore and navigate
+        try {
+          final userService = UserService();
+          await userService.updateVerificationStatus(isEmailVerified: true);
+        } catch (e) {
+          print('Error updating verification status in Firestore: $e');
+          // Continue with navigation even if Firestore update fails
+        }
+        
+        // Cancel timer and navigate
         _verificationCheckTimer?.cancel();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -78,6 +94,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       }
     } catch (e) {
       print('Error checking email verification: $e');
+    } finally {
+      _isVerificationInProgress = false;
     }
   }
 
@@ -208,7 +226,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       style: FButtonStyle.ghost,
                       onPress: () {
                         // Check verification status immediately
-                        _checkEmailVerification();
+                        if (!_isVerificationInProgress) {
+                          _checkEmailVerification();
+                        }
                       },
                       child: Text(
                         'I\'ve verified my email',

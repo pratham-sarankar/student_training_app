@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' as firebase_ui;
 import 'dart:async';
+import 'package:learn_work/services/user_service.dart';
+import 'package:learn_work/models/user.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final UserService _userService = UserService();
   
   // Phone authentication state
   String? _verificationId;
@@ -28,10 +31,19 @@ class AuthService {
     String password,
   ) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      final result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      
+      // Update user verification status in Firestore
+      if (result.user != null) {
+        await _userService.updateVerificationStatus(
+          isEmailVerified: result.user!.emailVerified,
+        );
+      }
+      
+      return result;
     } catch (e) {
       throw _handleAuthError(e);
     }
@@ -215,10 +227,28 @@ class AuthService {
     String password,
   ) async {
     try {
-      return await _auth.createUserWithEmailAndPassword(
+      final result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      
+              // Create user document in Firestore
+        if (result.user != null) {
+          final userModel = UserModel(
+            uid: result.user!.uid,
+            firstName: result.user!.displayName?.split(' ').first ?? '',
+            lastName: result.user!.displayName?.split(' ').skip(1).join(' ') ?? '',
+            email: result.user!.email ?? '',
+            photoUrl: result.user!.photoURL,
+            isEmailVerified: result.user!.emailVerified,
+            createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+          
+          await _userService.createOrUpdateUser(userModel);
+        }
+      
+      return result;
     } catch (e) {
       throw _handleAuthError(e);
     }
@@ -228,6 +258,11 @@ class AuthService {
   Future<void> sendEmailVerification() async {
     try {
       await _auth.currentUser?.sendEmailVerification();
+      
+      // Update verification status in Firestore
+      await _userService.updateVerificationStatus(
+        isEmailVerified: true,
+      );
     } catch (e) {
       throw _handleAuthError(e);
     }
@@ -263,9 +298,71 @@ class AuthService {
       if (photoURL != null) {
         await _auth.currentUser?.updatePhotoURL(photoURL);
       }
+      
+      // Update user document in Firestore
+      if (displayName != null) {
+        final nameParts = displayName.split(' ');
+        final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+        final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+        
+        await _userService.updateUserProfile(
+          firstName: firstName,
+          lastName: lastName,
+          photoUrl: photoURL,
+        );
+      }
     } catch (e) {
       throw _handleAuthError(e);
     }
+  }
+
+  // Update user profile with comprehensive data
+  Future<void> updateUserProfileComprehensive({
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? photoUrl,
+    String? bio,
+    String? gender,
+    DateTime? dateOfBirth,
+    bool? emailNotifications,
+    bool? pushNotifications,
+    bool? jobAlerts,
+    List<String>? jobCategories,
+    List<String>? preferredLocations,
+  }) async {
+    try {
+      // Update Firebase Auth display name if name changed
+      if (firstName != null || lastName != null) {
+        final newDisplayName = '${firstName ?? ''} ${lastName ?? ''}'.trim();
+        if (newDisplayName.isNotEmpty) {
+          await _auth.currentUser?.updateDisplayName(newDisplayName);
+        }
+      }
+      
+      // Update user document in Firestore
+      await _userService.updateUserProfile(
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        photoUrl: photoUrl,
+        bio: bio,
+        gender: gender,
+        dateOfBirth: dateOfBirth,
+        emailNotifications: emailNotifications,
+        pushNotifications: pushNotifications,
+        jobAlerts: jobAlerts,
+        jobCategories: jobCategories,
+        preferredLocations: preferredLocations,
+      );
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  // Get current user model
+  Future<UserModel?> getCurrentUserModel() async {
+    return await _userService.getCurrentUserDataWithFallback();
   }
 
   // Check if email is verified

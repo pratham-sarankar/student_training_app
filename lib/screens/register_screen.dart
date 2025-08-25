@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:learn_work/services/auth_service.dart';
+import 'package:learn_work/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
@@ -149,7 +150,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
           displayName: _fullNameController.text.trim(),
         );
 
-        // Save phone number locally
+        // Parse first and last name
+        final nameParts = _fullNameController.text.trim().split(' ');
+        final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+        final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+        // Create user document in Firestore using UserService
+        final userService = UserService();
+        await userService.createOrUpdateUserBasic(
+          uid: userCredential.user!.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: _emailController.text.trim(),
+          phoneNumber: _phoneController.text.trim(),
+        );
+
+        // Save phone number locally as backup
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('phoneNumber', _phoneController.text.trim());
 

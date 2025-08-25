@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/course.dart';
+import '../services/course_service.dart';
 import 'traning_course_details_screen.dart';
 
 class TrainingCoursesScreen extends StatefulWidget {
@@ -12,82 +15,27 @@ class TrainingCoursesScreen extends StatefulWidget {
 
 class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
   String _selectedCategory = 'All';
-  final List<String> _categories = ['All', 'Technology', 'Design', 'Business', 'Marketing'];
-  
-  final List<Map<String, dynamic>> _courses = [
-    {
-      'title': 'Flutter Development Fundamentals',
-      'category': 'Technology',
-      'description': 'Learn Flutter from scratch and build beautiful mobile applications for iOS and Android.',
-      'cost': 99.99,
-      'duration': '8 weeks',
-      'level': 'Beginner',
-      'image': 'https://elements-resized.envatousercontent.com/envato-dam-assets-production/EVA/TRX/2b/0b/38/42/89/v1_E10/E107OQSH.JPG?w=1600&cf_fit=scale-down&mark-alpha=18&mark=https%3A%2F%2Felements-assets.envato.com%2Fstatic%2Fwatermark4.png&q=85&format=auto&s=65dd1c957cd287a87f8117a41cedb3edb353b9f9bfc6b1e352c9b8f94e95154c',
-      'schedules': [
-        {'time': 'Mon, Wed 6:00 PM', 'seats': 15, 'startDate': '2024-02-01'},
-        {'time': 'Tue, Thu 7:00 PM', 'seats': 12, 'startDate': '2024-02-15'},
-        {'time': 'Sat 10:00 AM', 'seats': 20, 'startDate': '2024-02-10'},
-      ],
-    },
-    {
-      'title': 'UI/UX Design Masterclass',
-      'category': 'Design',
-      'description': 'Master the principles of user interface and user experience design.',
-      'cost': 149.99,
-      'duration': '6 weeks',
-      'level': 'Intermediate',
-      'image': 'https://elements-resized.envatousercontent.com/envato-dam-assets-production/EVA/TRX/2b/0b/38/42/89/v1_E10/E107OQSH.JPG?w=1600&cf_fit=scale-down&mark-alpha=18&mark=https%3A%2F%2Felements-assets.envato.com%2Fstatic%2Fwatermark4.png&q=85&format=auto&s=65dd1c957cd287a87f8117a41cedb3edb353b9f9bfc6b1e352c9b8f94e95154c',
-      'schedules': [
-        {'time': 'Mon, Wed 7:00 PM', 'seats': 18, 'startDate': '2024-02-05'},
-        {'time': 'Sat 2:00 PM', 'seats': 25, 'startDate': '2024-02-12'},
-      ],
-    },
-    {
-      'title': 'Data Science with Python',
-      'category': 'Technology',
-      'description': 'Learn data analysis, machine learning, and statistical modeling with Python.',
-      'cost': 199.99,
-      'duration': '10 weeks',
-      'level': 'Advanced',
-      'image': 'https://elements-resized.envatousercontent.com/envato-dam-assets-production/EVA/TRX/2b/0b/38/42/89/v1_E10/E107OQSH.JPG?w=1600&cf_fit=scale-down&mark-alpha=18&mark=https%3A%2F%2Felements-assets.envato.com%2Fstatic%2Fwatermark4.png&q=85&format=auto&s=65dd1c957cd287a87f8117a41cedb3edb353b9f9bfc6b1e352c9b8f94e95154c',
-      'schedules': [
-        {'time': 'Tue, Thu 6:30 PM', 'seats': 10, 'startDate': '2024-02-08'},
-        {'time': 'Sun 11:00 AM', 'seats': 15, 'startDate': '2024-02-18'},
-      ],
-    },
-    {
-      'title': 'Digital Marketing Strategy',
-      'category': 'Marketing',
-      'description': 'Develop comprehensive digital marketing strategies for business growth.',
-      'cost': 129.99,
-      'duration': '5 weeks',
-      'level': 'Beginner',
-      'image': 'https://elements-resized.envatousercontent.com/envato-dam-assets-production/EVA/TRX/2b/0b/38/42/89/v1_E10/E107OQSH.JPG?w=1600&cf_fit=scale-down&mark-alpha=18&mark=https%3A%2F%2Felements-assets.envato.com%2Fstatic%2Fwatermark4.png&q=85&format=auto&s=65dd1c957cd287a87f8117a41cedb3edb353b9f9bfc6b1e352c9b8f94e95154c',
-      'schedules': [
-        {'time': 'Wed, Fri 6:00 PM', 'seats': 22, 'startDate': '2024-02-03'},
-        {'time': 'Sat 9:00 AM', 'seats': 30, 'startDate': '2024-02-20'},
-      ],
-    },
-    {
-      'title': 'Business Analytics',
-      'category': 'Business',
-      'description': 'Learn to analyze business data and make data-driven decisions.',
-      'cost': 179.99,
-      'duration': '7 weeks',
-      'level': 'Intermediate',
-      'image': 'https://elements-resized.envatousercontent.com/envato-dam-assets-production/EVA/TRX/2b/0b/38/42/89/v1_E10/E107OQSH.JPG?w=1600&cf_fit=scale-down&mark-alpha=18&mark=https%3A%2F%2Felements-assets.envato.com%2Fstatic%2Fwatermark4.png&q=85&format=auto&s=65dd1c957cd287a87f8117a41cedb3edb353b9f9bfc6b1e352c9b8f94e95154c',
-      'schedules': [
-        {'time': 'Mon, Thu 7:30 PM', 'seats': 16, 'startDate': '2024-02-06'},
-        {'time': 'Sun 3:00 PM', 'seats': 20, 'startDate': '2024-02-25'},
-      ],
-    },
-  ];
+  final CourseService _courseService = CourseService();
+  bool _isInitialized = false;
 
-  List<Map<String, dynamic>> get _filteredCourses {
-    if (_selectedCategory == 'All') {
-      return _courses;
+  @override
+  void initState() {
+    super.initState();
+    _initializeCourses();
+  }
+
+  Future<void> _initializeCourses() async {
+    try {
+      await _courseService.initializeSampleCourses();
+      setState(() {
+        _isInitialized = true;
+      });
+    } catch (e) {
+      print('Error initializing courses: $e');
+      setState(() {
+        _isInitialized = true;
+      });
     }
-    return _courses.where((course) => course['category'] == _selectedCategory).toList();
   }
 
   @override
@@ -114,48 +62,70 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
             // Category Filter using Forui FButtons
             Container(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-              child: SingleChildScrollView(
-                clipBehavior: Clip.none,
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _categories.map((category) {
-                    bool isSelected = _selectedCategory == category;
-                    int courseCount = category == 'All' 
-                        ? _courses.length 
-                        : _courses.where((course) => course['category'] == category).length;
-                                         return Container(
-                       margin: EdgeInsets.only(right: 12.w),
-                       decoration: isSelected ? BoxDecoration(
-                         borderRadius: BorderRadius.circular(8.r),
-                         boxShadow: [
-                           BoxShadow(
-                             color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                             blurRadius: 8,
-                             offset: const Offset(0, 2),
-                           ),
-                         ],
-                       ) : null,
-                       child: FButton(
-                         onPress: () {
-                           setState(() {
-                             _selectedCategory = category;
-                           });
-                         },
-                         style: isSelected ? FButtonStyle.primary : FButtonStyle.outline,
-                         child: Text(
-                           '$category ($courseCount)',
-                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                             fontWeight: FontWeight.w700,
-                             color: isSelected 
-                                 ? Colors.white
-                                 : const Color(0xFF666666),
-                           ),
-                         ),
-                       ),
-                     );
-                  }).toList(),
-                ),
-              ),
+              child: _isInitialized
+                  ? StreamBuilder<List<String>>(
+                      stream: _courseService.getCourseCategories(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        
+                        if (snapshot.hasError) {
+                          return Text('Error loading categories: ${snapshot.error}');
+                        }
+                        
+                        final categories = snapshot.data ?? ['All'];
+                        
+                        return SingleChildScrollView(
+                          clipBehavior: Clip.none,
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: categories.map((category) {
+                              bool isSelected = _selectedCategory == category;
+                              return Container(
+                                margin: EdgeInsets.only(right: 12.w),
+                                decoration: isSelected ? BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ) : null,
+                                child: FButton(
+                                  onPress: () {
+                                    setState(() {
+                                      _selectedCategory = category;
+                                    });
+                                  },
+                                  style: isSelected ? FButtonStyle.primary : FButtonStyle.outline,
+                                  child: StreamBuilder<List<Course>>(
+                                    stream: category == 'All' 
+                                        ? _courseService.getCourses()
+                                        : _courseService.getCoursesByCategory(category),
+                                    builder: (context, coursesSnapshot) {
+                                      int courseCount = coursesSnapshot.data?.length ?? 0;
+                                      return Text(
+                                        '$category ($courseCount)',
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: isSelected 
+                                              ? Colors.white
+                                              : const Color(0xFF666666),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      },
+                    )
+                  : const Center(child: CircularProgressIndicator()),
             ),
             SizedBox(height: 16.h),
 
@@ -165,11 +135,19 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Showing ${_filteredCourses.length} courses',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF666666),
-                    ),
+                  StreamBuilder<List<Course>>(
+                    stream: _selectedCategory == 'All' 
+                        ? _courseService.getCourses()
+                        : _courseService.getCoursesByCategory(_selectedCategory),
+                    builder: (context, snapshot) {
+                      final courseCount = snapshot.data?.length ?? 0;
+                      return Text(
+                        'Showing $courseCount courses',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: const Color(0xFF666666),
+                        ),
+                      );
+                    },
                   ),
                   if (_selectedCategory != 'All')
                     Text(
@@ -186,44 +164,70 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
 
             // Courses List
             Expanded(
-              child: _filteredCourses.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 48.sp,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 16.h),
-                          Text(
-                            'No courses found for "$_selectedCategory"',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.grey,
+              child: _isInitialized
+                  ? StreamBuilder<List<Course>>(
+                      stream: _selectedCategory == 'All' 
+                          ? _courseService.getCourses()
+                          : _courseService.getCoursesByCategory(_selectedCategory),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              'Error loading courses: ${snapshot.error}',
+                              style: TextStyle(color: Colors.red),
                             ),
-                          ),
-                          SizedBox(height: 8.h),
-                          Text(
-                            'Try selecting a different category',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey.shade600,
+                          );
+                        }
+                        
+                        final courses = snapshot.data ?? [];
+                        
+                        if (courses.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 48.sp,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 16.h),
+                                Text(
+                                  'No courses found for "$_selectedCategory"',
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                Text(
+                                  'Try selecting a different category',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
-                      itemCount: _filteredCourses.length,
-                      itemBuilder: (context, index) {
-                        final course = _filteredCourses[index];
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 12.h),
-                          child: _buildCourseCard(context, course),
+                          );
+                        }
+                        
+                        return ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
+                          itemCount: courses.length,
+                          itemBuilder: (context, index) {
+                            final course = courses[index];
+                            return Container(
+                              margin: EdgeInsets.only(bottom: 12.h),
+                              child: _buildCourseCard(context, course),
+                            );
+                          },
                         );
                       },
-                    ),
+                    )
+                  : const Center(child: CircularProgressIndicator()),
             ),
           ],
         ),
@@ -231,7 +235,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
     );
   }
 
-  Widget _buildCourseCard(BuildContext context, Map<String, dynamic> course) {
+  Widget _buildCourseCard(BuildContext context, Course course) {
     return GestureDetector(
       onTap: () => _navigateToCourseDetails(course),
       child: MouseRegion(
@@ -269,7 +273,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.r),
                       image: DecorationImage(
-                        image: NetworkImage(course['image']),
+                        image: NetworkImage(course.image),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -282,7 +286,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          course['title'],
+                          course.title,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF1A1A1A),
@@ -302,7 +306,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                               child: Text(
-                                course['category'],
+                                course.category,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.w600,
@@ -316,7 +320,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                               child: Text(
-                                course['level'],
+                                course.level,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Colors.orange,
                                   fontWeight: FontWeight.w600,
@@ -335,7 +339,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
               
               // Course Description (shortened)
               Text(
-                course['description'],
+                course.description,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: const Color(0xFF666666),
                 ),
@@ -370,15 +374,11 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
     );
   }
 
-
-
-
-  void _navigateToCourseDetails(Map<String, dynamic> course) {
+  void _navigateToCourseDetails(Course course) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => TraningCourseDetailsScreen(course: course),
+        builder: (context) => TraningCourseDetailsScreen(course: course.toMap()),
       ),
     );
   }
-
 }

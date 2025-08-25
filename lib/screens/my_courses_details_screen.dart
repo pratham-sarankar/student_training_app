@@ -59,44 +59,80 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
       final currentUser = _chatService.currentUser;
       if (currentUser == null) return null;
 
-      // Create a unique chat ID for this course
-      final courseChatId = 'course_${widget.course['id'] ?? widget.course['title']}_${currentUser.uid}';
+      // Create a unique chat ID for this course and user
+      final courseChatId = '${currentUser.uid}_${widget.course['id']}';
       
-      // Check if course chat exists
+      // Check if course chat exists in user's subcollection
       final chatDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
           .collection('course_chats')
-          .doc(courseChatId)
+          .doc(widget.course['id'])
           .get();
 
       if (!chatDoc.exists) {
-        // Create new course chat
+        // Create new course chat in user's subcollection
         await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
             .collection('course_chats')
-            .doc(courseChatId)
+            .doc(widget.course['id'])
             .set({
-          'courseId': widget.course['id'] ?? widget.course['title'],
+          'courseId': widget.course['id'],
           'courseTitle': widget.course['title'],
-          'participants': [currentUser.uid],
-          'participantNames': [currentUser.displayName ?? 'Unknown User'],
+          'courseCategory': widget.course['category'],
+          'courseLevel': widget.course['level'],
+          'userId': currentUser.uid,
+          'userName': currentUser.displayName ?? 'Unknown User',
+          'userEmail': currentUser.email ?? '',
           'createdAt': Timestamp.now(),
           'updatedAt': Timestamp.now(),
           'lastMessage': 'Welcome to ${widget.course['title']}! How can I help you today?',
           'lastMessageTime': Timestamp.now(),
           'lastSenderId': 'instructor',
           'lastSenderName': 'Course Instructor',
+          'messageCount': 1,
+          'isActive': true,
         });
 
-        // Add welcome message
+        // Add welcome message to the chat
         await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
             .collection('course_chats')
-            .doc(courseChatId)
+            .doc(widget.course['id'])
             .collection('messages')
             .add({
           'senderId': 'instructor',
           'senderName': 'Course Instructor',
+          'senderType': 'instructor',
           'message': 'Welcome to ${widget.course['title']}! How can I help you today?',
           'timestamp': Timestamp.now(),
           'type': 'text',
+          'isRead': false,
+        });
+
+        // Also create a reference in the global course_chats collection for admin/instructor access
+        await FirebaseFirestore.instance
+            .collection('course_chats')
+            .doc('${widget.course['id']}_${currentUser.uid}')
+            .set({
+          'courseId': widget.course['id'],
+          'courseTitle': widget.course['title'],
+          'courseCategory': widget.course['category'],
+          'courseLevel': widget.course['level'],
+          'userId': currentUser.uid,
+          'userName': currentUser.displayName ?? 'Unknown User',
+          'userEmail': currentUser.email ?? '',
+          'createdAt': Timestamp.now(),
+          'updatedAt': Timestamp.now(),
+          'lastMessage': 'Welcome to ${widget.course['title']}! How can I help you today?',
+          'lastMessageTime': Timestamp.now(),
+          'lastSenderId': 'instructor',
+          'lastSenderName': 'Course Instructor',
+          'messageCount': 1,
+          'isActive': true,
+          'userChatRef': 'users/${currentUser.uid}/course_chats/${widget.course['id']}',
         });
       }
 
@@ -110,9 +146,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
   void _loadCourseMessages() {
     if (_courseChatId == null) return;
 
+    // Load messages from user's course chat subcollection
     FirebaseFirestore.instance
+        .collection('users')
+        .doc(_chatService.currentUser?.uid)
         .collection('course_chats')
-        .doc(_courseChatId)
+        .doc(widget.course['id'])
         .collection('messages')
         .orderBy('timestamp', descending: true)
         .snapshots()
@@ -601,7 +640,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
   }
 
   Future<void> _sendMessage() async {
-    if (_messageController.text.trim().isEmpty || _courseChatId == null) return;
+    if (_messageController.text.trim().isEmpty) return;
 
     setState(() {
       _isLoading = true;
@@ -611,29 +650,52 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
       final currentUser = _chatService.currentUser;
       if (currentUser == null) return;
 
-      // Send message to Firebase
+      final messageText = _messageController.text.trim();
+      final timestamp = Timestamp.now();
+
+      // Send message to user's course chat subcollection
       await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
           .collection('course_chats')
-          .doc(_courseChatId)
+          .doc(widget.course['id'])
           .collection('messages')
           .add({
         'senderId': currentUser.uid,
         'senderName': currentUser.displayName ?? 'Unknown User',
-        'message': _messageController.text.trim(),
-        'timestamp': Timestamp.now(),
+        'senderType': 'user',
+        'message': messageText,
+        'timestamp': timestamp,
         'type': 'text',
+        'isRead': false,
       });
 
-      // Update chat metadata
+      // Update chat metadata in user's subcollection
       await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
           .collection('course_chats')
-          .doc(_courseChatId)
+          .doc(widget.course['id'])
           .update({
-        'lastMessage': _messageController.text.trim(),
-        'lastMessageTime': Timestamp.now(),
+        'lastMessage': messageText,
+        'lastMessageTime': timestamp,
         'lastSenderId': currentUser.uid,
         'lastSenderName': currentUser.displayName ?? 'Unknown User',
-        'updatedAt': Timestamp.now(),
+        'updatedAt': timestamp,
+        'messageCount': FieldValue.increment(1),
+      });
+
+      // Also update the global course_chats collection for admin/instructor access
+      await FirebaseFirestore.instance
+          .collection('course_chats')
+          .doc('${widget.course['id']}_${currentUser.uid}')
+          .update({
+        'lastMessage': messageText,
+        'lastMessageTime': timestamp,
+        'lastSenderId': currentUser.uid,
+        'lastSenderName': currentUser.displayName ?? 'Unknown User',
+        'updatedAt': timestamp,
+        'messageCount': FieldValue.increment(1),
       });
 
       _messageController.clear();
