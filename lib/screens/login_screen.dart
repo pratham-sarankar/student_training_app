@@ -123,76 +123,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 16.h),
                 
-                // Alternative Login Options
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 1.h,
-                        color: const Color(0xFFE5E5E5),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      child: Text(
-                        'or continue with',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF999999),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1.h,
-                        color: const Color(0xFFE5E5E5),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-                
-                // Social Login Button using Forui
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xFFE5E5E5)),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: FButton(
-                          style: FButtonStyle.ghost,
-                          onPress: () {
-                            // TODO: Implement Google login
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.g_mobiledata,
-                                size: 20.sp,
-                                color: const Color(0xFF666666),
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'Google',
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: const Color(0xFF666666),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10.h),
+
                 
                 // Register Link
                 Row(

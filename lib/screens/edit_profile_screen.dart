@@ -18,7 +18,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _bioController = TextEditingController(text: 'Passionate learner focused on professional development and skill enhancement.');
   
   String _selectedGender = 'Prefer not to say';
-  String _selectedOccupation = 'Student';
   DateTime _selectedDate = DateTime.now().subtract(const Duration(days: 6570)); // 18 years ago
   
   final List<String> _genderOptions = [
@@ -26,14 +25,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'Female',
     'Non-binary',
     'Prefer not to say',
-  ];
-  
-  final List<String> _occupationOptions = [
-    'Student',
-    'Professional',
-    'Freelancer',
-    'Entrepreneur',
-    'Other',
   ];
 
   @override
@@ -236,23 +227,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   },
                 ),
                 SizedBox(height: 24.h),
-                
-                // Professional Information Section
-                _buildSectionTitle('Professional Information'),
-                SizedBox(height: 16.h),
-                
-                // Occupation
-                _buildDropdownField(
-                  label: 'Occupation',
-                  value: _selectedOccupation,
-                  items: _occupationOptions,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedOccupation = value!;
-                    });
-                  },
-                ),
-                SizedBox(height: 16.h),
                 
                 // Bio
                 _buildTextField(
