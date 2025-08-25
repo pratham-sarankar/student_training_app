@@ -105,7 +105,6 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                
                 // Secondary Action Button
                 SizedBox(
                   width: double.infinity,
@@ -128,7 +127,31 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 40.h),
+                SizedBox(height: 20.h),
+                
+                // Demo Button
+                // SizedBox(
+                //   width: double.infinity,
+                //   height: 48.h,
+                //   child: FButton(
+                //     style: FButtonStyle.ghost,
+                //     onPress: () {
+                //       Navigator.of(context).push(
+                //         MaterialPageRoute(
+                //           builder: (context) => const PhoneAuthDemoScreen(),
+                //         ),
+                //       );
+                //     },
+                //     child: Text(
+                //       '🧪 Try Phone Auth Demo',
+                //       style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                //         fontWeight: FontWeight.w500,
+                //         color: const Color(0xFF666666),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(height: 40.h),
                 
 
               ],

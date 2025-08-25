@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:learn_work/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:learn_work/widgets/auth_wrapper.dart';
 import 'my_courses_screen.dart';
 import 'edit_profile_screen.dart';
 import 'job_subscription_screen.dart';
@@ -14,6 +17,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final _authService = AuthService();
+
+  String get _userName {
+    final user = _authService.currentUser;
+    return user?.displayName ?? 'User';
+  }
+
+  String get _userEmail {
+    final user = _authService.currentUser;
+    return user?.email ?? 'user@email.com';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      'John Doe',
+                      _userName,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF1A1A1A),
@@ -55,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 2.h),
                     Text(
-                      'john.doe@email.com',
+                      _userEmail,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: const Color(0xFF666666),
                       ),
@@ -262,14 +277,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 48.h,
                 child: FButton(
                   style: FButtonStyle.outline,
-                  onPress: () {
-                    // TODO: Implement logout
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Logout functionality coming soon'),
-                        backgroundColor: Colors.orange,
-                      ),
-                    );
+                  onPress: () async {
+                    try {
+                      await AuthService().signOut();
+                      // Navigation will be handled by AuthWrapper
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Successfully signed out'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const AuthWrapper(),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to sign out: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
                   },
                   child: Text(
                     'Logout',

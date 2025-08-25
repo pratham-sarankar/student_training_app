@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:learn_work/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -11,14 +15,16 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController(text: 'John');
-  final _lastNameController = TextEditingController(text: 'Doe');
-  final _emailController = TextEditingController(text: 'john.doe@email.com');
-  final _phoneController = TextEditingController(text: '+1 (555) 123-4567');
-  final _bioController = TextEditingController(text: 'Passionate learner focused on professional development and skill enhancement.');
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _bioController = TextEditingController();
   
   String _selectedGender = 'Prefer not to say';
-  DateTime _selectedDate = DateTime.now().subtract(const Duration(days: 6570)); // 18 years ago
+  DateTime? _selectedDate;
+  bool _isLoading = false;
+  bool _isDataLoading = true;
   
   final List<String> _genderOptions = [
     'Male',
@@ -26,6 +32,64 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'Non-binary',
     'Prefer not to say',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  void _loadProfileData() async {
+    setState(() {
+      _isDataLoading = true;
+    });
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Load user data from Firebase Auth
+        final prefs = await SharedPreferences.getInstance();
+        
+        setState(() {
+          _emailController.text = user.email ?? '';
+          
+          // Parse display name if it exists
+          if (user.displayName != null && user.displayName!.isNotEmpty) {
+            final nameParts = user.displayName!.split(' ');
+            if (nameParts.length >= 2) {
+              _firstNameController.text = nameParts[0];
+              _lastNameController.text = nameParts.sublist(1).join(' ');
+            } else if (nameParts.length == 1) {
+              _firstNameController.text = nameParts[0];
+              _lastNameController.text = '';
+            }
+          }
+          
+          // Load other profile data from SharedPreferences
+          _phoneController.text = prefs.getString('phoneNumber') ?? '';
+          _bioController.text = prefs.getString('bio') ?? '';
+          _selectedGender = prefs.getString('gender') ?? 'Prefer not to say';
+          _selectedDate = prefs.getString('dateOfBirth') != null ? DateTime.parse(prefs.getString('dateOfBirth')!) : null;
+        });
+      }
+    } catch (e) {
+      print('Error loading profile data: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load profile data: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDataLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -60,16 +124,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
         centerTitle: true,
-        actions: [],
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.refresh,
+              color: const Color(0xFF1A1A1A),
+              size: 20.sp,
+            ),
+            onPressed: _isDataLoading ? null : _loadProfileData,
+          ),
+        ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.w),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+        child: _isDataLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'Loading profile...',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFF666666),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(16.w),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                 // Profile Picture Section
                 Center(
                   child: Column(
@@ -148,6 +241,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           if (value == null || value.isEmpty) {
                             return 'First name is required';
                           }
+                          if (value.trim().length < 2) {
+                            return 'First name must be at least 2 characters';
+                          }
                           return null;
                         },
                       ),
@@ -161,6 +257,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Last name is required';
+                          }
+                          if (value.trim().length < 2) {
+                            return 'Last name must be at least 2 characters';
                           }
                           return null;
                         },
@@ -176,6 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   label: 'Email Address',
                   hint: 'Enter email address',
                   keyboardType: TextInputType.emailAddress,
+                  enabled: false, // Email cannot be changed from profile
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Email is required';
@@ -197,6 +297,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Phone number is required';
+                    }
+                    if (value.trim().length < 10) {
+                      return 'Phone number must be at least 10 digits';
                     }
                     return null;
                   },
@@ -226,6 +329,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     });
                   },
                 ),
+                if (_selectedDate == null)
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.h),
+                    child: Text(
+                      'Date of birth is required',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
                 SizedBox(height: 24.h),
                 
                 // Bio
@@ -252,14 +365,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   height: 48.h,
                   child: FButton(
                     style: FButtonStyle.primary,
-                    onPress: _saveProfile,
-                    child: Text(
-                      'Save Changes',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    onPress: _isLoading ? null : _saveProfile,
+                    child: _isLoading
+                        ? SizedBox(
+                            width: 20.w,
+                            height: 20.h,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.w,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text(
+                            'Save Changes',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
                 SizedBox(height: 16.h),
@@ -270,7 +392,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   height: 48.h,
                   child: FButton(
                     style: FButtonStyle.outline,
-                    onPress: () => Navigator.of(context).pop(),
+                    onPress: _isLoading ? null : () => Navigator.of(context).pop(),
                     child: Text(
                       'Cancel',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -306,6 +428,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     TextInputType? keyboardType,
     int maxLines = 1,
     String? Function(String?)? validator,
+    bool enabled = true,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,6 +446,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           hint: hint,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          enabled: enabled,
         ),
       ],
     );
@@ -377,8 +501,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildDateField({
     required String label,
-    required DateTime selectedDate,
-    required Function(DateTime) onDateSelected,
+    required DateTime? selectedDate,
+    required Function(DateTime?) onDateSelected,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -407,7 +531,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                    selectedDate != null ? DateFormat('dd/MM/yyyy').format(selectedDate!) : 'Select Date',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFF1A1A1A),
                     ),
@@ -429,7 +553,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _selectDate(BuildContext context, Function(DateTime) onDateSelected) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -444,22 +568,75 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       const SnackBar(
         content: Text('Image picker functionality coming soon'),
         backgroundColor: Colors.orange,
+        duration: Duration(seconds: 2),
       ),
     );
   }
 
-  void _saveProfile() {
+  void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement save profile functionality
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Profile updated successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      
-      // Navigate back to profile screen
-      Navigator.of(context).pop();
+      // Additional validation for date
+      if (_selectedDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select your date of birth'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          // Update display name in Firebase Auth
+          final fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}'.trim();
+          await user.updateDisplayName(fullName);
+          
+          // Save other profile data to SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('phoneNumber', _phoneController.text.trim());
+          await prefs.setString('bio', _bioController.text.trim());
+          await prefs.setString('gender', _selectedGender);
+          if (_selectedDate != null) {
+            await prefs.setString('dateOfBirth', DateFormat('yyyy-MM-dd').format(_selectedDate!));
+          }
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            
+            // Navigate back to profile screen
+            Navigator.of(context).pop();
+          }
+        } else {
+          throw Exception('User not found');
+        }
+      } catch (e) {
+        print('Error updating profile: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update profile: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 }

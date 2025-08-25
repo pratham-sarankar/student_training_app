@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:learn_work/screens/all_jobs_screen.dart';
-import 'job_subscription_screen.dart';
 import 'training_courses_screen.dart';
 import 'profile_screen.dart';
 

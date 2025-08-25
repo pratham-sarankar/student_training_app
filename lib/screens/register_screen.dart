@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'verification_screen.dart';
+import 'package:learn_work/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen.dart';
+import 'email_verification_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,7 +16,174 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _fullNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _authService = AuthService();
   bool _acceptedTerms = false;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createAccount() async {
+    // Validate full name
+    if (_fullNameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your full name'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate email
+    if (_emailController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate phone
+    if (_phoneController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your phone number'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate password
+    if (_passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    if (_passwordController.text.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password must be at least 6 characters'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate confirm password
+    if (_confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please confirm your password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    if (_confirmPasswordController.text != _passwordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!_acceptedTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please accept the terms and conditions'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Create user account
+      final userCredential = await _authService.createUserWithEmailAndPassword(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      // Update user profile with full name
+      if (userCredential.user != null) {
+        await _authService.updateUserProfile(
+          displayName: _fullNameController.text.trim(),
+        );
+
+        // Save phone number locally
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('phoneNumber', _phoneController.text.trim());
+
+        // Send email verification
+        print('Sending email verification to: ${_emailController.text.trim()}');
+        await _authService.sendEmailVerification();
+        print('Email verification sent successfully during registration');
+
+        if (mounted) {
+          // Navigate to email verification screen
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const EmailVerificationScreen(),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +193,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 24.h),
-            child: Column(
-              children: [
-                SizedBox(height: 40.h),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  SizedBox(height: 24.h),
                 
                 // App Logo/Title
                 Container(
-                  width: 100.w,
-                  height: 100.h,
+                  width: 80.w,
+                  height: 80.h,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(25.r),
+                    borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                       width: 1.w,
@@ -42,11 +214,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: Icon(
                     Icons.school_outlined,
-                    size: 48.sp,
+                    size: 40.sp,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 20.h),
                 
                 // Create Account Text
                 Text(
@@ -57,7 +229,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 6.h),
                 Text(
                   'Join us and start your learning adventure',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -65,51 +237,116 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 40.h),
+                SizedBox(height: 24.h),
                 
-                // Full Name Field using Forui
-                FTextField(
-                  label: const Text('Full Name'),
-                  hint: 'Enter your full name',
-                  textInputAction: TextInputAction.next,
+                // Full Name Field
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Full Name',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    SizedBox(height: 6.h),
+                    FTextField(
+                      controller: _fullNameController,
+                      hint: 'Enter your full name',
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 16.h),
                 
-                // Email Field using Forui
-                FTextField(
-                  label: const Text('Email'),
-                  hint: 'Enter your email',
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
+                // Email Field
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Email',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    SizedBox(height: 6.h),
+                    FTextField(
+                      controller: _emailController,
+                      hint: 'Enter your email',
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 16.h),
                 
-                // Phone Field using Forui
-                FTextField(
-                  label: const Text('Phone Number'),
-                  hint: 'Enter your phone number',
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.next,
+                // Phone Field
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Phone Number',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    SizedBox(height: 6.h),
+                    FTextField(
+                      controller: _phoneController,
+                      hint: 'Enter your phone number',
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 16.h),
                 
-                // Password Field using Forui
-                FTextField(
-                  label: const Text('Password'),
-                  hint: 'Create a strong password',
-                  obscureText: true,
-                  textInputAction: TextInputAction.next,
+                // Password Field
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Password',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    SizedBox(height: 6.h),
+                    FTextField(
+                      controller: _passwordController,
+                      hint: 'Create a strong password',
+                      obscureText: true,
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 16.h),
                 
-                // Confirm Password Field using Forui
-                FTextField(
-                  label: const Text('Confirm Password'),
-                  hint: 'Confirm your password',
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
+                // Confirm Password Field
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Confirm Password',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    SizedBox(height: 6.h),
+                    FTextField(
+                      controller: _confirmPasswordController,
+                      hint: 'Confirm your password',
+                      obscureText: true,
+                      textInputAction: TextInputAction.done,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 8.h),
                 
                 // Terms and Conditions using Forui Checkbox
                 Row(
@@ -151,37 +388,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 20.h),
                 
-                // Register Button using Forui
+                // Register Button
                 SizedBox(
                   width: double.infinity,
-                  height: 56.h,
+                  height: 48.h,
                   child: FButton(
-                    onPress: _acceptedTerms ? () {
-                      // Navigate to verification screen for demo
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const VerificationScreen(
-                            type: 'email',
-                            value: 'user@example.com',
+                    onPress: _acceptedTerms && !_isLoading ? _createAccount : null,
+                    style: _acceptedTerms ? FButtonStyle.primary : FButtonStyle.secondary,
+                    child: _isLoading
+                        ? SizedBox(
+                            height: 18.h,
+                            width: 18.w,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text(
+                            'Create Account',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.2,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      );
-                    } : null, // Disable button if terms not accepted
-                    child: Text(
-                      'Create Account',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                        color: _acceptedTerms ? Colors.white : const Color(0xFFCCCCCC),
-                      ),
-                    ),
                   ),
                 ),
-                SizedBox(height: 16.h),
-                
-
+                SizedBox(height: 12.h),
                 
                 // Login Link
                 Row(
@@ -193,8 +428,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: const Color(0xFF888888),
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
+                    FButton(
+                      style: FButtonStyle.ghost,
+                      onPress: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) => const LoginScreen(),
@@ -211,9 +447,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: 16.h),
               ],
             ),
+          ),
           ),
         ),
       ),

@@ -2,9 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'screens/welcome_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+import 'firebase_options.dart';
+import 'widgets/auth_wrapper.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();  
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('Firebase initialized successfully');
+  } catch (e) {
+    print('Firebase initialization failed: $e');
+  }
+  
   runApp(const MyApp());
 }
 
@@ -121,7 +134,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
           ),
-          home: const WelcomeScreen(),
+          home: const AuthWrapper(),
         );
       },
     );
