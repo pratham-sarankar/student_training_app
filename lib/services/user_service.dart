@@ -205,52 +205,6 @@ class UserService {
     }
   }
 
-  // Add course to user's enrolled courses
-  Future<void> enrollInCourse(String courseId) async {
-    final user = currentUser;
-    if (user == null) throw Exception('User not authenticated');
-
-    try {
-      final currentUserModel = await getUserById(user.uid);
-      if (currentUserModel != null) {
-        if (!currentUserModel.isEnrolledInCourse(courseId)) {
-          final updatedUser = currentUserModel.copyWith(
-            enrolledCourses: [...currentUserModel.enrolledCourses, courseId],
-          );
-          await createOrUpdateUser(updatedUser);
-        }
-      }
-    } catch (e) {
-      throw Exception('Failed to enroll in course: $e');
-    }
-  }
-
-  // Mark course as completed
-  Future<void> completeCourse(String courseId) async {
-    final user = currentUser;
-    if (user == null) throw Exception('User not authenticated');
-
-    try {
-      final currentUserModel = await getUserById(user.uid);
-      if (currentUserModel != null) {
-        if (currentUserModel.isEnrolledInCourse(courseId) && 
-            !currentUserModel.hasCompletedCourse(courseId)) {
-          
-          final updatedEnrolledCourses = List<String>.from(currentUserModel.enrolledCourses)
-            ..remove(courseId);
-          
-          final updatedUser = currentUserModel.copyWith(
-            enrolledCourses: updatedEnrolledCourses,
-            completedCourses: [...currentUserModel.completedCourses, courseId],
-          );
-          await createOrUpdateUser(updatedUser);
-        }
-      }
-    } catch (e) {
-      throw Exception('Failed to complete course: $e');
-    }
-  }
-
   // Save job to user's saved jobs
   Future<void> saveJob(String jobId) async {
     final user = currentUser;
@@ -400,22 +354,6 @@ class UserService {
       ).toList();
     } catch (e) {
       throw Exception('Failed to get users by role: $e');
-    }
-  }
-
-  // Get users who have completed a specific course
-  Future<List<UserModel>> getUsersByCompletedCourse(String courseId) async {
-    try {
-      final snapshot = await _firestore
-          .collection('users')
-          .where('completedCourses', arrayContains: courseId)
-          .get();
-      
-      return snapshot.docs.map((doc) => 
-        UserModel.fromMap(doc.data(), doc.id)
-      ).toList();
-    } catch (e) {
-      throw Exception('Failed to get users by completed course: $e');
     }
   }
 }

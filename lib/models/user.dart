@@ -24,9 +24,7 @@ class UserModel {
   final List<String> jobCategories;
   final List<String> preferredLocations;
   
-  // Learning progress
-  final List<String> enrolledCourses;
-  final List<String> completedCourses;
+  // Job-related
   final List<String> savedJobs;
   final List<String> appliedJobs;
 
@@ -50,8 +48,6 @@ class UserModel {
     this.jobAlerts = true,
     this.jobCategories = const [],
     this.preferredLocations = const [],
-    this.enrolledCourses = const [],
-    this.completedCourses = const [],
     this.savedJobs = const [],
     this.appliedJobs = const [],
   });
@@ -78,8 +74,6 @@ class UserModel {
     DateTime? dateOfBirth,
     List<String>? jobCategories,
     List<String>? preferredLocations,
-    List<String>? enrolledCourses,
-    List<String>? completedCourses,
     List<String>? savedJobs,
     List<String>? appliedJobs,
   }) {
@@ -102,8 +96,6 @@ class UserModel {
       updatedAt: DateTime.now(),
       jobCategories: jobCategories ?? [],
       preferredLocations: preferredLocations ?? [],
-      enrolledCourses: enrolledCourses ?? [],
-      completedCourses: completedCourses ?? [],
       savedJobs: savedJobs ?? [],
       appliedJobs: appliedJobs ?? [],
     );
@@ -135,8 +127,6 @@ class UserModel {
       jobAlerts: map['jobAlerts'] ?? true,
       jobCategories: List<String>.from(map['jobCategories'] ?? []),
       preferredLocations: List<String>.from(map['preferredLocations'] ?? []),
-      enrolledCourses: List<String>.from(map['enrolledCourses'] ?? []),
-      completedCourses: List<String>.from(map['completedCourses'] ?? []),
       savedJobs: List<String>.from(map['savedJobs'] ?? []),
       appliedJobs: List<String>.from(map['appliedJobs'] ?? []),
     );
@@ -165,8 +155,6 @@ class UserModel {
       'jobAlerts': jobAlerts,
       'jobCategories': jobCategories,
       'preferredLocations': preferredLocations,
-      'enrolledCourses': enrolledCourses,
-      'completedCourses': completedCourses,
       'savedJobs': savedJobs,
       'appliedJobs': appliedJobs,
     };
@@ -190,8 +178,6 @@ class UserModel {
     bool? jobAlerts,
     List<String>? jobCategories,
     List<String>? preferredLocations,
-    List<String>? enrolledCourses,
-    List<String>? completedCourses,
     List<String>? savedJobs,
     List<String>? appliedJobs,
   }) {
@@ -215,8 +201,6 @@ class UserModel {
       jobAlerts: jobAlerts ?? this.jobAlerts,
       jobCategories: jobCategories ?? this.jobCategories,
       preferredLocations: preferredLocations ?? this.preferredLocations,
-      enrolledCourses: enrolledCourses ?? this.enrolledCourses,
-      completedCourses: completedCourses ?? this.completedCourses,
       savedJobs: savedJobs ?? this.savedJobs,
       appliedJobs: appliedJobs ?? this.appliedJobs,
     );
@@ -250,16 +234,6 @@ class UserModel {
   String? get formattedDateOfBirth {
     if (dateOfBirth == null) return null;
     return '${dateOfBirth!.day.toString().padLeft(2, '0')}/${dateOfBirth!.month.toString().padLeft(2, '0')}/${dateOfBirth!.year}';
-  }
-
-  // Check if user has enrolled in a specific course
-  bool isEnrolledInCourse(String courseId) {
-    return enrolledCourses.contains(courseId);
-  }
-
-  // Check if user has completed a specific course
-  bool hasCompletedCourse(String courseId) {
-    return completedCourses.contains(courseId);
   }
 
   // Check if user has saved a specific job
