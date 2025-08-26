@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/course.dart';
-import '../services/course_service.dart';
+import '../../models/course.dart';
+import '../../services/course_service.dart';
 import 'traning_course_details_screen.dart';
 
 class TrainingCoursesScreen extends StatefulWidget {

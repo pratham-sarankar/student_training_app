@@ -6,10 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
-import '../services/chat_service.dart';
-import '../services/course_notes_service.dart';
-import '../models/chat_message.dart';
-import '../models/course_note.dart';
+import '../../services/chat_service.dart';
+import '../../services/course_notes_service.dart';
+import '../../models/chat_message.dart';
+import '../../models/course_note.dart';
+
 
 class MyCoursesDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> course;

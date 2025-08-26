@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:learn_work/screens/main_screen.dart';
-import 'package:learn_work/screens/welcome_screen.dart';
-import 'package:learn_work/screens/email_verification_screen.dart';
+import 'package:learn_work/screens/student_screens/main_screen.dart';
+import 'package:learn_work/screens/student_screens/welcome_screen.dart';
+import 'package:learn_work/screens/student_screens/email_verification_screen.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:learn_work/screens/main_screen.dart';
+import 'package:learn_work/screens/student_screens/main_screen.dart';
 import 'package:learn_work/services/user_service.dart';
 import 'dart:async'; // Added for Timer
 

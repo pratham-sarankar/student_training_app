@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/job.dart';
-import '../services/job_service.dart';
-import 'job_details_screen.dart';
+import 'package:learn_work/screens/student_screens/job_details_screen.dart';
+import '../../models/job.dart';
+import '../../services/job_service.dart';
 
 class AllJobsScreen extends StatefulWidget {
   const AllJobsScreen({super.key});

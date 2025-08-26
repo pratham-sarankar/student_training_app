@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
+import '../admin_screen/admin_login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -129,29 +130,40 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 20.h),
                 
-                // Demo Button
-                // SizedBox(
-                //   width: double.infinity,
-                //   height: 48.h,
-                //   child: FButton(
-                //     style: FButtonStyle.ghost,
-                //     onPress: () {
-                //       Navigator.of(context).push(
-                //         MaterialPageRoute(
-                //           builder: (context) => const PhoneAuthDemoScreen(),
-                //         ),
-                //       );
-                //     },
-                //     child: Text(
-                //       '🧪 Try Phone Auth Demo',
-                //       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                //         fontWeight: FontWeight.w500,
-                //         color: const Color(0xFF666666),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // SizedBox(height: 40.h),
+                // Admin Login Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 48.h,
+                  child: FButton(
+                    style: FButtonStyle.ghost,
+                    onPress: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AdminLoginScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.admin_panel_settings,
+                          size: 20.sp,
+                          color: const Color(0xFF666666),
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Login as Admin',
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF666666),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 40.h),
                 
 
               ],

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_work/screens/main_screen.dart';
-import 'package:learn_work/screens/phone_verification.dart';
-import 'package:learn_work/screens/register_screen.dart';
-import 'package:learn_work/screens/forgot_password_screen.dart';
+import 'package:learn_work/screens/student_screens/main_screen.dart';
+import 'package:learn_work/screens/student_screens/phone_verification.dart';
+import 'package:learn_work/screens/student_screens/register_screen.dart';
+import 'package:learn_work/screens/student_screens/forgot_password_screen.dart';
 import 'package:learn_work/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

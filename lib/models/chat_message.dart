@@ -9,6 +9,7 @@ class ChatMessage {
   final DateTime timestamp;
   final String? imageUrl;
   final MessageType type;
+  final String senderType; // Add senderType to distinguish user/instructor
 
   ChatMessage({
     required this.id,
@@ -18,6 +19,7 @@ class ChatMessage {
     required this.timestamp,
     this.imageUrl,
     this.type = MessageType.text,
+    this.senderType = 'user', // Default to user
   });
 
   factory ChatMessage.fromFirestore(DocumentSnapshot doc) {
@@ -33,6 +35,7 @@ class ChatMessage {
         (e) => e.toString() == 'MessageType.${data['type'] ?? 'text'}',
         orElse: () => MessageType.text,
       ),
+      senderType: data['senderType'] ?? 'user', // Get senderType from Firestore
     );
   }
 
@@ -44,6 +47,7 @@ class ChatMessage {
       'timestamp': Timestamp.fromDate(timestamp),
       'imageUrl': imageUrl,
       'type': type.toString().split('.').last,
+      'senderType': senderType, // Include senderType in Firestore
     };
   }
 }
@@ -52,4 +56,5 @@ enum MessageType {
   text,
   image,
   file,
+  instructor, // Add instructor type
 }
