@@ -3,9 +3,54 @@ import 'package:provider/provider.dart';
 import 'package:forui/forui.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:learn_work/models/traning.dart';
+import 'package:learn_work/models/user.dart';
 
-class StudentsScreen extends StatelessWidget {
+class StudentsScreen extends StatefulWidget {
   const StudentsScreen({super.key});
+
+  @override
+  State<StudentsScreen> createState() => _StudentsScreenState();
+}
+
+class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObserver {
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+  
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Refresh students list when app is resumed
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+          adminProvider.loadAllStudents();
+        }
+      });
+    }
+  }
+
+  void _exportStudentsList(List<UserModel> students) {
+    // For now, just show a message
+    // In a real implementation, this would generate a CSV or PDF file
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Export functionality for ${students.length} students needs to be implemented',
+        ),
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,55 +64,69 @@ class StudentsScreen extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header - Made more compact
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                    // Compact Header
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.people,
+                                color: Theme.of(context).colorScheme.primary,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
-                                      Icons.people,
-                                      color: Theme.of(context).colorScheme.primary,
-                                      size: 18,
+                                    Text(
+                                      'Student Management',
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
                                     ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            'Student Management',
-                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: Theme.of(context).colorScheme.onSurface,
-                                            ),
-                                          ),
-                                          Text(
-                                            'View all students and their subscription status',
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                              fontSize: 11,
-                                            ),
-                                          ),
-                                        ],
+                                    Text(
+                                      'Manage student accounts and training progress',
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        fontSize: 11,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          );
-                      },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 6),
-                    // Students Table
+                    // Students Table - Expanded to fill remaining space
                     Expanded(
-                      child: _buildStudentsTable(context, adminProvider),
+                      child: adminProvider.isLoading 
+                        ? const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Loading students...',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : _buildStudentsTable(context, adminProvider),
                     ),
                   ],
                 );
@@ -80,18 +139,10 @@ class StudentsScreen extends StatelessWidget {
   }
 
   Widget _buildStudentsTable(BuildContext context, AdminProvider adminProvider) {
-    // Collect all students from all trainings
-    final allStudents = <String, EnrolledStudent>{};
+    // Use original students list directly
+    final studentsList = adminProvider.allStudents;
     
-    for (final training in adminProvider.trainings) {
-      for (final schedule in training.schedules) {
-        for (final student in schedule.enrolledStudents) {
-          allStudents[student.id] = student;
-        }
-      }
-    }
-
-    if (allStudents.isEmpty) {
+    if (studentsList.isEmpty) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -103,7 +154,7 @@ class StudentsScreen extends StatelessWidget {
             ),
             SizedBox(height: 12),
             Text(
-              'No students enrolled',
+              'No students found',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
@@ -111,7 +162,7 @@ class StudentsScreen extends StatelessWidget {
             ),
             SizedBox(height: 6),
             Text(
-              'Students will appear here once they enroll in training schedules',
+              'Students will appear here once they register with the Student role',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
@@ -121,16 +172,20 @@ class StudentsScreen extends StatelessWidget {
         ),
       );
     }
-
-    final studentsList = allStudents.values.toList();
     
     // Sort students by name
-    studentsList.sort((a, b) => a.name.compareTo(b.name));
+    final sortedStudents = List<UserModel>.from(studentsList)
+      ..sort((a, b) => a.fullName.compareTo(b.fullName));
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      clipBehavior: Clip.none,
-      child: DataTable(
+    return RefreshIndicator(
+      onRefresh: () async {
+        final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+        await adminProvider.loadAllStudents();
+      },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        child: DataTable(
         columnSpacing: 12,
         horizontalMargin: 12,
         dataRowHeight: 36,
@@ -160,7 +215,18 @@ class StudentsScreen extends StatelessWidget {
           ),
           DataColumn(
             label: Text(
-              'Enrolled Date',
+              'Registration Date',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ),
+          DataColumn(
+            label: Text(
+              'Profile Status',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
@@ -182,7 +248,7 @@ class StudentsScreen extends StatelessWidget {
           ),
           DataColumn(
             label: Text(
-              'Enrolled In',
+              'Training Status',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
@@ -203,12 +269,12 @@ class StudentsScreen extends StatelessWidget {
             ),
           ),
         ],
-        rows: studentsList.map((student) {
+        rows: sortedStudents.map((student) {
           // Find which trainings this student is enrolled in
           final enrolledTrainings = <String>[];
           for (final training in adminProvider.trainings) {
             for (final schedule in training.schedules) {
-              if (schedule.enrolledStudents.any((s) => s.id == student.id)) {
+              if (schedule.enrolledStudents.any((s) => s.id == student.uid)) {
                 enrolledTrainings.add(training.title);
                 break; // Only add training once even if student has multiple schedules
               }
@@ -219,7 +285,7 @@ class StudentsScreen extends StatelessWidget {
             cells: [
               DataCell(
                 Text(
-                  student.name,
+                  student.fullName,
                   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -233,7 +299,7 @@ class StudentsScreen extends StatelessWidget {
               ),
               DataCell(
                 Text(
-                  _formatDate(student.enrolledDate),
+                  _formatDate(student.createdAt),
                   style: const TextStyle(fontSize: 12),
                 ),
               ),
@@ -242,13 +308,32 @@ class StudentsScreen extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: student.isSubscribedToJobs ? Colors.green[100] : Colors.red[100],
+                      color: student.hasCompletedProfile ? Colors.green[100] : Colors.orange[100],
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      student.isSubscribedToJobs ? 'Subscribed' : 'Not Subscribed',
+                      student.hasCompletedProfile ? 'Complete' : 'Incomplete',
                       style: TextStyle(
-                        color: student.isSubscribedToJobs ? Colors.green[800] : Colors.red[800],
+                        color: student.hasCompletedProfile ? Colors.green[800] : Colors.orange[800],
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              DataCell(
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: student.jobAlerts ? Colors.green[100] : Colors.red[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
+                      style: TextStyle(
+                        color: student.jobAlerts ? Colors.green[800] : Colors.red[800],
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
@@ -258,9 +343,11 @@ class StudentsScreen extends StatelessWidget {
               ),
               DataCell(
                 Text(
-                  enrolledTrainings.join(', '),
+                  enrolledTrainings.isNotEmpty 
+                    ? enrolledTrainings.join(', ')
+                    : 'Not enrolled',
                   style: TextStyle(
-                    color: Colors.grey[600],
+                    color: enrolledTrainings.isNotEmpty ? Colors.grey[600] : Colors.orange[600],
                     fontSize: 11,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -300,13 +387,13 @@ class StudentsScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(
-                              student.isSubscribedToJobs ? Icons.notifications_off : Icons.notifications_active,
-                              color: student.isSubscribedToJobs ? Colors.orange : Colors.green,
+                              student.jobAlerts ? Icons.notifications_off : Icons.notifications_active,
+                              color: student.jobAlerts ? Colors.orange : Colors.green,
                               size: 16,
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              student.isSubscribedToJobs ? 'Unsubscribe' : 'Subscribe',
+                              student.jobAlerts ? 'Unsubscribe' : 'Subscribe',
                               style: TextStyle(fontSize: 13),
                             ),
                           ],
@@ -319,6 +406,7 @@ class StudentsScreen extends StatelessWidget {
             ],
           );
         }).toList(),
+        ),
       ),
     );
   }
@@ -327,13 +415,13 @@ class StudentsScreen extends StatelessWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _showStudentDetails(BuildContext context, EnrolledStudent student, AdminProvider adminProvider) {
+  void _showStudentDetails(BuildContext context, UserModel student, AdminProvider adminProvider) {
     // Find all schedules this student is enrolled in
     final enrollments = <MapEntry<String, TrainingSchedule>>[];
     
     for (final training in adminProvider.trainings) {
       for (final schedule in training.schedules) {
-        if (schedule.enrolledStudents.any((s) => s.id == student.id)) {
+        if (schedule.enrolledStudents.any((s) => s.id == student.uid)) {
           enrollments.add(MapEntry(training.title, schedule));
         }
       }
@@ -384,7 +472,7 @@ class StudentsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            student.name,
+                            student.fullName,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -429,25 +517,118 @@ class StudentsScreen extends StatelessWidget {
                             student.email,
                             Colors.blue,
                           ),
+                          if (student.phoneNumber != null && student.phoneNumber!.isNotEmpty)
+                            _buildInfoTile(
+                              Icons.phone,
+                              'Phone',
+                              student.phoneNumber!,
+                              Colors.green,
+                            ),
                           _buildInfoTile(
                             Icons.calendar_today,
-                            'Enrolled Date',
-                            _formatDate(student.enrolledDate),
+                            'Registration Date',
+                            _formatDate(student.createdAt),
                             Colors.green,
                           ),
+                          if (student.dateOfBirth != null)
+                            _buildInfoTile(
+                              Icons.cake,
+                              'Date of Birth',
+                              student.formattedDateOfBirth ?? 'N/A',
+                              Colors.purple,
+                            ),
                           _buildInfoTile(
-                            student.isSubscribedToJobs ? Icons.notifications_active : Icons.notifications_off,
+                            student.jobAlerts ? Icons.notifications_active : Icons.notifications_off,
                             'Job Notifications',
-                            student.isSubscribedToJobs ? 'Subscribed' : 'Not Subscribed',
-                            student.isSubscribedToJobs ? Colors.green : Colors.red,
+                            student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
+                            student.jobAlerts ? Colors.green : Colors.red,
+                          ),
+                          _buildInfoTile(
+                            student.hasCompletedProfile ? Icons.check_circle : Icons.info_outline,
+                            'Profile Status',
+                            student.hasCompletedProfile ? 'Complete' : 'Incomplete',
+                            student.hasCompletedProfile ? Colors.green : Colors.orange,
                           ),
                         ],
                       ),
+                      if (student.bio != null && student.bio!.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        _buildInfoSection(
+                          'Bio',
+                          [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Text(
+                                student.bio!,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (student.jobCategories.isNotEmpty || student.preferredLocations.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        _buildInfoSection(
+                          'Preferences',
+                          [
+                            if (student.jobCategories.isNotEmpty)
+                              _buildInfoTile(
+                                Icons.work,
+                                'Job Categories',
+                                student.jobCategories.join(', '),
+                                Colors.blue,
+                              ),
+                            if (student.preferredLocations.isNotEmpty)
+                              _buildInfoTile(
+                                Icons.location_on,
+                                'Preferred Locations',
+                                student.preferredLocations.join(', '),
+                                Colors.green,
+                              ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       // Enrollments Section
                       _buildInfoSection(
-                        'Enrolled in ${enrollments.length} schedule(s)',
-                        enrollments.map((enrollment) => _buildEnrollmentTile(context, enrollment)).toList(),
+                        enrollments.isNotEmpty 
+                          ? 'Enrolled in ${enrollments.length} schedule(s)'
+                          : 'Not enrolled in any training schedules',
+                        enrollments.isNotEmpty 
+                          ? enrollments.map((enrollment) => _buildEnrollmentTile(context, enrollment)).toList()
+                          : [
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange[50],
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.orange[200]!),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.info_outline, color: Colors.orange[600], size: 18),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        'This student has not enrolled in any training schedules yet.',
+                                        style: TextStyle(
+                                          color: Colors.orange[800],
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                       ),
                       const SizedBox(height: 16),
                     ],
@@ -591,45 +772,29 @@ class StudentsScreen extends StatelessWidget {
     );
   }
 
-  void _toggleSubscription(BuildContext context, EnrolledStudent student, AdminProvider adminProvider) {
-    // Create a new student with toggled subscription status
-    final updatedStudent = student.copyWith(
-      isSubscribedToJobs: !student.isSubscribedToJobs,
-    );
-
-    // Update the student in all trainings and schedules
-    for (final training in adminProvider.trainings) {
-      for (final schedule in training.schedules) {
-        final studentIndex = schedule.enrolledStudents.indexWhere((s) => s.id == student.id);
-        if (studentIndex != -1) {
-          // Update the student in this schedule
-          final updatedSchedule = schedule.copyWith(
-            enrolledStudents: List.from(schedule.enrolledStudents)
-              ..[studentIndex] = updatedStudent,
-          );
-          
-          // Update the schedule in the training
-          final updatedTraining = training.copyWith(
-            schedules: training.schedules.map((s) => 
-              s.id == schedule.id ? updatedSchedule : s
-            ).toList(),
-          );
-          
-          // Update the training in the provider
-          adminProvider.updateTraining(updatedTraining);
-        }
-      }
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          updatedStudent.isSubscribedToJobs 
-            ? '${student.name} subscribed to job notifications'
-            : '${student.name} unsubscribed from job notifications',
+  void _toggleSubscription(BuildContext context, UserModel student, AdminProvider adminProvider) async {
+    try {
+      await adminProvider.updateUserJobAlerts(student.uid, !student.jobAlerts);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            !student.jobAlerts 
+              ? '${student.fullName} subscribed to job notifications'
+              : '${student.fullName} unsubscribed from job notifications',
+          ),
+          backgroundColor: !student.jobAlerts ? Colors.green : Colors.orange,
         ),
-        backgroundColor: updatedStudent.isSubscribedToJobs ? Colors.green : Colors.orange,
-      ),
-    );
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to update job notifications: $e',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

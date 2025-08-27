@@ -6,7 +6,6 @@ import 'jobs_screen.dart';
 import 'trainings_screen.dart';
 import 'students_screen.dart';
 import 'package:forui/forui.dart';
-import 'course_chat_list_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -51,6 +50,44 @@ class DashboardScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                // Sign out button
+                                IconButton(
+                                  onPressed: () async {
+                                    // Show logout confirmation dialog using ForUI
+                                    final shouldLogout = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => FDialog(
+                                        title: const Text('Confirm Logout'),
+                                        body: const Text('Are you sure you want to logout?'),
+                                        actions: [
+                                          FButton(
+                                            style: FButtonStyle.outline,
+                                            onPress: () => Navigator.of(context).pop(false),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          FButton(
+                                            style: FButtonStyle.primary,
+                                            onPress: () => Navigator.of(context).pop(true),
+                                            child: const Text('Logout'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    
+                                    // If user confirms logout, proceed
+                                    if (shouldLogout == true) {
+                                      await adminProvider.signOutAdmin();
+                                      // The AuthWrapper will automatically handle navigation
+                                      // No need to manually navigate
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.logout,
+                                    color: Theme.of(context).colorScheme.primary,
+                                    size: 20,
+                                  ),
+                                  tooltip: 'Sign Out',
+                                ),
                               ],
                             ),
                           ),
@@ -89,7 +126,7 @@ class DashboardScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           // Main content - compact
                           SizedBox(
-                            height: constraints.maxHeight - 160, // Reduced height for more compact layout
+                            height: constraints.maxHeight - 100, // Reduced height for more compact layout
                             child: _buildScreen(adminProvider.selectedIndex),
                           ),
                         ],

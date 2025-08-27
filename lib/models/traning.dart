@@ -47,15 +47,41 @@ class Training {
   }
 
   factory Training.fromJson(Map<String, dynamic> json) {
+    DateTime parseCreatedAt(dynamic createdAt) {
+      if (createdAt == null) return DateTime.now();
+      
+      if (createdAt is String) {
+        return DateTime.parse(createdAt);
+      } else if (createdAt is DateTime) {
+        return createdAt;
+      } else if (createdAt.runtimeType.toString().contains('Timestamp')) {
+        // Handle Firestore Timestamp
+        try {
+          // Access the seconds and nanoseconds properties
+          final seconds = createdAt.seconds as int? ?? 0;
+          final nanoseconds = createdAt.nanoseconds as int? ?? 0;
+          return DateTime.fromMillisecondsSinceEpoch(seconds * 1000 + (nanoseconds / 1000000).round());
+        } catch (e) {
+          print('Error parsing Firestore Timestamp: $e');
+          return DateTime.now();
+        }
+      }
+      
+      return DateTime.now();
+    }
+
+    // Handle different field names from Firestore
+    final price = json['price'] ?? json['cost'] ?? 0.0;
+    
     return Training(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      price: json['price'].toDouble(),
-      schedules: (json['schedules'] as List)
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      price: (price is num) ? price.toDouble() : 0.0,
+      schedules: (json['schedules'] as List? ?? [])
           .map((s) => TrainingSchedule.fromJson(s))
           .toList(),
-      createdAt: DateTime.parse(json['createdAt']),
+      createdAt: parseCreatedAt(json['createdAt']),
     );
   }
 }
@@ -108,7 +134,10 @@ class TrainingSchedule {
       'id': id,
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
-      'time': '${time.hour}:${time.minute}',
+      'time': {
+        'hour': time.hour,
+        'minute': time.minute,
+      },
       'capacity': capacity,
       'enrolledStudents': enrolledStudents.map((s) => s.toJson()).toList(),
       'notes': notes.map((n) => n.toJson()).toList(),
@@ -117,23 +146,75 @@ class TrainingSchedule {
   }
 
   factory TrainingSchedule.fromJson(Map<String, dynamic> json) {
-    final timeParts = json['time'].split(':');
+    DateTime parseDate(dynamic date) {
+      if (date == null) return DateTime.now();
+      
+      if (date is String) {
+        try {
+          return DateTime.parse(date);
+        } catch (e) {
+          print('Error parsing date string: $date, error: $e');
+          return DateTime.now();
+        }
+      } else if (date is DateTime) {
+        return date;
+      } else if (date.runtimeType.toString().contains('Timestamp')) {
+        try {
+          final seconds = date.seconds as int? ?? 0;
+          final nanoseconds = date.nanoseconds as int? ?? 0;
+          return DateTime.fromMillisecondsSinceEpoch(seconds * 1000 + (nanoseconds / 1000000).round());
+        } catch (e) {
+          print('Error parsing Firestore Timestamp: $e');
+          return DateTime.now();
+        }
+      }
+      
+      return DateTime.now();
+    }
+
+    TimeOfDay parseTime(dynamic time) {
+      if (time == null) return const TimeOfDay(hour: 0, minute: 0);
+      
+      if (time is Map<String, dynamic>) {
+        // Handle time object format from toJson
+        final hour = time['hour'] as int? ?? 0;
+        final minute = time['minute'] as int? ?? 0;
+        return TimeOfDay(hour: hour, minute: minute);
+      } else if (time is String) {
+        try {
+          // Handle different time formats like "Wed, Fri 6:00 PM" or "6:00 PM"
+          final timeMatch = RegExp(r'(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)?').firstMatch(time);
+          if (timeMatch != null) {
+            int hour = int.parse(timeMatch.group(1)!);
+            int minute = int.parse(timeMatch.group(2)!);
+            final period = timeMatch.group(3)?.toUpperCase();
+            
+            if (period == 'PM' && hour != 12) hour += 12;
+            if (period == 'AM' && hour == 12) hour = 0;
+            
+            return TimeOfDay(hour: hour, minute: minute);
+          }
+        } catch (e) {
+          print('Error parsing time string: $time, error: $e');
+        }
+      }
+      
+      return const TimeOfDay(hour: 0, minute: 0);
+    }
+
     return TrainingSchedule(
-      id: json['id'],
-      startDate: DateTime.parse(json['startDate']),
-      endDate: DateTime.parse(json['endDate']),
-      time: TimeOfDay(
-        hour: int.parse(timeParts[0]),
-        minute: int.parse(timeParts[1]),
-      ),
-      capacity: json['capacity'],
-      enrolledStudents: (json['enrolledStudents'] as List)
+      id: json['id'] ?? '',
+      startDate: parseDate(json['startDate']),
+      endDate: parseDate(json['endDate']),
+      time: parseTime(json['time']),
+      capacity: json['capacity'] ?? json['seats'] ?? 0,
+      enrolledStudents: (json['enrolledStudents'] as List? ?? [])
           .map((s) => EnrolledStudent.fromJson(s))
           .toList(),
-      notes: (json['notes'] as List)
+      notes: (json['notes'] as List? ?? [])
           .map((n) => Note.fromJson(n))
           .toList(),
-      messages: (json['messages'] as List)
+      messages: (json['messages'] as List? ?? [])
           .map((m) => Message.fromJson(m))
           .toList(),
     );
@@ -183,10 +264,12 @@ class EnrolledStudent {
 
   factory EnrolledStudent.fromJson(Map<String, dynamic> json) {
     return EnrolledStudent(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      enrolledDate: DateTime.parse(json['enrolledDate']),
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      enrolledDate: json['enrolledDate'] != null 
+          ? DateTime.parse(json['enrolledDate']) 
+          : DateTime.now(),
       isSubscribedToJobs: json['isSubscribedToJobs'] ?? false,
     );
   }
@@ -235,11 +318,13 @@ class Note {
 
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
-      id: json['id'],
-      title: json['title'],
-      filePath: json['filePath'],
-      fileType: json['fileType'],
-      uploadedAt: DateTime.parse(json['uploadedAt']),
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      filePath: json['filePath'] ?? '',
+      fileType: json['fileType'] ?? '',
+      uploadedAt: json['uploadedAt'] != null 
+          ? DateTime.parse(json['uploadedAt']) 
+          : DateTime.now(),
     );
   }
 }
@@ -277,9 +362,11 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-      id: json['id'],
-      content: json['content'],
-      sentAt: DateTime.parse(json['sentAt']),
+      id: json['id'] ?? '',
+      content: json['content'] ?? '',
+      sentAt: json['sentAt'] != null 
+          ? DateTime.parse(json['sentAt']) 
+          : DateTime.now(),
     );
   }
 }

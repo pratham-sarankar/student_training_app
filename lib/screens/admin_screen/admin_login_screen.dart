@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'dashboard_screen.dart';
 import '../../providers/admin_provider.dart';
+import '../student_screens/forgot_password_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -16,7 +16,6 @@ class AdminLoginScreen extends StatefulWidget {
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -48,52 +47,59 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // Simple admin validation - you can replace this with your actual admin validation logic
-      if (_emailController.text == 'admin@demo.com' && 
-          _passwordController.text == 'admin123') {
-        // Navigate to admin dashboard with provider
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (context) => AdminProvider(),
-                child: const DashboardScreen(),
-              ),
-            ),
-          );
-        }
-      } else {
-        // Show error for invalid credentials
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid admin credentials'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Login failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+         try {
+       print('🔐 Attempting admin login with email: ${_emailController.text.trim()}');
+       
+       // Use the admin provider to sign in
+       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+       final success = await adminProvider.signInAdmin(
+         _emailController.text.trim(),
+         _passwordController.text,
+       );
+       
+       print('🔐 Admin login result: $success');
+       
+       if (success && mounted) {
+         // Success! The AuthWrapper will automatically handle navigation
+         // based on the user's role. Just pop back to welcome screen.
+         Navigator.of(context).pop();
+       }
+     } catch (e) {
+       if (mounted) {
+         // Get the error message from the provider if available
+         final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+         String errorMessage = adminProvider.errorMessage ?? 'Login failed';
+         
+         // If no provider error, show the caught exception
+         if (errorMessage == 'Login failed') {
+           if (e.toString().contains('wrong-password') || e.toString().contains('incorrect')) {
+             errorMessage = 'Incorrect password. Please try again.';
+           } else if (e.toString().contains('user-not-found')) {
+             errorMessage = 'No admin account found with this email address.';
+           } else if (e.toString().contains('invalid-email')) {
+             errorMessage = 'Please enter a valid email address.';
+           } else if (e.toString().contains('too-many-requests')) {
+             errorMessage = 'Too many failed attempts. Please try again later.';
+           } else if (e.toString().contains('network')) {
+             errorMessage = 'Network error. Please check your internet connection.';
+           } else if (e.toString().contains('Access denied')) {
+             errorMessage = 'Access denied. This account is not authorized for admin access.';
+           } else {
+             errorMessage = 'Login failed: ${e.toString()}';
+           }
+         }
+         
+         print('🔐 Admin login error: $errorMessage');
+         
+         ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(
+             content: Text(errorMessage),
+             backgroundColor: Colors.red,
+             duration: const Duration(seconds: 4),
+           ),
+         );
+       }
+     }
   }
 
   @override
@@ -217,40 +223,114 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         ),
                       ],
                     ),
+                    // Forgot Password Link positioned under password field
+                    SizedBox(height: 8.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        FButton(
+                          style: FButtonStyle.ghost,
+                          onPress: () {
+                            // Navigate to forgot password screen
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const ForgotPasswordScreen(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 SizedBox(height: 32.h),
                 
                 // Login Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56.h,
-                  child: FButton(
-                    onPress: _isLoading ? null : _handleAdminLogin,
-                    child: _isLoading
-                        ? SizedBox(
-                            width: 24.w,
-                            height: 24.h,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.w,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+                Consumer<AdminProvider>(
+                  builder: (context, adminProvider, child) {
+                    return FButton(
+                      onPress: adminProvider.isLoading ? null : _handleAdminLogin,
+                      child: adminProvider.isLoading
+                          ? SizedBox(
+                              width: 24.w,
+                              height: 24.h,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.w,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              'Login as Admin',
+                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.2,
+                                color: Colors.white,
                               ),
                             ),
-                          )
-                        : Text(
-                            'Login as Admin',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.2,
-                              color: Colors.white,
-                            ),
-                          ),
-                  ),
+                    );
+                  },
                 ),
+                
+                // Error Message Display
+                Consumer<AdminProvider>(
+                  builder: (context, adminProvider, child) {
+                    if (adminProvider.errorMessage != null) {
+                      return Container(
+                        margin: EdgeInsets.only(top: 16.h),
+                        padding: EdgeInsets.all(12.w),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: Colors.red.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red.shade600,
+                              size: 20.sp,
+                            ),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                adminProvider.errorMessage!,
+                                style: TextStyle(
+                                  color: Colors.red.shade700,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: adminProvider.clearError,
+                              icon: Icon(
+                                Icons.close,
+                                color: Colors.red.shade600,
+                                size: 18.sp,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+                
                 SizedBox(height: 24.h),
                 
-                // Demo Credentials Info
+                // Info Box
                 Container(
                   padding: EdgeInsets.all(16.w),
                   decoration: BoxDecoration(
@@ -263,8 +343,14 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   ),
                   child: Column(
                     children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 24.sp,
+                      ),
+                      SizedBox(height: 8.h),
                       Text(
-                        'Demo Credentials',
+                        'Firebase Authentication',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF495057),
@@ -272,7 +358,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       ),
                       SizedBox(height: 8.h),
                       Text(
-                        'Email: admin@demo.com\nPassword: admin123',
+                        'This admin panel uses Firebase Authentication. Only users with Admin role can access this area.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: const Color(0xFF6C757D),
                           height: 1.4,

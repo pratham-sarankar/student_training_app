@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 import '../admin_screen/admin_login_screen.dart';
+import '../../providers/admin_provider.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -139,7 +141,10 @@ class WelcomeScreen extends StatelessWidget {
                     onPress: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const AdminLoginScreen(),
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => AdminProvider(),
+                            child: const AdminLoginScreen(),
+                          ),
                         ),
                       );
                     },

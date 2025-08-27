@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:forui/forui.dart';
-import 'package:forui_assets/forui_assets.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:learn_work/models/job.dart';
+import 'package:forui/forui.dart';
 import 'add_job_screen.dart';
 
 class JobsScreen extends StatelessWidget {
@@ -61,31 +60,15 @@ class JobsScreen extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: FilledButton.icon(
-                              onPressed: () => _navigateToAddJob(context),
-                              icon: const Icon(Icons.add, size: 14),
-                              label: const Text('Add Job', style: TextStyle(fontSize: 12)),
-                              style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                minimumSize: const Size(0, 32),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: FilledButton.icon(
-                              onPressed: () => _sendJobNotifications(context),
-                              icon: const Icon(Icons.notifications_active, size: 14),
-                              label: const Text('Send Alerts', style: TextStyle(fontSize: 12)),
-                              style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                minimumSize: const Size(0, 32),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
+                            child: FButton(
+                              onPress: () => _navigateToAddJob(context),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.add, size: 14),
+                                  const SizedBox(width: 4),
+                                  const Text('Add Job', style: TextStyle(fontSize: 12)),
+                                ],
                               ),
                             ),
                           ),
@@ -94,10 +77,17 @@ class JobsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 // Compact Jobs Table
                 Expanded(
-                  child: _buildJobsTable(context, adminProvider),
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      // Store reference to AdminProvider before using it
+                      final adminProvider = context.read<AdminProvider>();
+                      await adminProvider.loadJobs();
+                    },
+                    child: _buildJobsTable(context, adminProvider),
+                  ),
                 ),
               ],
             ),
@@ -108,6 +98,67 @@ class JobsScreen extends StatelessWidget {
   }
 
   Widget _buildJobsTable(BuildContext context, AdminProvider adminProvider) {
+    if (adminProvider.isLoading) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 10),
+            Text(
+              'Loading jobs...',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (adminProvider.errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Colors.red[400],
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Error loading jobs',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.red[400],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              adminProvider.errorMessage!,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                // Store reference to AdminProvider before using it
+                final adminProvider = context.read<AdminProvider>();
+                adminProvider.loadJobs();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (adminProvider.jobs.isEmpty) {
       return const Center(
         child: Column(
@@ -141,8 +192,9 @@ class JobsScreen extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      clipBehavior: Clip.none,
+      clipBehavior: Clip.hardEdge,
       child: DataTable(
+        clipBehavior: Clip.hardEdge,
         columnSpacing: 12,
         horizontalMargin: 12,
         dataRowHeight: 36,
@@ -279,8 +331,29 @@ class JobsScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(color: Colors.grey[200]!),
                     ),
-                    onSelected: (value) {
+                    onSelected: (value) async {
                       if (value == 'edit') {
+                        // Show brief loading indicator
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Row(
+                              children: [
+                                SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Text('Opening editor...'),
+                              ],
+                            ),
+                            duration: Duration(seconds: 1),
+                            backgroundColor: Colors.blue,
+                          ),
+                        );
                         _navigateToAddJob(context, job: job);
                       } else if (value == 'delete') {
                         _deleteJob(context, job.id);
@@ -320,17 +393,41 @@ class JobsScreen extends StatelessWidget {
 
 
 
-  void _navigateToAddJob(BuildContext context, {Job? job}) {
-    Navigator.of(context).push(
+  void _navigateToAddJob(BuildContext context, {Job? job}) async {
+    // Get the AdminProvider instance from the current context
+    final adminProvider = context.read<AdminProvider>();
+    
+    final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AddJobScreen(job: job),
+        builder: (context) => ChangeNotifierProvider.value(
+          value: adminProvider,
+          child: AddJobScreen(job: job),
+        ),
       ),
     );
+    
+    // If we're returning from editing and there's a result, refresh the jobs
+    if (result == true) {
+      // Use the stored reference instead of context.read to avoid deactivated widget error
+      await adminProvider.loadJobs();
+      
+      // Show success message - check if context is still mounted
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Job updated successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   void _deleteJob(BuildContext context, String jobId) {
     // Find the job to get its details for the confirmation
-    final job = context.read<AdminProvider>().jobs.firstWhere((j) => j.id == jobId);
+    final adminProvider = context.read<AdminProvider>();
+    final job = adminProvider.jobs.firstWhere((j) => j.id == jobId);
     
     showModalBottomSheet(
       context: context,
@@ -578,7 +675,9 @@ class JobsScreen extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                context.read<AdminProvider>().deleteJob(jobId);
+                                // Store reference to AdminProvider before using it
+                                final adminProvider = context.read<AdminProvider>();
+                                adminProvider.deleteJob(jobId);
                                 Navigator.of(context).pop();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -639,14 +738,5 @@ class JobsScreen extends StatelessWidget {
     );
   }
 
-  void _sendJobNotifications(BuildContext context) {
-    context.read<AdminProvider>().sendJobNotifications();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Job notifications sent to all subscribed students'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
 }
 
