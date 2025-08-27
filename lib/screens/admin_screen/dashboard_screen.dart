@@ -16,8 +16,8 @@ class DashboardScreen extends StatelessWidget {
       builder: (context, adminProvider, child) {
         return AnnotatedRegion(
           value: SystemUiOverlayStyle.dark,
-          child: FScaffold(
-            child: SafeArea(
+          child: Scaffold(
+            body: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                     return SingleChildScrollView(
@@ -25,11 +25,11 @@ class DashboardScreen extends StatelessWidget {
                         children: [
                           // Mobile header - compact
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                             child: Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(8),
@@ -149,7 +149,7 @@ class DashboardScreen extends StatelessWidget {
     required bool isSelected,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2),
+      margin: const EdgeInsets.symmetric(horizontal: 6),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -172,7 +172,8 @@ class DashboardScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Icon(
                   icon,
@@ -184,10 +185,11 @@ class DashboardScreen extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   title,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 13, 
+                    fontSize: 12, 
                     fontWeight: FontWeight.w500,
-                    color: isSelected 
+                    color: isSelected
                       ? Theme.of(context).colorScheme.onPrimary
                       : Theme.of(context).colorScheme.primary,
                   ),

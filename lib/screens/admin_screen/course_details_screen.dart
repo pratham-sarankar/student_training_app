@@ -190,7 +190,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         children: [
                           Icon(
                             Icons.flash_on,
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: Theme.of(context).colorScheme.primary,
                             size: 18,
                           ),
                           const SizedBox(width: 8),
@@ -303,7 +303,6 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                     ),
                   ),
                 ],
-                
                 // Schedules Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -327,6 +326,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
+                            const SizedBox(height: 2),
                             Text(
                               'Manage course schedules and student enrollments',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(

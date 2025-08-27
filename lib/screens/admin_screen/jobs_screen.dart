@@ -44,6 +44,7 @@ class JobsScreen extends StatelessWidget {
                                     color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
+                                const SizedBox(height: 2),
                                 Text(
                                   'Manage job postings and notifications',
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(

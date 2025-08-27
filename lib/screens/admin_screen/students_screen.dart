@@ -90,6 +90,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                                         color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                     ),
+                                    const SizedBox(height: 2),
                                     Text(
                                       'Manage student accounts and training progress',
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(

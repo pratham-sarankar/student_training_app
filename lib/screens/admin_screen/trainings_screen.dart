@@ -80,6 +80,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                                               color: Theme.of(context).colorScheme.onSurface,
                                             ),
                                           ),
+                                          const SizedBox(height: 2),
                                           Text(
                                             'Manage training courses and schedules',
                                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
