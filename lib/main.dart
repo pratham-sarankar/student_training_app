@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FThemes.zinc.light;
+    final theme = FThemes.zinc.dark;
     return FTheme(
       data: theme,
       child: ScreenUtilInit(

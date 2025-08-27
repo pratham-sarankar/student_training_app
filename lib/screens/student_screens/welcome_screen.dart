@@ -13,8 +13,9 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    final typography = context.theme.typography;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
@@ -23,18 +24,15 @@ class WelcomeScreen extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: 60.h),
-                
+
                 // Professional Logo Section
                 Container(
                   width: 120.w,
                   height: 120.h,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: theme.colors.primaryForeground,
                     borderRadius: BorderRadius.circular(30.r),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                      width: 1.w,
-                    ),
+                    border: Border.all(color: theme.colors.border, width: 1.w),
                   ),
                   child: Icon(
                     Icons.school_outlined,
@@ -43,48 +41,23 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 40.h),
-                
+
                 // Main Title
                 Text(
                   'Learn Work',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1A1A1A),
-                    letterSpacing: -0.5,
-                  ),
+                  style: typography.xl3.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 12.h),
-                
+
                 // Subtitle
                 Text(
-                  'Your gateway to professional learning',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFF666666),
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.1,
-                    height: 1.2,
-                  ),
+                  'Your gateway to professional learning. Join thousands of professionals advancing their careers',
+                  style: typography.lg,
                   textAlign: TextAlign.center,
-                  maxLines: 1,
                   overflow: TextOverflow.visible,
                 ),
-                SizedBox(height: 8.h),
-                
-                // Description
-                Text(
-                  'Join thousands of professionals advancing their careers',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF888888),
-                    fontWeight: FontWeight.w400,
-                    height: 1.3,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.visible,
-                ),
-                SizedBox(height: 80.h),
-                
+                const Spacer(),
                 // Primary Action Button
                 FButton(
                   onPress: () {
@@ -94,16 +67,9 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text(
-                    'Sign In',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: Text('Sign In'),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 // Secondary Action Button
                 FButton(
                   style: FButtonStyle.outline,
@@ -114,16 +80,10 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text(
-                    'Create Account',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
+                  child: Text('Create Account'),
                 ),
                 SizedBox(height: 20.h),
-                
+
                 // Admin Login Button
                 SizedBox(
                   width: double.infinity,
@@ -133,10 +93,11 @@ class WelcomeScreen extends StatelessWidget {
                     onPress: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider(
-                            create: (context) => AdminProvider(),
-                            child: const AdminLoginScreen(),
-                          ),
+                          builder:
+                              (context) => ChangeNotifierProvider(
+                                create: (context) => AdminProvider(),
+                                child: const AdminLoginScreen(),
+                              ),
                         ),
                       );
                     },
@@ -151,7 +112,9 @@ class WelcomeScreen extends StatelessWidget {
                         SizedBox(width: 8.w),
                         Text(
                           'Login as Admin',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                             color: const Color(0xFF666666),
                           ),
@@ -161,8 +124,6 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 40.h),
-                
-
               ],
             ),
           ),
