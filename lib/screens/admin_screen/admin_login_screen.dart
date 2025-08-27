@@ -251,7 +251,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 16.h),
                 
                 // Login Button
                 Consumer<AdminProvider>(
@@ -327,49 +327,6 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     return const SizedBox.shrink();
                   },
                 ),
-                
-                SizedBox(height: 24.h),
-                
-                // Info Box
-                Container(
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: const Color(0xFFE9ECEF),
-                      width: 1.w,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 24.sp,
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Firebase Authentication',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF495057),
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'This admin panel uses Firebase Authentication. Only users with Admin role can access this area.',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: const Color(0xFF6C757D),
-                          height: 1.4,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                
-                SizedBox(height: 40.h),
               ],
             ),
           ),
