@@ -7,7 +7,6 @@ import 'package:learn_work/screens/student_screens/phone_verification.dart';
 import 'package:learn_work/screens/student_screens/register_screen.dart';
 import 'package:learn_work/screens/student_screens/forgot_password_screen.dart';
 import 'package:learn_work/services/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -438,30 +437,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20.h),
                 
                 // Login/Verify Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 48.h,
-                  child: FButton(
-                    onPress: _isLoading ? null : (_isPhoneMode ? _sendPhoneVerification : _signInWithEmail),
-                    style: FButtonStyle.primary,
-                    child: _isLoading
-                        ? SizedBox(
-                            height: 18.h,
-                            width: 18.w,
-                            child: const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            _isPhoneMode ? 'Send Code' : 'Sign In',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.2,
-                              color: Colors.white,
-                            ),
+                FButton(
+                  onPress: _isLoading ? null : (_isPhoneMode ? _sendPhoneVerification : _signInWithEmail),
+                  style: FButtonStyle.primary,
+                  child: _isLoading
+                      ? SizedBox(
+                          height: 18.h,
+                          width: 18.w,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
-                  ),
+                        )
+                      : Text(
+                          _isPhoneMode ? 'Send Code' : 'Sign In',
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.2,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
                 SizedBox(height: 12.h),
                 

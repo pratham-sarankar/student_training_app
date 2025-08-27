@@ -407,30 +407,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: 20.h),
                 
                 // Register Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 48.h,
-                  child: FButton(
-                    onPress: _acceptedTerms && !_isLoading ? _createAccount : null,
-                    style: _acceptedTerms ? FButtonStyle.primary : FButtonStyle.secondary,
-                    child: _isLoading
-                        ? SizedBox(
-                            height: 18.h,
-                            width: 18.w,
-                            child: const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            'Create Account',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.2,
-                              color: Colors.white,
-                            ),
+                FButton(
+                  onPress: _acceptedTerms && !_isLoading ? _createAccount : null,
+                  style: _acceptedTerms ? FButtonStyle.primary : FButtonStyle.primary,
+                  child: _isLoading
+                      ? SizedBox(
+                          height: 18.h,
+                          width: 18.w,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
-                  ),
+                        )
+                      : Text(
+                          'Create Account',
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.2,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
                 SizedBox(height: 12.h),
                 

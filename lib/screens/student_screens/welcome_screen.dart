@@ -86,47 +86,39 @@ class WelcomeScreen extends StatelessWidget {
                 SizedBox(height: 80.h),
                 
                 // Primary Action Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56.h,
-                  child: FButton(
-                    onPress: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Sign In',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                        color: Colors.white,
+                FButton(
+                  onPress: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
                       ),
+                    );
+                  },
+                  child: Text(
+                    'Sign In',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                      color: Colors.white,
                     ),
                   ),
                 ),
                 SizedBox(height: 20.h),
                 // Secondary Action Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56.h,
-                  child: FButton(
-                    style: FButtonStyle.outline,
-                    onPress: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Create Account',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
+                FButton(
+                  style: FButtonStyle.outline,
+                  onPress: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
                       ),
+                    );
+                  },
+                  child: Text(
+                    'Create Account',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
                     ),
                   ),
                 ),
