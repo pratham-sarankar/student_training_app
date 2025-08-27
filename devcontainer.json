@@ -1,0 +1,4 @@
+{
+  "image": "cirrusci/flutter:beta",
+  "forwards": [3000]
+}
