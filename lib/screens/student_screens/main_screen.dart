@@ -46,15 +46,16 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return Scaffold(
-      backgroundColor: Colors.white,
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colors.background,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: theme.colors.foreground.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -68,16 +69,18 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor: const Color(0xFF999999),
+          backgroundColor: theme.colors.background,
+          selectedItemColor: theme.colors.primary,
+          unselectedItemColor: theme.colors.mutedForeground,
           selectedLabelStyle: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 12,
+            color: theme.colors.primary,
           ),
           unselectedLabelStyle: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 12,
+            color: theme.colors.mutedForeground,
           ),
           elevation: 0,
           items: _bottomNavItems,

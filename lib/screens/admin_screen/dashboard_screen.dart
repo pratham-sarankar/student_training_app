@@ -12,11 +12,14 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         return AnnotatedRegion(
           value: SystemUiOverlayStyle.dark,
           child: Scaffold(
+            backgroundColor: theme.colors.background,
             body: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -31,12 +34,12 @@ class DashboardScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                    color: theme.colors.primary,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
                                     Icons.admin_panel_settings,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: theme.colors.primaryForeground,
                                     size: 24,
                                   ),
                                 ),
@@ -44,8 +47,8 @@ class DashboardScreen extends StatelessWidget {
                                 Expanded(
                                   child: Text(
                                     'Admin Panel',
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      color: Theme.of(context).colorScheme.primary,
+                                    style: theme.typography.lg.copyWith(
+                                      color: theme.colors.foreground,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -83,7 +86,7 @@ class DashboardScreen extends StatelessWidget {
                                   },
                                   icon: Icon(
                                     Icons.logout,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: theme.colors.foreground,
                                     size: 20,
                                   ),
                                   tooltip: 'Sign Out',
@@ -125,8 +128,12 @@ class DashboardScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           // Main content - compact
-                          SizedBox(
+                          Container(
                             height: constraints.maxHeight - 100, // Reduced height for more compact layout
+                            decoration: BoxDecoration(
+                              color: theme.colors.background,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             child: _buildScreen(adminProvider.selectedIndex),
                           ),
                         ],
@@ -148,6 +155,8 @@ class DashboardScreen extends StatelessWidget {
     required int index,
     required bool isSelected,
   }) {
+    final theme = context.theme;
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 6),
       child: Material(
@@ -161,12 +170,12 @@ class DashboardScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: isSelected 
-                ? Theme.of(context).colorScheme.primary
-                : Colors.transparent,
+                ? theme.colors.primary
+                : theme.colors.background,
               border: Border.all(
                 color: isSelected 
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                  ? theme.colors.primary
+                  : theme.colors.border,
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(6),
@@ -179,19 +188,18 @@ class DashboardScreen extends StatelessWidget {
                   icon,
                   size: 16,
                   color: isSelected 
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.primary,
+                    ? theme.colors.primaryForeground
+                    : theme.colors.foreground,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12, 
+                  style: theme.typography.sm.copyWith(
                     fontWeight: FontWeight.w500,
                     color: isSelected
-                      ? Theme.of(context).colorScheme.onPrimary
-                      : Theme.of(context).colorScheme.primary,
+                      ? theme.colors.primaryForeground
+                      : theme.colors.foreground,
                   ),
                 ),
               ],

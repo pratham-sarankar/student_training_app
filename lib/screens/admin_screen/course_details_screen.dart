@@ -27,6 +27,8 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         // Get the latest training data from the provider
@@ -44,26 +46,26 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
         final training = _currentTraining ?? widget.training;
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: theme.colors.background,
           appBar: AppBar(
             title: Text(
               training.title,
-              style: const TextStyle(
+              style: theme.typography.lg.copyWith(
                 fontWeight: FontWeight.w600,
-                fontSize: 18,
+                color: theme.colors.foreground,
               ),
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: theme.colors.background,
             elevation: 0,
             scrolledUnderElevation: 0,
             surfaceTintColor: Colors.transparent,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, size: 20),
+              icon: Icon(Icons.arrow_back_ios, size: 20, color: theme.colors.foreground),
               onPressed: () => Navigator.of(context).pop(),
               tooltip: 'Back',
               style: IconButton.styleFrom(
-                backgroundColor: Colors.grey.withOpacity(0.1),
-                foregroundColor: Colors.grey[700],
+                backgroundColor: theme.colors.muted,
+                foregroundColor: theme.colors.foreground,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -72,20 +74,20 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
             actions: [
               IconButton(
                 onPressed: () => _showTrainingFormDialog(context),
-                icon: const Icon(Icons.edit_outlined, size: 20),
+                icon: Icon(Icons.edit_outlined, size: 20, color: theme.colors.primary),
                 tooltip: 'Edit Course',
                 style: IconButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: theme.colors.primary.withOpacity(0.1),
+                  foregroundColor: theme.colors.primary,
                 ),
               ),
                IconButton(
                  onPressed: () => _deleteTraining(context),
-                 icon: const Icon(Icons.delete_outline, size: 20),
+                 icon: Icon(Icons.delete_outline, size: 20, color: theme.colors.destructive),
                  tooltip: 'Delete Course',
                  style: IconButton.styleFrom(
-                   backgroundColor: Colors.red.withOpacity(0.1),
-                   foregroundColor: Colors.red,
+                   backgroundColor: theme.colors.destructive.withOpacity(0.1),
+                   foregroundColor: theme.colors.destructive,
                  ),
                ),
                const SizedBox(width: 8),
@@ -98,7 +100,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 // Course Header Section
                 Container(
                   width: double.infinity,
-                  color: Colors.white,
+                  color: theme.colors.background,
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,12 +110,12 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              color: theme.colors.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               Icons.school,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: theme.colors.primary,
                               size: 20,
                             ),
                           ),
@@ -124,17 +126,16 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               children: [
                                 Text(
                                   training.title,
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  style: theme.typography.lg.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: theme.colors.foreground,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   training.description,
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 13,
+                                  style: theme.typography.sm.copyWith(
+                                    color: theme.colors.mutedForeground,
                                     height: 1.3,
                                   ),
                                 ),
@@ -151,7 +152,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               icon: Icons.attach_money,
                               title: 'Price',
                               value: '₹${training.price.toStringAsFixed(2)}',
-                              color: Colors.green,
+                              color: theme.colors.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -160,7 +161,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               icon: Icons.schedule,
                               title: 'Schedules',
                               value: '${training.schedules.length}',
-                              color: Colors.blue,
+                              color: theme.colors.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -169,7 +170,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               icon: Icons.people,
                               title: 'Total Students',
                               value: '${training.schedules.fold(0, (sum, schedule) => sum + schedule.enrolledStudents.length)}',
-                              color: Colors.purple,
+                              color: theme.colors.primary,
                             ),
                           ),
                         ],
@@ -181,8 +182,8 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 // Quick Actions Section
                 Container(
                   width: double.infinity,
-                  color: Colors.grey[50],
-                  padding: const EdgeInsets.all(12),
+                  color: theme.colors.muted,
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -190,56 +191,56 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         children: [
                           Icon(
                             Icons.flash_on,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 18,
+                            color: theme.colors.primary,
+                            size: 16,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           Text(
                             'Quick Actions',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: theme.typography.sm.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface,
+                              color: theme.colors.foreground,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildQuickActionCard(
-                              context,
-                              icon: Icons.add,
-                              title: 'Add Schedule',
-                              subtitle: 'Create new course schedule',
-                              onTap: () => _showScheduleFormDialog(context),
-                              color: Colors.blue,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _buildQuickActionCard(
-                              context,
-                              icon: Icons.upload_file,
-                              title: 'Upload Notes',
-                              subtitle: 'Add course materials',
-                              onTap: () => _showUploadNoteScreen(context, training.id),
-                              color: Colors.green,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _buildQuickActionCard(
-                              context,
-                              icon: Icons.chat,
-                              title: 'Course Chat',
-                              subtitle: 'View student messages',
-                              onTap: () => _showInstructorChat(context),
-                              color: Colors.purple,
-                            ),
-                          ),
-                        ],
-                      ),
+                      const SizedBox(height: 8),
+                                             Row(
+                         children: [
+                           Expanded(
+                             child: _buildQuickActionCard(
+                               context,
+                               icon: Icons.add,
+                               title: 'Add Schedule',
+                               subtitle: 'New schedule',
+                               onTap: () => _showScheduleFormDialog(context),
+                               color: theme.colors.primary,
+                             ),
+                           ),
+                           const SizedBox(width: 8),
+                           Expanded(
+                             child: _buildQuickActionCard(
+                               context,
+                               icon: Icons.upload_file,
+                               title: 'Upload Notes',
+                               subtitle: 'Add course materials',
+                               onTap: () => _showUploadNoteScreen(context, training.id),
+                               color: theme.colors.primary,
+                             ),
+                           ),
+                           const SizedBox(width: 8),
+                           Expanded(
+                             child: _buildQuickActionCard(
+                               context,
+                               icon: Icons.chat,
+                               title: 'Course Chat',
+                               subtitle: 'View messages',
+                               onTap: () => _showInstructorChat(context),
+                               color: theme.colors.primary,
+                             ),
+                           ),
+                         ],
+                       ),
                     ],
                   ),
                 ),
@@ -248,7 +249,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 if (training.schedules.any((schedule) => schedule.notes.isNotEmpty)) ...[
                   Container(
                     width: double.infinity,
-                    color: Colors.white,
+                    color: theme.colors.background,
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,15 +258,15 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                           children: [
                             Icon(
                               Icons.folder_open,
-                              color: Theme.of(context).colorScheme.secondary,
+                              color: theme.colors.secondary,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
                             Text(
                               'Course Content',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              style: theme.typography.lg.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: theme.colors.foreground,
                               ),
                             ),
                           ],
@@ -274,26 +275,25 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
+                            color: theme.colors.muted,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[200]!),
+                            border: Border.all(color: theme.colors.border),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Total Notes: ${training.schedules.fold(0, (sum, schedule) => sum + schedule.notes.length)}',
-                                style: TextStyle(
-                                  color: Colors.grey[700],
+                                style: theme.typography.sm.copyWith(
+                                  color: theme.colors.foreground,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Notes are available across ${training.schedules.where((schedule) => schedule.notes.isNotEmpty).length} schedules',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 12,
+                                style: theme.typography.xs.copyWith(
+                                  color: theme.colors.mutedForeground,
                                 ),
                               ),
                             ],
@@ -310,7 +310,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                     children: [
                       Icon(
                         Icons.schedule,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colors.primary,
                         size: 18,
                       ),
                       const SizedBox(width: 8),
@@ -321,17 +321,16 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                           children: [
                             Text(
                               'Course Schedules',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              style: theme.typography.lg.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: theme.colors.foreground,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Manage course schedules and student enrollments',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                fontSize: 11,
+                              style: theme.typography.xs.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                           ],
@@ -364,35 +363,36 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final theme = context.theme;
+    
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(6),
             border: Border.all(color: color.withOpacity(0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(height: 8),
+              Icon(icon, color: color, size: 18),
+              const SizedBox(height: 6),
               Text(
                 title,
-                style: TextStyle(
+                style: theme.typography.xs.copyWith(
                   color: color,
-                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 1),
               Text(
                 subtitle,
-                style: TextStyle(
+                style: theme.typography.xs.copyWith(
                   color: color.withOpacity(0.7),
                   fontSize: 10,
                 ),
@@ -444,15 +444,17 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   }
 
   Widget _buildEmptySchedulesState() {
+    final theme = context.theme;
+    
     return Builder(
       builder: (context) => Container(
         margin: const EdgeInsets.symmetric(horizontal: 12),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.grey.withOpacity(0.2),
+            color: theme.colors.border,
             style: BorderStyle.solid,
           ),
         ),
@@ -462,31 +464,29 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: theme.colors.muted,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.schedule_outlined,
                   size: 40,
-                  color: Colors.grey[400],
+                  color: theme.colors.mutedForeground,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 'No Schedules Yet',
-                style: TextStyle(
-                  fontSize: 16,
+                style: theme.typography.lg.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
+                  color: theme.colors.foreground,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Create your first schedule to start\nenrolling students',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 13,
+                style: theme.typography.sm.copyWith(
+                  color: theme.colors.mutedForeground,
                 ),
               ),
             ],
@@ -497,15 +497,17 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   }
 
   Widget _buildEmptyEnrolledStudentsState() {
+    final theme = context.theme;
+    
     return Builder(
       builder: (context) => Container(
         margin: const EdgeInsets.symmetric(horizontal: 12),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.grey.withOpacity(0.2),
+            color: theme.colors.border,
             style: BorderStyle.solid,
           ),
         ),
@@ -515,31 +517,29 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: theme.colors.muted,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.people_outline,
                   size: 40,
-                  color: Colors.grey[400],
+                  color: theme.colors.mutedForeground,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 'No Students Enrolled Yet',
-                style: TextStyle(
-                  fontSize: 16,
+                style: theme.typography.lg.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
+                  color: theme.colors.foreground,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Once students enroll, they will appear here.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 13,
+                style: theme.typography.sm.copyWith(
+                  color: theme.colors.mutedForeground,
                 ),
               ),
             ],
@@ -550,6 +550,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   }
 
   Widget _buildScheduleCard(BuildContext context, TrainingSchedule schedule) {
+    final theme = context.theme;
     final enrollmentPercentage = schedule.capacity > 0 
         ? (schedule.enrolledStudents.length / schedule.capacity * 100).round()
         : 0;
@@ -558,11 +559,11 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colors.background,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: theme.colors.foreground.withOpacity(0.04),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -575,15 +576,15 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: isFull 
-                    ? Colors.red.withOpacity(0.1)
-                    : Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    ? theme.colors.destructive.withOpacity(0.1)
+                    : theme.colors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Icon(
                 isFull ? Icons.event_busy : Icons.calendar_today,
                 color: isFull 
-                    ? Colors.red
-                    : Theme.of(context).colorScheme.primary,
+                    ? theme.colors.destructive
+                    : theme.colors.primary,
                 size: 16,
               ),
             ),
@@ -594,9 +595,9 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 children: [
                   Text(
                     '${_formatDate(schedule.startDate)} - ${_formatDate(schedule.endDate)}',
-                    style: const TextStyle(
+                    style: theme.typography.sm.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      color: theme.colors.foreground,
                     ),
                   ),
                   Row(
@@ -604,28 +605,26 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                       Icon(
                         Icons.access_time,
                         size: 11,
-                        color: Colors.grey[600],
+                        color: theme.colors.mutedForeground,
                       ),
                       const SizedBox(width: 2),
                       Text(
                         schedule.time.format(context),
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 11,
+                        style: theme.typography.xs.copyWith(
+                          color: theme.colors.mutedForeground,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Icon(
                         Icons.people,
                         size: 11,
-                        color: Colors.grey[600],
+                        color: theme.colors.mutedForeground,
                       ),
                       const SizedBox(width: 2),
                       Text(
                         '${schedule.enrolledStudents.length}/${schedule.capacity} enrolled',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 11,
+                        style: theme.typography.xs.copyWith(
+                          color: theme.colors.mutedForeground,
                         ),
                       ),
                     ],
@@ -638,21 +637,21 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
               decoration: BoxDecoration(
                 color: isFull 
-                    ? Colors.red.withOpacity(0.1)
-                    : Colors.green.withOpacity(0.1),
+                    ? theme.colors.destructive.withOpacity(0.1)
+                    : theme.colors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: isFull 
-                      ? Colors.red.withOpacity(0.3)
-                      : Colors.green.withOpacity(0.3),
+                      ? theme.colors.destructive.withOpacity(0.3)
+                      : theme.colors.primary.withOpacity(0.3),
                 ),
               ),
               child: Text(
                 isFull ? 'Full' : 'Available',
                 style: TextStyle(
                   color: isFull 
-                      ? Colors.red
-                      : Colors.green,
+                      ? theme.colors.destructive
+                      : theme.colors.primary,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
@@ -661,11 +660,11 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
           ],
         ),
         trailing: PopupMenuButton<String>(
-          color: Colors.white,
+          color: theme.colors.background,
           elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey[200]!),
+            side: BorderSide(color: theme.colors.border),
           ),
           onSelected: (value) {
             switch (value) {
@@ -699,7 +698,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               ),
             ),
           ],
-          child: const Icon(Icons.more_vert),
+          child: Icon(Icons.more_vert, color: theme.colors.foreground),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -724,14 +723,14 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                     Icon(
                       Icons.school,
                       size: 12,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colors.primary,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Enrolled Students (${schedule.enrolledStudents.length})',
-                      style: const TextStyle(
+                      style: theme.typography.sm.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 12,
+                        color: theme.colors.foreground,
                       ),
                     ),
                   ],
@@ -747,10 +746,10 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                            color: theme.colors.primary.withOpacity(0.3),
                           ),
                         ),
                         child: Row(
@@ -759,14 +758,13 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                             Icon(
                               Icons.person,
                               size: 10,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: theme.colors.primary,
                             ),
                             const SizedBox(width: 3),
                             Text(
                               student.name,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontSize: 10,
+                              style: theme.typography.xs.copyWith(
+                                color: theme.colors.primary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -828,14 +826,14 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
           minChildSize: 0.6,
           maxChildSize: 0.95,
           builder: (context, scrollController) => Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            decoration: BoxDecoration(
+              color: context.theme.colors.background,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x1A000000),
+                  color: context.theme.colors.foreground.withOpacity(0.1),
                   blurRadius: 20,
-                  offset: Offset(0, -4),
+                  offset: const Offset(0, -4),
                 ),
               ],
             ),
@@ -847,7 +845,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: context.theme.colors.mutedForeground,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

@@ -79,7 +79,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         _verificationCheckTimer?.cancel();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text('Email verified successfully!'),
               backgroundColor: Colors.green,
             ),
@@ -116,7 +116,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Verification email sent!'),
             backgroundColor: Colors.green,
           ),
@@ -128,7 +128,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to send email: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
           ),
         );
       }
@@ -138,16 +138,21 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final theme = context.theme;
     
     return Scaffold(
-      backgroundColor: Colors.white,
       body: AnnotatedRegion(
-        value: SystemUiOverlayStyle.dark,
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -155,54 +160,54 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        color: theme.colors.primaryForeground,
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                          color: theme.colors.border,
                           width: 1,
                         ),
                       ),
                       child: Icon(
                         Icons.email_outlined,
                         size: 48,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colors.primary,
                       ),
                     ),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     Text(
                       'Verify your email',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: theme.typography.lg.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: theme.colors.foreground,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
                       'We\'ve sent a verification email to:',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color(0xFF888888),
+                      style: theme.typography.sm.copyWith(
+                        color: theme.colors.foreground,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       user?.email ?? '',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      style: theme.typography.sm.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colors.primary,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     Text(
                       'Please check your email and click the verification link to continue.',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color(0xFF888888),
+                      style: theme.typography.sm.copyWith(
+                        color: theme.colors.foreground,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -213,14 +218,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           _isResendEnabled
                               ? 'Resend Email'
                               : 'Resend in $_resendCountdown seconds',
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          style: theme.typography.sm.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: theme.colors.primaryForeground,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     FButton(
                       style: FButtonStyle.ghost,
                       onPress: () {
@@ -232,21 +237,21 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       child: Text(
                         'I\'ve verified my email',
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colors.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     FButton(
                       style: FButtonStyle.ghost,
                       onPress: () {
                         // Skip email verification and proceed
                         // You can add navigation logic here to go to the main app
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('Email verification skipped. You can verify later in settings.'),
-                            backgroundColor: Colors.orange,
+                            backgroundColor: theme.colors.destructive,
                           ),
                         );
                         Navigator.of(context).pushReplacement(
@@ -258,7 +263,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       child: Text(
                         'Skip for now',
                         style: TextStyle(
-                          color: const Color(0xFF888888),
+                          color: theme.colors.foreground,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

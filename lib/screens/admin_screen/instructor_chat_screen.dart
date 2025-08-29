@@ -88,7 +88,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error loading messages: $error'),
-              backgroundColor: Colors.red,
+              backgroundColor: context.theme.colors.destructive,
             ),
           );
         }
@@ -102,7 +102,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error setting up messages listener: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
           ),
         );
       }
@@ -190,7 +190,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error sending message: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
           ),
         );
       }
@@ -242,10 +242,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colors.background,
         body: SafeArea(
           child: Column(
             children: [
@@ -253,10 +255,10 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.colors.background,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: theme.colors.foreground.withOpacity(0.05),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -270,7 +272,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                       child: Icon(
                         Icons.arrow_back,   
                         size: 16,
-                        color: const Color(0xFF666666),
+                        color: theme.colors.foreground,
                       ),
                     ),
                     SizedBox(width: 12),
@@ -280,17 +282,17 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                         children: [
                           Text(
                             widget.courseTitle,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: theme.typography.lg.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF1A1A1A),
+                              color: theme.colors.foreground,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             'Chat with ${widget.studentName}',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFF666666),
+                            style: theme.typography.sm.copyWith(
+                              color: theme.colors.mutedForeground,
                               fontSize: 12,
                             ),
                           ),
@@ -300,13 +302,13 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: theme.colors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         'Instructor',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.green,
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.primary,
                           fontWeight: FontWeight.w500,
                           fontSize: 10,
                         ),
@@ -319,7 +321,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
               // Chat Messages
               Expanded(
                 child: _isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? Center(child: CircularProgressIndicator(color: theme.colors.primary))
                     : _messages.isEmpty
                         ? Center(
                             child: Column(
@@ -328,22 +330,20 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                 Icon(
                                   Icons.chat_bubble_outline,
                                   size: 64,
-                                  color: Colors.grey[400],
+                                  color: theme.colors.muted,
                                 ),
                                 SizedBox(height: 16),
                                 Text(
                                   'No messages yet',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey[600],
+                                  style: theme.typography.lg.copyWith(
+                                    color: theme.colors.mutedForeground,
                                   ),
                                 ),
                                 SizedBox(height: 8),
                                 Text(
                                   'Start the conversation with your student!',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[500],
+                                  style: theme.typography.sm.copyWith(
+                                    color: theme.colors.mutedForeground,
                                   ),
                                 ),
                               ],
@@ -370,13 +370,13 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                     if (!isInstructor) ...[
                                       CircleAvatar(
                                         radius: 16,
-                                        backgroundColor: Colors.blue,
+                                        backgroundColor: theme.colors.secondary,
                                         child: Text(
                                           widget.studentName[0].toUpperCase(),
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                            color: theme.colors.background,
                                           ),
                                         ),
                                       ),
@@ -390,12 +390,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: isInstructor 
-                                              ? Theme.of(context).colorScheme.primary 
-                                              : Colors.white,
+                                              ? theme.colors.primary 
+                                              : theme.colors.background,
                                           borderRadius: BorderRadius.circular(20),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withOpacity(0.1),
+                                              color: theme.colors.foreground.withOpacity(0.1),
                                               blurRadius: 4,
                                               offset: const Offset(0, 2),
                                             ),
@@ -410,7 +410,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                               message.message,
                                               style: TextStyle(
                                                 fontSize: 16,
-                                                color: isInstructor ? Colors.white : Colors.black87,
+                                                color: isInstructor ? theme.colors.primaryForeground : theme.colors.foreground,
                                               ),
                                             ),
                                             SizedBox(height: 4),
@@ -419,8 +419,8 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 color: isInstructor
-                                                    ? Colors.white.withOpacity(0.8)
-                                                    : Colors.grey[600],
+                                                    ? theme.colors.primaryForeground.withOpacity(0.8)
+                                                    : theme.colors.mutedForeground,
                                               ),
                                             ),
                                           ],
@@ -431,11 +431,11 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                       SizedBox(width: 8),
                                       CircleAvatar(
                                         radius: 16,
-                                        backgroundColor: Theme.of(context).colorScheme.primary,
+                                        backgroundColor: theme.colors.primary,
                                         child: Icon(
                                           Icons.school,
                                           size: 16,
-                                          color: Colors.white,
+                                          color: theme.colors.primaryForeground,
                                         ),
                                       ),
                                     ],
@@ -450,10 +450,10 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
               Container(
                           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.colors.background,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: theme.colors.foreground.withOpacity(0.05),
                       blurRadius: 8,
                       offset: const Offset(0, -2),
                     ),
@@ -464,7 +464,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: theme.colors.muted,
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: TextField(
@@ -486,7 +486,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colors.primary,
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: IconButton(
@@ -494,12 +494,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                             ? SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: const CircularProgressIndicator(
+                                child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
                                 ),
                               )
-                                : Icon(Icons.send, size: 20, color: Colors.white),
+                                : Icon(Icons.send, size: 20, color: theme.colors.primaryForeground),
                         onPressed: _isSendingMessage ? null : _sendMessage,
                       ),
                     ),

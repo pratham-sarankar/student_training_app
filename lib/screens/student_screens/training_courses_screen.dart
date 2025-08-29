@@ -41,22 +41,28 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return AnnotatedRegion(
-      value: SystemUiOverlayStyle.dark,
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
             children: [
               // Header Title
               Center(
                 child: Padding(
-                  padding: EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.only(top: 16),
                   child: Text(
                     'Training Courses',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: theme.typography.lg.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A1A),
+                      color: theme.colors.foreground,
                     ),
                   ),
                 ),
@@ -64,17 +70,27 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
       
               // Category Filter using Forui FButtons
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 child: _isInitialized
                     ? StreamBuilder<List<String>>(
                         stream: _courseService.getCourseCategories(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                            return Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                              ),
+                            );
                           }
                           
                           if (snapshot.hasError) {
-                            return Text('Error loading categories: ${snapshot.error}');
+                            return Text(
+                              'Error loading categories: ${snapshot.error}',
+                              style: TextStyle(
+                                color: theme.colors.destructive,
+                                fontSize: 16,
+                              ),
+                            );
                           }
                           
                           final categories = snapshot.data ?? ['All'];
@@ -86,12 +102,12 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                               children: categories.map((category) {
                                 bool isSelected = _selectedCategory == category;
                                 return Container(
-                                  margin: EdgeInsets.only(right: 12),
+                                  margin: const EdgeInsets.only(right: 12),
                                   decoration: isSelected ? BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                        color: theme.colors.primary.withOpacity(0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -112,11 +128,11 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                         int courseCount = coursesSnapshot.data?.length ?? 0;
                                         return Text(
                                           '$category ($courseCount)',
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          style: theme.typography.sm.copyWith(
                                             fontWeight: FontWeight.w700,
                                             color: isSelected 
-                                                ? Colors.white
-                                                : const Color(0xFF666666),
+                                                ? theme.colors.primaryForeground
+                                                : theme.colors.mutedForeground,
                                           ),
                                         );
                                       },
@@ -128,13 +144,17 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                           );
                         },
                       )
-                    : const Center(child: CircularProgressIndicator()),
+                    : Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                        ),
+                      ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
       
               // Results Header
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -146,8 +166,8 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                         final courseCount = snapshot.data?.length ?? 0;
                         return Text(
                           'Showing $courseCount courses',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFF666666),
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.mutedForeground,
                           ),
                         );
                       },
@@ -155,15 +175,15 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                     if (_selectedCategory != 'All')
                       Text(
                         'Filtered by: $_selectedCategory',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                   ],
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
       
               // Courses List
               Expanded(
@@ -174,14 +194,21 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                             : _courseService.getCoursesByCategory(_selectedCategory),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                            return Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                              ),
+                            );
                           }
                           
                           if (snapshot.hasError) {
                             return Center(
                               child: Text(
                                 'Error loading courses: ${snapshot.error}',
-                                style: TextStyle(color: Colors.red),
+                                style: TextStyle(
+                                  color: theme.colors.destructive,
+                                  fontSize: 16,
+                                ),
                               ),
                             );
                           }
@@ -196,20 +223,20 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                   Icon(
                                     Icons.search_off,
                                     size: 48,
-                                    color: Colors.grey,
+                                    color: theme.colors.mutedForeground,
                                   ),
-                                  SizedBox(height: 16),
+                                  const SizedBox(height: 16),
                                   Text(
                                     'No courses found for "$_selectedCategory"',
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: Colors.grey,
+                                    style: theme.typography.lg.copyWith(
+                                      color: theme.colors.foreground,
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Text(
                                     'Try selecting a different category',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.grey.shade600,
+                                    style: theme.typography.sm.copyWith(
+                                      color: theme.colors.mutedForeground,
                                     ),
                                   ),
                                 ],
@@ -218,19 +245,23 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                           }
                           
                           return ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 24),
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
                             itemCount: courses.length,
                             itemBuilder: (context, index) {
                               final course = courses[index];
                               return Container(
-                                margin: EdgeInsets.only(bottom: 12),
+                                margin: const EdgeInsets.only(bottom: 12),
                                 child: _buildCourseCard(context, course),
                               );
                             },
                           );
                         },
                       )
-                    : const Center(child: CircularProgressIndicator()),
+                    : Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                        ),
+                      ),
               ),
             ],
           ),
@@ -240,6 +271,8 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
   }
 
   Widget _buildCourseCard(BuildContext context, Course course) {
+    final theme = context.theme;
+    
     return GestureDetector(
       onTap: () => _navigateToCourseDetails(course),
       child: MouseRegion(
@@ -247,17 +280,17 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: double.infinity,
-                    padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.colors.background,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: const Color(0xFFE5E5E5),
+              color: theme.colors.border,
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: theme.colors.foreground.withOpacity(0.02),
                 blurRadius: 4,
                 offset: const Offset(0, 1),
               ),
@@ -282,7 +315,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   
                   // Course Info
                   Expanded(
@@ -291,41 +324,41 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                       children: [
                         Text(
                           course.title,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          style: theme.typography.lg.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A1A1A),
+                            color: theme.colors.foreground,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Wrap(
                           spacing: 6,
                           runSpacing: 4,
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                color: theme.colors.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 course.category,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
+                                style: theme.typography.sm.copyWith(
+                                  color: theme.colors.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.orange.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 course.level,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: theme.typography.sm.copyWith(
                                   color: Colors.orange,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -339,35 +372,35 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                 ],
               ),
               
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               
               // Course Description (shortened)
               Text(
                 course.description,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF666666),
+                style: theme.typography.sm.copyWith(
+                  color: theme.colors.mutedForeground,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               // View Details hint
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
                     'Tap to view details',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                    style: theme.typography.sm.copyWith(
+                      color: theme.colors.primary.withOpacity(0.7),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-                        SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Icon(
                     Icons.arrow_forward_ios,
-                          size: 12,
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                    size: 12,
+                    color: theme.colors.primary.withOpacity(0.7),
                   ),
                 ],
               ),

@@ -90,15 +90,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return AnnotatedRegion(
-      value: SystemUiOverlayStyle.dark,
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: SafeArea(
           child: RefreshIndicator(
             onRefresh: _loadCourseCount,
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -111,44 +117,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 80,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withOpacity(0.1),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                            color: theme.colors.primary.withOpacity(0.2),
                             width: 2,
                           ),
                         ),
                         child: Icon(
                           Icons.person,
                           size: 40,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colors.primary,
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       Text(
                         _userName,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: theme.colors.foreground,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
                         _userEmail,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: const Color(0xFF666666),
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.mutedForeground,
                         ),
                       ),
-                      SizedBox(height: 6),
+                      const SizedBox(height: 6),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           'Student',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.primary,
                             fontWeight: FontWeight.w600,
                             fontSize: 10,
                           ),
@@ -157,16 +163,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // My Courses Section
                 Container(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                    color: theme.colors.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: theme.colors.primary.withOpacity(0.1),
                       width: 1,
                     ),
                   ),
@@ -176,33 +182,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: theme.colors.primary,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               Icons.school,
                               size: 20,
-                              color: Colors.white,
+                              color: theme.colors.primaryForeground,
                             ),
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'My Courses',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  style: theme.typography.lg.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF1A1A1A),
+                                    color: theme.colors.foreground,
                                   ),
                                 ),
                                 Text(
                                   'View all your purchased courses',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: const Color(0xFF666666),
+                                  style: theme.typography.sm.copyWith(
+                                    color: theme.colors.mutedForeground,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -210,9 +216,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              color: theme.colors.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: _isLoadingCourseCount
@@ -222,14 +228,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     child: CircularProgressIndicator(
                                       strokeWidth: 1.5,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Theme.of(context).colorScheme.primary,
+                                        theme.colors.primary,
                                       ),
                                     ),
                                   )
                                 : Text(
                                     '$_courseCount',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Theme.of(context).colorScheme.primary,
+                                    style: theme.typography.sm.copyWith(
+                                      color: theme.colors.primary,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 10,
                                     ),
@@ -237,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
-                              SizedBox(height: 12),
+                              const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
                         height: 48,
@@ -256,9 +262,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                           child: Text(
                             'View My Courses',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: theme.typography.sm.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: theme.colors.primaryForeground,
                             ),
                           ),
                         ),
@@ -266,7 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // Profile Options
                 
@@ -284,7 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -299,7 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -314,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -325,7 +331,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // TODO: Navigate to privacy settings
                   },
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -336,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // TODO: Navigate to help
                   },
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -347,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // TODO: Navigate to about
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // Logout Button
                 SizedBox(
@@ -361,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         // Navigation will be handled by AuthWrapper
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text('Successfully signed out'),
                               backgroundColor: Colors.green,
                             ),
@@ -377,7 +383,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Failed to sign out: $e'),
-                              backgroundColor: Colors.red,
+                              backgroundColor: context.theme.colors.destructive,
                             ),
                           );
                         }
@@ -385,14 +391,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                     child: Text(
                       'Logout',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      style: theme.typography.sm.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFFEF4444),
+                        color: theme.colors.destructive,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -408,49 +414,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final theme = context.theme;
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colors.background,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: const Color(0xFFE5E5E5),
+            color: theme.colors.border,
             width: 1,
           ),
         ),
         child: Row(
           children: [
             Container(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                color: theme.colors.primary.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
                 icon,
                 size: 20,
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colors.primary,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: theme.typography.sm.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A1A),
+                      color: theme.colors.foreground,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF666666),
+                    style: theme.typography.sm.copyWith(
+                      color: theme.colors.mutedForeground,
                       fontSize: 11,
                     ),
                   ),
@@ -459,7 +467,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Icon(
               Icons.chevron_right,
-              color: const Color(0xFF999999),
+              color: theme.colors.mutedForeground,
                 size: 16,
             ),
           ],

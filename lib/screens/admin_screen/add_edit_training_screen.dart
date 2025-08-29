@@ -48,10 +48,11 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     final isEditMode = widget.training != null;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colors.background,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
@@ -67,15 +68,15 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                     child: Icon(
                       Icons.arrow_back,
                       size: 16,
-                      color: const Color(0xFF666666),
+                      color: theme.colors.foreground,
                     ),
                   ),
                   SizedBox(width: 12),
                   Text(
                     isEditMode ? 'Edit Training' : 'Add New Training',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: theme.typography.lg.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A1A),
+                      color: theme.colors.foreground,
                     ),
                   ),
                 ],
@@ -174,15 +175,14 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                                 Icon(
                                   Icons.add,
                                   size: 16,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: theme.colors.primary,
                                 ),
                                 SizedBox(width: 6),
                                 Text(
                                   'Add Schedule',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: theme.colors.primary,
                                   ),
                                 ),
                               ],
@@ -217,7 +217,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
                       ),
                     )
                     : Row(
@@ -226,7 +226,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                         Icon(
                           isEditMode ? Icons.save : Icons.add,
                           size: 16,
-                          color: Colors.white,
+                          color: theme.colors.primaryForeground,
                         ),
                         SizedBox(width: 6),
                         Text(
@@ -234,7 +234,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           style: TextStyle(
                               fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: theme.colors.primaryForeground,
                           ),
                         ),
                       ],
@@ -246,11 +246,12 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
+    final theme = context.theme;
     return Text(
       title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+      style: theme.typography.lg.copyWith(
         fontWeight: FontWeight.w600,
-        color: const Color(0xFF1A1A1A),
+        color: theme.colors.foreground,
       ),
     );
   }
@@ -263,15 +264,15 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
+    final theme = context.theme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: theme.typography.sm.copyWith(
             fontWeight: FontWeight.w500,
-            color: const Color(0xFF1A1A1A),
-            fontSize: 13,
+            color: theme.colors.foreground,
           ),
         ),
         SizedBox(height: 6),
@@ -288,23 +289,23 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   Widget _buildEmptySchedulesState() {
+    final theme = context.theme;
     return Container(
       width: double.infinity,
           padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: theme.colors.muted,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.colors.border),
       ),
       child: Column(
         children: [
-          Icon(Icons.schedule_outlined, size: 32, color: Colors.grey[400]),
+          Icon(Icons.schedule_outlined, size: 32, color: theme.colors.mutedForeground),
           SizedBox(height: 8),
           Text(
             'No schedules added yet',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 13,
+            style: theme.typography.sm.copyWith(
+              color: theme.colors.foreground,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -312,7 +313,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
           Text(
             'Add at least one schedule for students to enroll',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey[500], fontSize: 11),
+            style: theme.typography.xs.copyWith(color: theme.colors.mutedForeground),
           ),
         ],
       ),
@@ -320,16 +321,17 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   Widget _buildScheduleCard(int index, TrainingSchedule schedule) {
+    final theme = context.theme;
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colors.background,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: theme.colors.foreground.withOpacity(0.05),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -342,10 +344,9 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
             children: [
               Text(
                 'Schedule ${index + 1}',
-                style: TextStyle(
+                style: theme.typography.sm.copyWith(
                   fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                  color: const Color(0xFF1A1A1A),
+                  color: theme.colors.foreground,
                 ),
               ),
               const Spacer(),
@@ -355,14 +356,14 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                 child: Icon(
                   Icons.edit,
                   size: 14,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: theme.colors.primary,
                 ),
               ),
               SizedBox(width: 6),
               FButton(
                 onPress: () => _showDeleteScheduleDialog(index),
                 style: FButtonStyle.outline,
-                child: Icon(Icons.delete, size: 14, color: Colors.red[400]),
+                child: Icon(Icons.delete, size: 14, color: theme.colors.destructive),
               ),
             ],
           ),
@@ -408,14 +409,15 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   Widget _buildScheduleInfo(IconData icon, String text) {
+    final theme = context.theme;
     return Row(
       children: [
-        Icon(icon, size: 14, color: Colors.grey[600]),
+        Icon(icon, size: 14, color: theme.colors.mutedForeground),
         SizedBox(width: 4),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+            style: theme.typography.xs.copyWith(color: theme.colors.mutedForeground),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -549,6 +551,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   void _showScheduleDialog({TrainingSchedule? schedule, int? index}) {
+    final theme = context.theme;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -562,14 +565,14 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
           minChildSize: 0.6,
           maxChildSize: 0.95,
           builder: (sheetContext, scrollController) => Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            decoration: BoxDecoration(
+              color: theme.colors.background,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x1A000000),
+                  color: theme.colors.foreground.withOpacity(0.1),
                   blurRadius: 20,
-                  offset: Offset(0, -4),
+                  offset: const Offset(0, -4),
                 ),
               ],
             ),
@@ -581,7 +584,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: theme.colors.mutedForeground,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -751,6 +754,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     final isEditMode = widget.schedule != null;
 
     return Container(
@@ -766,16 +770,14 @@ class _ScheduleDialogState extends State<ScheduleDialog>
               children: [
                 Text(
                   isEditMode ? 'Edit Schedule' : 'Add New Schedule',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.typography.xl.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close, color: theme.colors.foreground),
                   style: IconButton.styleFrom(
-                    backgroundColor: Colors.grey[100],
+                    backgroundColor: theme.colors.muted,
                     shape: const CircleBorder(),
                   ),
                 ),
@@ -855,12 +857,13 @@ class _ScheduleDialogState extends State<ScheduleDialog>
     required DateTime value,
     required Function(DateTime) onChanged,
   }) {
+    final theme = context.theme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+          style: theme.typography.sm.copyWith(fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 6),
         FDateField.calendar(
@@ -884,20 +887,21 @@ class _ScheduleDialogState extends State<ScheduleDialog>
   }
 
   Widget _buildTimeField() {
+    final theme = context.theme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Time',
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+          style: theme.typography.sm.copyWith(fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 6),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
+            color: theme.colors.muted,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: theme.colors.border),
           ),
           child: SizedBox(
               height: 44, // Fixed height to prevent infinite constraints
@@ -934,12 +938,13 @@ class _ScheduleDialogState extends State<ScheduleDialog>
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
+    final theme = context.theme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+          style: theme.typography.sm.copyWith(fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 6),
         FTextField(

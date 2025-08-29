@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
-import '../../providers/admin_provider.dart';
 import 'main_screen.dart';
 import 'phone_verification.dart';
 import 'register_screen.dart';
@@ -217,10 +214,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return Scaffold(
-      backgroundColor: Colors.white,
       body: AnnotatedRegion(
-        value: SystemUiOverlayStyle.dark,
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -235,27 +238,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: theme.colors.primaryForeground,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      color: theme.colors.border,
                       width: 1,
                     ),
                   ),
                   child: Icon(
                     _isPhoneMode ? Icons.phone_android : Icons.school_outlined,
                     size: 36,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colors.primary,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 
                 // Welcome Text
                 Text(
                   'Welcome back!',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                  style: theme.typography.lg.copyWith(
+                    color: theme.colors.foreground,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -264,8 +266,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   _isPhoneMode 
                     ? 'Sign in with your Indian phone number'
                     : 'Sign in to continue your learning journey',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF888888),
+                  style: theme.typography.sm.copyWith(
+                    color: theme.colors.foreground,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -275,8 +277,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
+                    color: theme.colors.background,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: theme.colors.border,
+                      width: 1,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -290,8 +296,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             'Email',
                             style: TextStyle(
                               color: _isPhoneMode 
-                                ? const Color(0xFF888888)
-                                : Colors.white,
+                                ? theme.colors.foreground
+                                : theme.colors.primaryForeground,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -307,8 +313,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             'Phone',
                             style: TextStyle(
                               color: _isPhoneMode 
-                                ? Colors.white
-                                : const Color(0xFF888888),
+                                ? theme.colors.primaryForeground
+                                : theme.colors.foreground,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -327,9 +333,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         'Email',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: theme.typography.sm.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: theme.colors.foreground,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -349,9 +355,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         'Password',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: theme.typography.sm.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: theme.colors.foreground,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -381,7 +387,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Forgot Password?',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: theme.colors.primary,
                           ),
                         ),
                       ),
@@ -394,9 +400,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         'Phone Number',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: theme.typography.sm.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: theme.colors.foreground,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -412,14 +418,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           Icon(
                             Icons.info_outline,
                             size: 16,
-                            color: const Color(0xFF888888),
+                            color: theme.colors.foreground,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               'Enter your 10-digit Indian mobile number (e.g., 9876543210)',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: const Color(0xFF888888),
+                              style: theme.typography.sm.copyWith(
+                                color: theme.colors.foreground,
                               ),
                             ),
                           ),
@@ -428,9 +434,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 4),
                       Text(
                         'Country code +91 will be automatically added',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
+                        style: theme.typography.sm.copyWith(
                           fontStyle: FontStyle.italic,
+                          color: theme.colors.foreground,
                         ),
                       ),
                     ],
@@ -446,17 +452,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? SizedBox(
                           height: 18,
                           width: 18,
-                          child: const CircularProgressIndicator(
+                          child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
                           ),
                         )
                       : Text(
                           _isPhoneMode ? 'Send Code' : 'Sign In',
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          style: theme.typography.sm.copyWith(
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.2,
-                            color: Colors.white,
+                            color: theme.colors.primaryForeground,
                           ),
                         ),
                 ),
@@ -468,8 +474,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Text(
                       'Don\'t have an account? ',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF888888),
+                      style: theme.typography.sm.copyWith(
+                        color: theme.colors.foreground,
                       ),
                     ),
                     FButton(
@@ -484,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colors.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

@@ -57,14 +57,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: const Color(0xFF1A1A1A),
+            color: Theme.of(context).iconTheme.color,
             size: 20,
           ),
           onPressed: () => Navigator.of(context).pop(),
@@ -73,7 +73,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           'Notifications',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF1A1A1A),
+            color: Theme.of(context).textTheme.titleMedium?.color,
           ),
         ),
         centerTitle: true,
@@ -115,7 +115,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           'Recent Notifications',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF1A1A1A),
+            color: Theme.of(context).textTheme.titleMedium?.color,
           ),
         ),
         SizedBox(height: 16),
@@ -130,11 +130,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: notification.isRead ? Colors.white : Theme.of(context).colorScheme.primary.withOpacity(0.05),
+        color: notification.isRead 
+            ? Theme.of(context).cardColor 
+            : Theme.of(context).colorScheme.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: notification.isRead 
-              ? const Color(0xFFE5E5E5) 
+              ? Theme.of(context).dividerColor
               : Theme.of(context).colorScheme.primary.withOpacity(0.2),
           width: 1,
         ),
@@ -166,7 +168,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         notification.title,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                     ),
@@ -185,15 +187,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 Text(
                   notification.message,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF666666),
-                        fontSize: 12,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                    fontSize: 11,
                   ),
                 ),
                 SizedBox(height: 8),
                 Text(
                   notification.time,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF999999),
+                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
                     fontSize: 10,
                   ),
                 ),
@@ -245,7 +247,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('All notifications marked as read'),
-        backgroundColor: Colors.green,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }

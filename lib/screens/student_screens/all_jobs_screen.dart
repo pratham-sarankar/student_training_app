@@ -47,58 +47,66 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return AnnotatedRegion(
-      value: SystemUiOverlayStyle.dark,
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
             children: [
               // Header Title
               Center(
                 child: Padding(
-                  padding: EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.only(top: 16),
                   child: Text(
                     'All Jobs',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    style: theme.typography.lg.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A1A),
+                      color: theme.colors.foreground,
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               
               // Search Bar
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: theme.colors.muted,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: const Color(0xFFE5E5E5),
+                      color: theme.colors.border,
                       width: 1,
                     ),
                   ),
                   child: TextField(
                     controller: _searchController,
+                    textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
                       hintText: 'Search jobs...',
                       hintStyle: TextStyle(
-                        color: Colors.grey.shade500,
+                        color: theme.colors.mutedForeground,
                         fontSize: 14,
                       ),
                       prefixIcon: Icon(
                         Icons.search,
-                        color: Colors.grey.shade500,
+                        color: theme.colors.mutedForeground,
                         size: 20,
                       ),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
-                        vertical: 12,
+                        vertical: 16,
                       ),
+                      isDense: true,
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -108,14 +116,16 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               
               // Jobs List
               Expanded(
                 child: _isInitialized
                     ? _buildJobsList()
-                    : const Center(
-                        child: CircularProgressIndicator(),
+                    : Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                        ),
                       ),
               ),
             ],
@@ -131,14 +141,21 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         stream: _jobService.getJobs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(context.theme.colors.primary),
+              ),
+            );
           }
           
           if (snapshot.hasError) {
             return Center(
               child: Text(
                 'Error loading jobs: ${snapshot.error}',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(
+                  color: context.theme.colors.destructive,
+                  fontSize: 16,
+                ),
               ),
             );
           }
@@ -153,14 +170,14 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   Icon(
                     Icons.work_outline,
                     size: 64,
-                    color: Colors.grey.shade400,
+                    color: context.theme.colors.mutedForeground,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'No jobs available',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.grey.shade600,
+                      color: context.theme.colors.foreground,
                     ),
                   ),
                 ],
@@ -169,7 +186,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           }
           
           return ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
@@ -185,14 +202,21 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         stream: _jobService.searchJobs(_searchQuery),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(context.theme.colors.primary),
+              ),
+            );
           }
           
           if (snapshot.hasError) {
             return Center(
               child: Text(
                 'Error searching jobs: ${snapshot.error}',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(
+                  color: context.theme.colors.destructive,
+                  fontSize: 16,
+                ),
               ),
             );
           }
@@ -207,22 +231,22 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   Icon(
                     Icons.search_off,
                     size: 64,
-                    color: Colors.grey.shade400,
+                    color: context.theme.colors.mutedForeground,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'No jobs found for "$_searchQuery"',
                     style: TextStyle(
-                              fontSize: 18,
-                      color: Colors.grey.shade600,
+                      fontSize: 18,
+                      color: context.theme.colors.foreground,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Try different keywords or check spelling',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade500,
+                      color: context.theme.colors.mutedForeground,
                     ),
                   ),
                 ],
@@ -231,7 +255,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           }
           
           return ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
@@ -246,6 +270,8 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   }
 
   Widget _buildJobCard(Job job) {
+    final theme = context.theme;
+    
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -256,18 +282,18 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         );
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 10),
-        padding: EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFFE5E5E5),
+            color: theme.colors.border,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: theme.colors.foreground.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -283,21 +309,21 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: theme.colors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
                     child: Text(
                       job.logo,
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colors.primary,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 
                 // Job Info
                 Expanded(
@@ -306,16 +332,16 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     children: [
                       Text(
                         job.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: theme.colors.foreground,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         job.company,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF666666),
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.mutedForeground,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -324,31 +350,31 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Job Details Row
             Row(
               children: [
                 _buildJobDetail(Icons.location_on_outlined, job.location),
-                      SizedBox(width: 16),
+                const SizedBox(width: 16),
                 _buildJobDetail(Icons.work_outline, job.type),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 _buildJobDetail(Icons.access_time, job.posted),
               ],
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             
             // Salary
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color: theme.colors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 job.salary,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: theme.colors.primary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -361,19 +387,21 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   }
 
   Widget _buildJobDetail(IconData icon, String text) {
+    final theme = context.theme;
+    
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
           icon,
           size: 16,
-          color: const Color(0xFF999999),
+          color: theme.colors.mutedForeground,
         ),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Text(
           text,
           style: TextStyle(
-            color: const Color(0xFF666666),
+            color: theme.colors.mutedForeground,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),

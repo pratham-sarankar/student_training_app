@@ -29,24 +29,24 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   Future<void> _handleAdminLogin() async {
     // Basic validation
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all fields'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+              ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please fill in all fields'),
+            backgroundColor: context.theme.colors.mutedForeground,
+          ),
+        );
       return;
     }
     
-    if (!_emailController.text.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid email address'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
+          if (!_emailController.text.contains('@')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please enter a valid email address'),
+            backgroundColor: context.theme.colors.mutedForeground,
+          ),
+        );
+        return;
+      }
 
          try {
        print('🔐 Attempting admin login with email: ${_emailController.text.trim()}');
@@ -95,7 +95,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
          ScaffoldMessenger.of(context).showSnackBar(
            SnackBar(
              content: Text(errorMessage),
-             backgroundColor: Colors.red,
+             backgroundColor: context.theme.colors.destructive,
              duration: const Duration(seconds: 4),
            ),
          );
@@ -105,57 +105,59 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colors.background,
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
               children: [
-                SizedBox(height: 80),
+                const SizedBox(height: 80),
                 
                 // Admin Icon
                 Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: theme.colors.primaryForeground,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      color: theme.colors.border,
                       width: 1,
                     ),
                   ),
                   child: Icon(
                     Icons.admin_panel_settings,
                     size: 36,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colors.primary,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // Title
                 Text(
                   'Admin Login',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: theme.typography.lg.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                    color: theme.colors.foreground,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 
                 // Subtitle
                 Text(
                   'Access administrative controls',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF888888),
+                  style: theme.typography.sm.copyWith(
+                    color: theme.colors.mutedForeground,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 
                 // Email Field
                 Column(
@@ -163,12 +165,12 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   children: [
                     Text(
                       'Admin Email',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: theme.typography.sm.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: theme.colors.foreground,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 6),
                     FTextField(
                       controller: _emailController,
                       hint: 'Enter admin email',
@@ -177,7 +179,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 
                 // Password Field
                 Column(
@@ -185,12 +187,12 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   children: [
                     Text(
                       'Password',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: theme.typography.sm.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: theme.colors.foreground,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 6),
                     Stack(
                       children: [
                         FTextField(
@@ -212,11 +214,11 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 });
                               },
                               child: Container(
-                                    padding: EdgeInsets.all(8),
+                                    padding: const EdgeInsets.all(8),
                                 child: Icon(
                                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
                                   size: 20,
-                                  color: const Color(0xFF666666),
+                                  color: theme.colors.mutedForeground,
                                 ),
                               ),
                             ),
@@ -225,7 +227,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       ],
                     ),
                     // Forgot Password Link positioned under password field
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -242,7 +244,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: theme.colors.primary,
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
                             ),
@@ -252,7 +254,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 
                 // Login Button
                 Consumer<AdminProvider>(
@@ -266,16 +268,16 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
+                                  theme.colors.primaryForeground,
                                 ),
                               ),
                             )
                           : Text(
                               'Login as Admin',
-                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.2,
-                                color: Colors.white,
+                                color: theme.colors.primaryForeground,
                               ),
                             ),
                     );
@@ -287,26 +289,26 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   builder: (context, adminProvider, child) {
                     if (adminProvider.errorMessage != null) {
                       return Container(
-                        margin: EdgeInsets.only(top: 16),
-                        padding: EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red.shade50,
+                          color: theme.colors.destructiveForeground,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.shade200),
+                          border: Border.all(color: theme.colors.destructive),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.error_outline,
-                              color: Colors.red.shade600,
+                              color: theme.colors.destructive,
                               size: 20,
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 adminProvider.errorMessage!,
                                 style: TextStyle(
-                                  color: Colors.red.shade700,
+                                  color: theme.colors.destructive,
                                   fontSize: 14,
                                 ),
                               ),
@@ -315,7 +317,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               onPressed: adminProvider.clearError,
                               icon: Icon(
                                 Icons.close,
-                                color: Colors.red.shade600,
+                                color: theme.colors.destructive,
                                     size: 18,
                               ),
                               padding: EdgeInsets.zero,

@@ -75,9 +75,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   Future<void> _verifyCode() async {
     if (_otpController.text.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Please enter the complete 6-digit code'),
-          backgroundColor: Colors.red,
+          backgroundColor: context.theme.colors.destructive,
         ),
       );
       return;
@@ -93,7 +93,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Phone number verified successfully!'),
             backgroundColor: Colors.green,
           ),
@@ -124,7 +124,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -154,10 +154,10 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         _startResendTimer();
         
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Verification code resent successfully!'),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -180,7 +180,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -202,16 +202,22 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return Scaffold(
-      backgroundColor: Colors.white,
       body: AnnotatedRegion(
-        value: SystemUiOverlayStyle.dark,
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
               children: [
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 
                 // Back Button
                 Row(
@@ -222,62 +228,62 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       child: Icon(
                         Icons.arrow_back_ios,
                         size: 20,
-                        color: const Color(0xFF1A1A1A),
+                        color: theme.colors.foreground,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // App Logo/Title
                 Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: theme.colors.primaryForeground,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      color: theme.colors.border,
                       width: 1,
                     ),
                   ),
                   child: Icon(
                     Icons.phone_android,
                     size: 36,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colors.primary,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // Title
                 Text(
                   'Verify Phone Number',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: theme.typography.lg.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                    color: theme.colors.foreground,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'We\'ve sent a 6-digit verification code to',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF888888),
+                  style: theme.typography.sm.copyWith(
+                    color: theme.colors.foreground,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   widget.phoneNumber,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  style: theme.typography.sm.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                    color: theme.colors.foreground,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                      SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -294,10 +300,10 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                         size: 16,
                         color: Colors.green,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         'Code sent successfully',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        style: theme.typography.sm.copyWith(
                           color: Colors.green,
                           fontWeight: FontWeight.w500,
                         ),
@@ -305,7 +311,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 
                 // OTP Input
                 Column(
@@ -313,12 +319,12 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   children: [
                     Text(
                       'Verification Code',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: theme.typography.sm.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: theme.colors.foreground,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 6),
                     Pinput(
                       controller: _otpController,
                       length: 6,
@@ -330,15 +336,15 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       defaultPinTheme: PinTheme(
                         width: 48,
                         height: 48,
-                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        textStyle: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: theme.colors.foreground,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: theme.colors.background,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: const Color(0xFFE0E0E0),
+                            color: theme.colors.border,
                             width: 1.5,
                           ),
                         ),
@@ -346,20 +352,20 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       focusedPinTheme: PinTheme(
                         width: 48,
                         height: 48,
-                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        textStyle: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colors.primary,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: theme.colors.background,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: theme.colors.primary,
                             width: 2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              color: theme.colors.primary.withOpacity(0.1),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -369,15 +375,15 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       submittedPinTheme: PinTheme(
                         width: 48,
                         height: 48,
-                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        textStyle: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: theme.colors.primaryForeground,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                                  borderRadius: BorderRadius.circular(12),
+                          color: theme.colors.primary,
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: theme.colors.primary,
                             width: 1.5,
                           ),
                         ),
@@ -385,15 +391,15 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       errorPinTheme: PinTheme(
                         width: 48,
                         height: 48,
-                        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        textStyle: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: theme.colors.primaryForeground,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color: theme.colors.destructive,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.red,
+                            color: theme.colors.destructive,
                             width: 1.5,
                           ),
                         ),
@@ -408,17 +414,17 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 
                 // Helpful Information
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.05),
+                    color: theme.colors.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.blue.withOpacity(0.2),
+                      color: theme.colors.primary.withOpacity(0.2),
                       width: 1,
                     ),
                   ),
@@ -430,30 +436,30 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                           Icon(
                             Icons.info_outline,
                             size: 18,
-                            color: Colors.blue,
+                            color: theme.colors.primary,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             'Not receiving the code?',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            style: theme.typography.sm.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue,
+                              color: theme.colors.primary,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         '• Check if the SMS is in your spam folder\n• Ensure your phone has good network coverage\n• Wait a few minutes - SMS delivery can be delayed\n• Try resending the code after the timer expires',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.blue.shade700,
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.primary,
                           height: 1.4,
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 // Verify Button
                 SizedBox(
                   width: double.infinity,
@@ -465,22 +471,22 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                         ? SizedBox(
                             height: 18,
                             width: 18,
-                            child: const CircularProgressIndicator(
+                            child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
                             ),
                           )
                         : Text(
                             'Verify',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            style: theme.typography.sm.copyWith(
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.2,
-                              color: Colors.white,
+                              color: theme.colors.primaryForeground,
                             ),
                           ),
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 
                 // Resend Code
                 Column(
@@ -490,8 +496,8 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       children: [
                         Text(
                           'Didn\'t receive the code? ',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFF888888),
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.foreground,
                           ),
                         ),
                         if (_canResend)
@@ -500,19 +506,19 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                             onPress: _isResending ? null : _resendCode,
                             child: _isResending
                                 ? SizedBox(
-                                            height: 14,
+                                    height: 14,
                                     width: 14,
-                                    child: const CircularProgressIndicator(
+                                    child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.black,
+                                        theme.colors.foreground,
                                       ),
                                     ),
                                   )
                                 : Text(
                                     'Resend',
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color: theme.colors.primary,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -520,18 +526,18 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                         else
                           Text(
                             'Resend in ${_formatTimer(_resendTimer)}',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: const Color(0xFF888888),
+                            style: theme.typography.sm.copyWith(
+                              color: theme.colors.foreground,
                             ),
                           ),
                       ],
                     ),
                     if (!_canResend) ...[
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Please wait before requesting a new code',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: const Color(0xFFAAAAAA),
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.foreground,
                           fontSize: 12,
                         ),
                         textAlign: TextAlign.center,
@@ -539,7 +545,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                     ],
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
             ),
           ),

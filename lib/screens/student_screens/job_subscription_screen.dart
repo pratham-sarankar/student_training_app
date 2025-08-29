@@ -17,24 +17,23 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           elevation: 0,
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
             icon: Icon(
               Icons.arrow_back,
-              color: const Color(0xFF1A1A1A),
+              color: Theme.of(context).iconTheme.color,
               size: 20,
             ),
           ),
           title: Text(
             'Job Subscription',
-            style: TextStyle(
-              fontSize: 16,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A1A1A),
+              color: Theme.of(context).textTheme.titleMedium?.color,
             ),
           ),
           centerTitle: true,
@@ -70,14 +69,14 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                         'Stay Updated with Job Opportunities',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A1A1A),
+                          color: Theme.of(context).textTheme.titleMedium?.color,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
                         'Get notified about new job postings, career opportunities, and industry updates directly to your email.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: const Color(0xFF666666),
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                       ),
                     ],
@@ -90,7 +89,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   'Subscription Status',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                    color: Theme.of(context).textTheme.titleMedium?.color,
                   ),
                 ),
                 SizedBox(height: 12),
@@ -101,12 +100,12 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   decoration: BoxDecoration(
                     color: _isSubscribed 
                         ? Theme.of(context).colorScheme.primary.withOpacity(0.05)
-                        : Colors.grey.withOpacity(0.05),
+                        : Theme.of(context).colorScheme.surface.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isSubscribed 
                           ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
-                          : Colors.grey.withOpacity(0.15),
+                          : Theme.of(context).colorScheme.outline.withOpacity(0.15),
                       width: 1,
                     ),
                   ),
@@ -116,7 +115,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                         _isSubscribed ? Icons.check_circle : Icons.cancel_outlined,
                         color: _isSubscribed 
                             ? Theme.of(context).colorScheme.primary
-                            : Colors.grey,
+                            : Theme.of(context).colorScheme.outline,
                         size: 24,
                       ),
                       SizedBox(width: 12),
@@ -128,7 +127,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                               _isSubscribed ? 'Subscribed' : 'Not Subscribed',
                               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF1A1A1A),
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                               ),
                             ),
                             SizedBox(height: 2),
@@ -137,7 +136,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                                   ? 'You\'re receiving job updates and notifications'
                                   : 'Subscribe to start receiving job opportunities',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: const Color(0xFF666666),
+                                color: Theme.of(context).textTheme.bodySmall?.color,
                                 fontSize: 11,
                               ),
                             ),
@@ -154,7 +153,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   'What You\'ll Get',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                    color: Theme.of(context).textTheme.titleMedium?.color,
                   ),
                 ),
                 SizedBox(height: 12),
@@ -191,9 +190,9 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                           _isSubscribed = false;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('Successfully unsubscribed from job updates'),
-                            backgroundColor: Colors.green,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                           ),
                         );
                       },
@@ -201,7 +200,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                         'Unsubscribe',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ),
@@ -216,9 +215,9 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                           _isSubscribed = true;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('Successfully subscribed to job updates'),
-                            backgroundColor: Colors.green,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                           ),
                         );
                       },
@@ -226,13 +225,13 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                         'Subscribe Now',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ),
                   ),
                 ],
-                      SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
             ),
           ),
@@ -250,15 +249,15 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
       width: double.infinity,
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: const Color(0xFFE5E5E5),
+          color: Theme.of(context).dividerColor,
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Theme.of(context).shadowColor.withOpacity(0.02),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -287,14 +286,14 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                 ),
                 SizedBox(height: 2),
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF666666),
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                     fontSize: 11,
                   ),
                 ),

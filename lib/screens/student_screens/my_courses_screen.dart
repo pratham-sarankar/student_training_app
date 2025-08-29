@@ -148,10 +148,12 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colors.background,
         body: SafeArea(
           child: Column(
             children: [
@@ -166,28 +168,28 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       child: Icon(
                         Icons.arrow_back,
                         size: 16,
-                        color: const Color(0xFF666666),
+                        color: theme.colors.foreground,
                       ),
                     ),
                     SizedBox(width: 12),
                     Text(
                       'My Courses',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      style: theme.typography.lg.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
+                        color: theme.colors.foreground,
                       ),
                     ),
                     const Spacer(),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        color: theme.colors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${_purchasedCourses.length}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.primary,
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
                         ),
@@ -226,7 +228,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                                           child: Container(
                                             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                             decoration: BoxDecoration(
-                                              color: Colors.black87,
+                                              color: theme.colors.foreground.withOpacity(0.87),
                                               borderRadius: BorderRadius.circular(20),
                                             ),
                                             child: Row(
@@ -237,15 +239,15 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                                                   height: 16,
                                                   child: CircularProgressIndicator(
                                                     strokeWidth: 2,
-                                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                    valueColor: AlwaysStoppedAnimation<Color>(theme.colors.background),
                                                   ),
                                                 ),
                                                 SizedBox(width: 8),
                                                 Text(
                                                   'Refreshing...',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                          fontSize: 12,
+                                                  style: theme.typography.sm.copyWith(
+                                                    color: theme.colors.background,
+                                                    fontSize: 12,
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
@@ -266,6 +268,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   }
 
   Widget _buildLoadingState() {
+    final theme = context.theme;
+    
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 16),
       itemCount: 3, // Show 3 skeleton cards while loading
@@ -273,15 +277,15 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
         return Container(
           margin: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.colors.background,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.grey.withOpacity(0.1),
+              color: theme.colors.border.withOpacity(0.1),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: theme.colors.foreground.withOpacity(0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -297,7 +301,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   height: 16,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: theme.colors.muted,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -310,7 +314,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       height: 20,
                       width: 60,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: theme.colors.muted,
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -319,7 +323,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       height: 20,
                       width: 50,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: theme.colors.muted,
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -334,7 +338,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                                 height: 12,
                       width: 80,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: theme.colors.muted,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -343,7 +347,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       height: 12,
                       width: 100,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: theme.colors.muted,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -356,7 +360,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   height: 4,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: theme.colors.muted,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -367,7 +371,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   height: 40,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: theme.colors.muted,
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
@@ -379,10 +383,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
     );
   }
 
-
-
-
   Widget _buildErrorState() {
+    final theme = context.theme;
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -391,28 +394,28 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: theme.colors.destructive.withOpacity(0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: Icon(
               Icons.error_outline,
               size: 40,
-              color: Colors.red,
+              color: theme.colors.destructive,
             ),
           ),
                     SizedBox(height: 16),
           Text(
             'Error Loading Courses',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            style: theme.typography.lg.copyWith(
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A1A1A),
+              color: theme.colors.foreground,
             ),
           ),
           SizedBox(height: 8),
           Text(
             _errorMessage ?? 'Something went wrong',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: const Color(0xFF666666),
+            style: theme.typography.sm.copyWith(
+              color: theme.colors.mutedForeground,
             ),
             textAlign: TextAlign.center,
           ),
@@ -428,6 +431,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final theme = context.theme;
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -436,28 +441,28 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: theme.colors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: Icon(
               Icons.school_outlined,
               size: 40,
-              color: Theme.of(context).colorScheme.primary,
+              color: theme.colors.primary,
             ),
           ),
           SizedBox(height: 16),
           Text(
             'No Courses Yet',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            style: theme.typography.lg.copyWith(
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A1A1A),
+              color: theme.colors.foreground,
             ),
           ),
           SizedBox(height: 8),
           Text(
             'Start your learning journey by purchasing your first course',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: const Color(0xFF666666),
+            style: theme.typography.sm.copyWith(
+              color: theme.colors.mutedForeground,
             ),
             textAlign: TextAlign.center,
           ),
@@ -473,18 +478,20 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   }
 
     Widget _buildSimpleCourseCard(Map<String, dynamic> course) {
+    final theme = context.theme;
+    
     return Container(
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colors.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.1),
+          color: theme.colors.border.withOpacity(0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: theme.colors.foreground.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -501,9 +508,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   // Title
                   Text(
                     course['title'],
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: theme.typography.sm.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A1A1A),
+                      color: theme.colors.foreground,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -516,13 +523,13 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           course['category'],
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.primary,
                             fontWeight: FontWeight.w500,
                             fontSize: 10,
                           ),
@@ -532,13 +539,13 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.1),
+                          color: theme.colors.secondary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           course['level'],
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.orange,
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.secondary,
                             fontWeight: FontWeight.w500,
                             fontSize: 10,
                           ),
@@ -554,13 +561,13 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       Icon(
                         Icons.access_time,
                         size: 12,
-                        color: const Color(0xFF666666),
+                        color: theme.colors.mutedForeground,
                       ),
                       SizedBox(width: 4),
                       Text(
                         course['duration'],
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: const Color(0xFF666666),
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.mutedForeground,
                           fontSize: 10,
                         ),
                       ),
@@ -568,14 +575,14 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       Icon(
                         Icons.person_outline,
                         size: 12,
-                        color: const Color(0xFF666666),
+                        color: theme.colors.mutedForeground,
                       ),
                       SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           course['instructor'],
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: const Color(0xFF666666),
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.mutedForeground,
                                   fontSize: 10,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -595,16 +602,16 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                           children: [
                             Text(
                               'Progress',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: const Color(0xFF666666),
+                              style: theme.typography.sm.copyWith(
+                                color: theme.colors.mutedForeground,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             Text(
                               '${(course['progress'] * 100).toInt()}%',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
+                              style: theme.typography.sm.copyWith(
+                                color: theme.colors.primary,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -614,11 +621,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                         SizedBox(height: 4),
                         LinearProgressIndicator(
                           value: course['progress']?.toDouble() ?? 0.0,
-                          backgroundColor: Colors.grey[200],
+                          backgroundColor: theme.colors.muted,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            course['progress'] == 1.0 
-                                ? Colors.green 
-                                : Theme.of(context).colorScheme.primary,
+                            theme.colors.primary,
                           ),
                           minHeight: 4,
                         ),
@@ -630,13 +635,13 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                                 Icon(
                                   Icons.check_circle,
                                   size: 12,
-                                  color: Colors.green,
+                                  color: theme.colors.primary,
                                 ),
                                 SizedBox(width: 4),
                                 Text(
                                   'Completed!',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.green,
+                                  style: theme.typography.sm.copyWith(
+                                    color: theme.colors.primary,
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -665,9 +670,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       },
                       child: Text(
                         course['progress'] == 1.0 ? 'Review Course' : 'Continue Learning',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        style: theme.typography.sm.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: theme.colors.primaryForeground,
                             fontSize: 12,
                         ),
                       ),

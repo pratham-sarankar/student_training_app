@@ -131,30 +131,30 @@ class _AddJobScreenState extends State<AddJobScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     final isEditing = widget.job != null;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colors.background,
         elevation: 0,
         toolbarHeight: 48,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87, size: 18),
+          icon: Icon(Icons.arrow_back, color: theme.colors.foreground, size: 18),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           isEditing ? 'Edit Job' : 'Add New Job',
-          style: const TextStyle(
-            color: Colors.black87,
+          style: theme.typography.sm.copyWith(
             fontWeight: FontWeight.w600,
-            fontSize: 16,
+            color: theme.colors.foreground,
           ),
         ),
         actions: [
           if (isEditing)
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red, size: 18),
+              icon: Icon(Icons.delete, color: theme.colors.destructive, size: 18),
               onPressed: _showDeleteConfirmation,
               tooltip: 'Delete Job',
             ),
@@ -172,14 +172,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withOpacity(0.05),
+                    color: theme.colors.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withOpacity(0.1),
+                      color: theme.colors.primary.withOpacity(0.1),
                     ),
                   ),
                   child: Row(
@@ -187,14 +183,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Icon(
                           Icons.work,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: theme.colors.primary,
                           size: 16,
                         ),
                       ),
@@ -207,36 +201,25 @@ class _AddJobScreenState extends State<AddJobScreen> {
                               isEditing
                                   ? 'Edit Job Details'
                                   : 'Create New Job Posting',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleSmall?.copyWith(
+                              style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: theme.colors.foreground,
                               ),
                             ),
                             Text(
                               isEditing
                                   ? 'Update the job information below'
                                   : 'Fill in the details to create a new job posting',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodySmall?.copyWith(
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                fontSize: 11,
+                              style: theme.typography.xs.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                             if (isEditing &&
                                 widget.job?.type.isNotEmpty == true)
                               Text(
                                 'Current Type: ${widget.job!.type}',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 10,
+                                style: theme.typography.xs.copyWith(
+                                  color: theme.colors.primary,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -262,12 +245,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     ),
                     prefixIcon: Icon(
                       Icons.work_outline,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colors.primary,
                       size: 16,
                     ),
                     hintText: 'e.g., Senior Software Engineer',
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: theme.colors.muted,
                     isDense: true,
                   ),
                   validator: (value) {
@@ -299,12 +282,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.business,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: theme.colors.primary,
                                   size: 16,
                                 ),
                                 hintText: 'e.g., Tech Corp Inc.',
                                 filled: true,
-                                fillColor: Colors.grey.shade50,
+                                fillColor: theme.colors.muted,
                                 isDense: true,
                               ),
                               validator: (value) {
@@ -330,12 +313,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.location_on,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: theme.colors.primary,
                                   size: 16,
                                 ),
                                 hintText: 'e.g., New York, NY',
                                 filled: true,
-                                fillColor: Colors.grey.shade50,
+                                fillColor: theme.colors.muted,
                                 isDense: true,
                               ),
                               validator: (value) {
@@ -364,12 +347,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                               ),
                               prefixIcon: Icon(
                                 Icons.business,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: theme.colors.primary,
                                 size: 16,
                               ),
                               hintText: 'e.g., Tech Corp Inc.',
                               filled: true,
-                              fillColor: Colors.grey.shade50,
+                              fillColor: theme.colors.muted,
                               isDense: true,
                             ),
                             validator: (value) {
@@ -393,12 +376,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                               ),
                               prefixIcon: Icon(
                                 Icons.location_on,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: theme.colors.primary,
                                 size: 16,
                               ),
                               hintText: 'e.g., New York, NY',
                               filled: true,
-                              fillColor: Colors.grey.shade50,
+                              fillColor: theme.colors.muted,
                               isDense: true,
                             ),
                             validator: (value) {
@@ -429,13 +412,13 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     ),
                     prefixIcon: Icon(
                       Icons.description,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colors.primary,
                       size: 16,
                     ),
                     hintText:
                         'Describe the role, responsibilities, and requirements...',
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: theme.colors.muted,
                     isDense: true,
                     alignLabelWithHint: false,
                   ),
@@ -463,12 +446,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     ),
                     prefixIcon: Icon(
                       Icons.currency_rupee,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colors.primary,
                       size: 16,
                     ),
                     hintText: 'e.g., 50,000 - 80,000 annually',
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: theme.colors.muted,
                     isDense: true,
                   ),
                   validator: (value) {
@@ -494,12 +477,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     ),
                     prefixIcon: Icon(
                       Icons.work,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colors.primary,
                       size: 16,
                     ),
                     hintText: 'Select job type',
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: theme.colors.muted,
                     isDense: true,
                   ),
                   items:
@@ -508,7 +491,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           value: type,
                           child: Text(
                             type,
-                            style: const TextStyle(color: Colors.black),
+                            style: TextStyle(color: theme.colors.foreground),
                           ),
                         );
                       }).toList(),
@@ -526,12 +509,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     }
                     return null;
                   },
-                  dropdownColor: Colors.white,
+                  dropdownColor: theme.colors.background,
                   icon: Icon(
                     Icons.arrow_drop_down,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colors.primary,
                   ),
-                  style: const TextStyle(fontSize: 14),
+                  style: TextStyle(fontSize: 14, color: theme.colors.foreground),
                 ),
                 const SizedBox(height: 8),
 
@@ -549,12 +532,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     ),
                     prefixIcon: Icon(
                       Icons.category,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colors.primary,
                       size: 16,
                     ),
                     hintText: 'Select job category',
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: theme.colors.muted,
                     isDense: true,
                   ),
                   items:
@@ -563,7 +546,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           value: category,
                           child: Text(
                             category,
-                            style: const TextStyle(color: Colors.black),
+                            style: TextStyle(color: theme.colors.foreground),
                           ),
                         );
                       }).toList(),
@@ -581,21 +564,21 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     }
                     return null;
                   },
-                  dropdownColor: Colors.white,
+                  dropdownColor: theme.colors.background,
                   icon: Icon(
                     Icons.arrow_drop_down,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colors.primary,
                   ),
-                  style: const TextStyle(fontSize: 14),
+                  style: TextStyle(fontSize: 14, color: theme.colors.foreground),
                 ),
                 const SizedBox(height: 8),
 
                 // Requirements
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
+                    border: Border.all(color: theme.colors.border),
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.white,
+                    color: theme.colors.background,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -607,9 +590,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withOpacity(0.05),
+                          color: theme.colors.primary.withOpacity(0.05),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8),
@@ -620,24 +601,21 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withOpacity(0.1),
+                                color: theme.colors.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Icon(
                                 Icons.check_circle,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: theme.colors.primary,
                                 size: 14,
                               ),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               'Requirements *',
-                              style: TextStyle(
+                              style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: theme.colors.foreground,
                               ),
                             ),
                           ],
@@ -669,19 +647,16 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                           right: 10,
                                         ),
                                         decoration: BoxDecoration(
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
+                                          color: theme.colors.primary,
                                           shape: BoxShape.circle,
                                         ),
                                       ),
                                       Expanded(
                                         child: Text(
                                           req,
-                                          style: const TextStyle(
-                                            fontSize: 13,
+                                          style: theme.typography.sm.copyWith(
                                             height: 1.4,
+                                            color: theme.colors.foreground,
                                           ),
                                         ),
                                       ),
@@ -691,10 +666,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                             _requirements.removeAt(index);
                                           });
                                         },
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.remove_circle_outline,
                                           size: 16,
-                                          color: Colors.red,
+                                          color: theme.colors.destructive,
                                         ),
                                       ),
                                     ],
@@ -708,65 +683,64 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: TextFormField(
-                                    controller: _requirementsController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter a new requirement...',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(4),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey.shade400,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(4),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
-                                        ),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 8,
+                                  child: Container(
+                                    height: 38,
+                                    child: TextFormField(
+                                      controller: _requirementsController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter a new requirement...',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(4),
+                                          borderSide: BorderSide(
+                                            color: theme.colors.border,
                                           ),
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      isDense: true,
-                                      suffixIcon:
-                                          _requirementsController
-                                                  .text
-                                                  .isNotEmpty
-                                              ? IconButton(
-                                                icon: const Icon(
-                                                  Icons.clear,
-                                                  size: 16,
-                                                ),
-                                                onPressed:
-                                                    () =>
-                                                        _requirementsController
-                                                            .clear(),
-                                                tooltip: 'Clear',
-                                              )
-                                              : null,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(4),
+                                          borderSide: BorderSide(
+                                            color: theme.colors.primary,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 8,
+                                            ),
+                                        filled: true,
+                                        fillColor: theme.colors.background,
+                                        suffixIcon:
+                                            _requirementsController
+                                                    .text
+                                                    .isNotEmpty
+                                                ? IconButton(
+                                                  icon: Icon(
+                                                    Icons.clear,
+                                                    size: 16,
+                                                    color: theme.colors.mutedForeground,
+                                                  ),
+                                                  onPressed:
+                                                      () =>
+                                                          _requirementsController
+                                                              .clear(),
+                                                  tooltip: 'Clear',
+                                                )
+                                                : null,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(width: 6),
                                 Container(
-                                  height:  38,
+                                  height: 38,
                                   decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: theme.colors.primary,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.add,
                                       size: 18,
-                                      color: Colors.white,
+                                      color: theme.colors.primaryForeground,
                                     ),
                                     onPressed: () {
                                       if (_requirementsController.text
@@ -798,9 +772,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 // Responsibilities
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
+                    border: Border.all(color: theme.colors.border),
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.white,
+                    color: theme.colors.background,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -812,9 +786,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withOpacity(0.05),
+                          color: theme.colors.primary.withOpacity(0.05),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8),
@@ -825,24 +797,21 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withOpacity(0.1),
+                                color: theme.colors.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Icon(
                                 Icons.task_alt,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: theme.colors.primary,
                                 size: 14,
                               ),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               'Responsibilities *',
-                              style: TextStyle(
+                              style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: theme.colors.foreground,
                               ),
                             ),
                           ],
@@ -874,19 +843,16 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                           right: 10,
                                         ),
                                         decoration: BoxDecoration(
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
+                                          color: theme.colors.primary,
                                           shape: BoxShape.circle,
                                         ),
                                       ),
                                       Expanded(
                                         child: Text(
                                           resp,
-                                          style: const TextStyle(
-                                            fontSize: 13,
+                                          style: theme.typography.sm.copyWith(
                                             height: 1.4,
+                                            color: theme.colors.foreground,
                                           ),
                                         ),
                                       ),
@@ -896,10 +862,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                             _responsibilities.removeAt(index);
                                           });
                                         },
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.remove_circle_outline,
                                           size: 16,
-                                          color: Colors.red,
+                                          color: theme.colors.destructive,
                                         ),
                                       ),
                                     ],
@@ -909,69 +875,68 @@ class _AddJobScreenState extends State<AddJobScreen> {
                               const SizedBox(height: 12),
                             ],
 
-                            // Input field for new responsibilities
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _responsibilitiesController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter a new responsibility...',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(4),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey.shade400,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(4),
-                                        borderSide: BorderSide(
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
-                                        ),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 8,
-                                          ),
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      isDense: true,
-                                      suffixIcon:
-                                          _responsibilitiesController
-                                                  .text
-                                                  .isNotEmpty
-                                              ? IconButton(
-                                                icon: const Icon(
-                                                  Icons.clear,
-                                                  size: 16,
-                                                ),
-                                                onPressed:
-                                                    () =>
-                                                        _responsibilitiesController
-                                                            .clear(),
-                                                tooltip: 'Clear',
-                                              )
-                                              : null,
-                                    ),
-                                  ),
-                                ),
+                                                         // Input field for new responsibilities
+                             Row(
+                               children: [
+                                 Expanded(
+                                   child: Container(
+                                     height: 38,
+                                     child: TextFormField(
+                                       controller: _responsibilitiesController,
+                                       decoration: InputDecoration(
+                                         hintText: 'Enter a new responsibility...',
+                                         border: OutlineInputBorder(
+                                           borderRadius: BorderRadius.circular(4),
+                                           borderSide: BorderSide(
+                                             color: theme.colors.border,
+                                           ),
+                                         ),
+                                         focusedBorder: OutlineInputBorder(
+                                           borderRadius: BorderRadius.circular(4),
+                                           borderSide: BorderSide(
+                                             color: theme.colors.primary,
+                                           ),
+                                         ),
+                                         contentPadding:
+                                             const EdgeInsets.symmetric(
+                                               horizontal: 10,
+                                               vertical: 8,
+                                             ),
+                                         filled: true,
+                                         fillColor: theme.colors.background,
+                                         suffixIcon:
+                                             _responsibilitiesController
+                                                     .text
+                                                     .isNotEmpty
+                                                 ? IconButton(
+                                                   icon: Icon(
+                                                     Icons.clear,
+                                                     size: 16,
+                                                     color: theme.colors.mutedForeground,
+                                                   ),
+                                                   onPressed:
+                                                       () =>
+                                                           _responsibilitiesController
+                                                               .clear(),
+                                                   tooltip: 'Clear',
+                                                 )
+                                                 : null,
+                                       ),
+                                     ),
+                                   ),
+                                 ),
                                 const SizedBox(width: 6),
                                 Container(
                                   height: 38,
                                   decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: theme.colors.primary,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.add,
                                       size: 18,
-                                      color: Colors.white,
+                                      color: theme.colors.primaryForeground,
                                     ),
                                     onPressed: () {
                                       if (_responsibilitiesController.text
@@ -1004,13 +969,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withOpacity(0.02),
+                    color: theme.colors.primary.withOpacity(0.02),
                     border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withOpacity(0.2),
+                      color: theme.colors.primary.withOpacity(0.2),
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -1023,7 +984,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             _isActive = value ?? true;
                           });
                         },
-                        activeColor: Theme.of(context).colorScheme.primary,
+                        activeColor: theme.colors.primary,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       const SizedBox(width: 6),
@@ -1033,22 +994,17 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           children: [
                             Text(
                               'Job Status',
-                              style: TextStyle(
+                              style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                                color: Theme.of(context).colorScheme.onSurface,
+                                color: theme.colors.foreground,
                               ),
                             ),
                             Text(
                               _isActive
                                   ? 'Active and visible to students'
                                   : 'Inactive and hidden from students',
-                              style: TextStyle(
-                                color:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                fontSize: 11,
+                              style: theme.typography.xs.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                           ],
@@ -1068,7 +1024,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           side: BorderSide(
-                            color: Theme.of(context).colorScheme.outline,
+                            color: theme.colors.border,
                             width: 1.5,
                           ),
                           shape: RoundedRectangleBorder(
@@ -1077,9 +1033,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
                         ),
                         child: Text(
                           'Cancel',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Theme.of(context).colorScheme.onSurface,
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.foreground,
                           ),
                         ),
                       ),
@@ -1090,29 +1045,27 @@ class _AddJobScreenState extends State<AddJobScreen> {
                         onPressed: _isLoading ? null : _saveJob,
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
+                          backgroundColor: theme.colors.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(6),
                           ),
                         ),
                         child:
                             _isLoading
-                                ? const SizedBox(
+                                ? SizedBox(
                                   height: 14,
                                   width: 14,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
+                                      theme.colors.primaryForeground,
                                     ),
                                   ),
                                 )
                                 : Text(
                                   isEditing ? 'Update Job' : 'Create Job',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.white,
+                                  style: theme.typography.sm.copyWith(
+                                    color: theme.colors.primaryForeground,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -1129,6 +1082,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
   }
 
   void _saveJob() async {
+    final theme = context.theme;
     print('_saveJob called - starting validation...');
     if (_formKey.currentState!.validate()) {
       print('Form validation passed!');
@@ -1200,8 +1154,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
           print('Job created successfully');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Job created successfully!'),
+              SnackBar(
+                content: const Text('Job created successfully!'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -1214,8 +1168,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
           print('Job updated successfully');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Job updated successfully!'),
+              SnackBar(
+                content: const Text('Job updated successfully!'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -1229,7 +1183,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
+              backgroundColor: theme.colors.destructive,
             ),
           );
         }
@@ -1246,6 +1200,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
   }
 
   void _showDeleteConfirmation() {
+    final theme = context.theme;
     showDialog(
       context: context,
       builder:
@@ -1264,7 +1219,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   Navigator.of(context).pop();
                   _deleteJob();
                 },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: TextButton.styleFrom(foregroundColor: theme.colors.destructive),
                 child: const Text('Delete'),
               ),
             ],
@@ -1273,6 +1228,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
   }
 
   void _deleteJob() async {
+    final theme = context.theme;
     if (widget.job != null) {
       setState(() {
         _isLoading = true;
@@ -1294,7 +1250,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
+              backgroundColor: theme.colors.destructive,
             ),
           );
         }

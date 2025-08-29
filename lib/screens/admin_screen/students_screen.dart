@@ -42,22 +42,25 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
   void _exportStudentsList(List<UserModel> students) {
     // For now, just show a message
     // In a real implementation, this would generate a CSV or PDF file
+    final theme = context.theme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           'Export functionality for ${students.length} students needs to be implemented',
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: theme.colors.primary,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: theme.colors.background,
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -74,7 +77,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                             children: [
                               Icon(
                                 Icons.people,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: theme.colors.primary,
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
@@ -85,16 +88,16 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                                   children: [
                                     Text(
                                       'Student Management',
-                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      style: theme.typography.lg.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: Theme.of(context).colorScheme.onSurface,
+                                        color: theme.colors.foreground,
                                       ),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       'Manage student accounts and training progress',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      style: theme.typography.sm.copyWith(
+                                        color: theme.colors.mutedForeground,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -111,16 +114,18 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                     // Students Table - Expanded to fill remaining space
                     Expanded(
                       child: adminProvider.isLoading 
-                        ? const Center(
+                        ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                CircularProgressIndicator(),
-                                SizedBox(height: 16),
+                                CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                                ),
+                                const SizedBox(height: 16),
                                 Text(
                                   'Loading students...',
                                   style: TextStyle(
-                                    color: Colors.grey,
+                                    color: theme.colors.mutedForeground,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -140,32 +145,34 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
   }
 
   Widget _buildStudentsTable(BuildContext context, AdminProvider adminProvider) {
+    final theme = context.theme;
+    
     // Use original students list directly
     final studentsList = adminProvider.allStudents;
     
     if (studentsList.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.people_outline,
               size: 48,
-              color: Colors.grey,
+              color: theme.colors.mutedForeground,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
               'No students found',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey,
+                color: theme.colors.mutedForeground,
               ),
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Text(
               'Students will appear here once they register with the Student role',
               style: TextStyle(
-                color: Colors.grey,
+                color: theme.colors.mutedForeground,
                 fontSize: 12,
               ),
             ),
@@ -198,7 +205,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colors.foreground,
                 letterSpacing: 0.2,
               ),
             ),
@@ -209,7 +216,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colors.foreground,
                 letterSpacing: 0.2,
               ),
             ),
@@ -220,7 +227,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colors.foreground,
                 letterSpacing: 0.2,
               ),
             ),
@@ -231,7 +238,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colors.foreground,
                 letterSpacing: 0.2,
               ),
             ),
@@ -242,7 +249,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colors.foreground,
                 letterSpacing: 0.2,
               ),
             ),
@@ -253,7 +260,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colors.foreground,
                 letterSpacing: 0.2,
               ),
             ),
@@ -264,7 +271,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colors.foreground,
                 letterSpacing: 0.2,
               ),
             ),
@@ -309,13 +316,13 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: student.hasCompletedProfile ? Colors.green[100] : Colors.orange[100],
+                      color: student.hasCompletedProfile ? theme.colors.primary.withOpacity(0.1) : theme.colors.mutedForeground.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       student.hasCompletedProfile ? 'Complete' : 'Incomplete',
                       style: TextStyle(
-                        color: student.hasCompletedProfile ? Colors.green[800] : Colors.orange[800],
+                        color: student.hasCompletedProfile ? theme.colors.primary : theme.colors.mutedForeground,
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
@@ -328,13 +335,13 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: student.jobAlerts ? Colors.green[100] : Colors.red[100],
+                      color: student.jobAlerts ? theme.colors.primary.withOpacity(0.1) : theme.colors.destructive.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
                       style: TextStyle(
-                        color: student.jobAlerts ? Colors.green[800] : Colors.red[800],
+                        color: student.jobAlerts ? theme.colors.primary : theme.colors.destructive,
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
@@ -348,7 +355,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                     ? enrolledTrainings.join(', ')
                     : 'Not enrolled',
                   style: TextStyle(
-                    color: enrolledTrainings.isNotEmpty ? Colors.grey[600] : Colors.orange[600],
+                    color: enrolledTrainings.isNotEmpty ? theme.colors.mutedForeground : theme.colors.mutedForeground,
                     fontSize: 11,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -359,11 +366,11 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                   child: PopupMenuButton<String>(
                     icon: const Icon(Icons.more_vert, size: 18),
                     tooltip: 'Actions',
-                    color: Colors.white,
+                    color: theme.colors.background,
                     elevation: 8,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: Colors.grey[200]!),
+                      side: BorderSide(color: theme.colors.border),
                     ),
                     onSelected: (value) {
                       if (value == 'details') {
@@ -373,13 +380,13 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                       }
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'details',
                         child: Row(
                           children: [
-                            Icon(Icons.info, color: Colors.blue, size: 16),
-                            SizedBox(width: 8),
-                            Text('View Details', style: TextStyle(fontSize: 13)),
+                            Icon(Icons.info, color: theme.colors.primary, size: 16),
+                            const SizedBox(width: 8),
+                            const Text('View Details', style: TextStyle(fontSize: 13)),
                           ],
                         ),
                       ),
@@ -389,7 +396,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                           children: [
                             Icon(
                               student.jobAlerts ? Icons.notifications_off : Icons.notifications_active,
-                              color: student.jobAlerts ? Colors.orange : Colors.green,
+                              color: student.jobAlerts ? theme.colors.mutedForeground : theme.colors.primary,
                               size: 16,
                             ),
                             const SizedBox(width: 8),
@@ -417,6 +424,8 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
   }
 
   void _showStudentDetails(BuildContext context, UserModel student, AdminProvider adminProvider) {
+    final theme = context.theme;
+    
     // Find all schedules this student is enrolled in
     final enrollments = <MapEntry<String, TrainingSchedule>>[];
     
@@ -437,9 +446,9 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
         minChildSize: 0.4,
         maxChildSize: 0.9,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          decoration: BoxDecoration(
+            color: theme.colors.background,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
           child: Column(
             children: [
@@ -449,7 +458,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                 width: 32,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: theme.colors.mutedForeground,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -460,10 +469,10 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      backgroundColor: theme.colors.primaryForeground,
                       child: Icon(
                         Icons.person,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colors.primary,
                         size: 22,
                       ),
                     ),
@@ -474,14 +483,14 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                         children: [
                           Text(
                             student.fullName,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: theme.typography.lg.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
                             'Student Details',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                            style: theme.typography.sm.copyWith(
+                              color: theme.colors.mutedForeground,
                             ),
                           ),
                         ],
@@ -489,9 +498,9 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                     ),
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close, size: 20),
+                      icon: Icon(Icons.close, size: 20),
                       style: IconButton.styleFrom(
-                        backgroundColor: Colors.grey[100],
+                        backgroundColor: theme.colors.mutedForeground.withOpacity(0.1),
                         shape: const CircleBorder(),
                         padding: const EdgeInsets.all(8),
                         minimumSize: const Size(32, 32),
@@ -516,39 +525,39 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                             Icons.email,
                             'Email',
                             student.email,
-                            Colors.blue,
+                            theme.colors.primary,
                           ),
                           if (student.phoneNumber != null && student.phoneNumber!.isNotEmpty)
                             _buildInfoTile(
                               Icons.phone,
                               'Phone',
                               student.phoneNumber!,
-                              Colors.green,
+                              theme.colors.primary,
                             ),
                           _buildInfoTile(
                             Icons.calendar_today,
                             'Registration Date',
                             _formatDate(student.createdAt),
-                            Colors.green,
+                            theme.colors.primary,
                           ),
                           if (student.dateOfBirth != null)
                             _buildInfoTile(
                               Icons.cake,
                               'Date of Birth',
                               student.formattedDateOfBirth ?? 'N/A',
-                              Colors.purple,
+                              theme.colors.primary,
                             ),
                           _buildInfoTile(
                             student.jobAlerts ? Icons.notifications_active : Icons.notifications_off,
                             'Job Notifications',
                             student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
-                            student.jobAlerts ? Colors.green : Colors.red,
+                            student.jobAlerts ? theme.colors.primary : theme.colors.destructive,
                           ),
                           _buildInfoTile(
                             student.hasCompletedProfile ? Icons.check_circle : Icons.info_outline,
                             'Profile Status',
                             student.hasCompletedProfile ? 'Complete' : 'Incomplete',
-                            student.hasCompletedProfile ? Colors.green : Colors.orange,
+                            student.hasCompletedProfile ? theme.colors.primary : theme.colors.mutedForeground,
                           ),
                         ],
                       ),
@@ -560,15 +569,15 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.grey[50],
+                                color: theme.colors.mutedForeground.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey[200]!),
+                                border: Border.all(color: theme.colors.border),
                               ),
                               child: Text(
                                 student.bio!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.black87,
+                                  color: theme.colors.foreground,
                                 ),
                               ),
                             ),
@@ -585,14 +594,14 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                                 Icons.work,
                                 'Job Categories',
                                 student.jobCategories.join(', '),
-                                Colors.blue,
+                                theme.colors.primary,
                               ),
                             if (student.preferredLocations.isNotEmpty)
                               _buildInfoTile(
                                 Icons.location_on,
                                 'Preferred Locations',
                                 student.preferredLocations.join(', '),
-                                Colors.green,
+                                theme.colors.primary,
                               ),
                           ],
                         ),
@@ -609,19 +618,19 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                               Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: Colors.orange[50],
+                                  color: theme.colors.mutedForeground.withOpacity(0.05),
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.orange[200]!),
+                                  border: Border.all(color: theme.colors.border),
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.info_outline, color: Colors.orange[600], size: 18),
+                                    Icon(Icons.info_outline, color: theme.colors.mutedForeground, size: 18),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
                                         'This student has not enrolled in any training schedules yet.',
                                         style: TextStyle(
-                                          color: Colors.orange[800],
+                                          color: theme.colors.mutedForeground,
                                           fontSize: 12,
                                         ),
                                       ),
@@ -644,15 +653,17 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
   }
 
   Widget _buildInfoSection(String title, List<Widget> children) {
+    final theme = context.theme;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: Colors.black87,
+            color: theme.colors.foreground,
           ),
         ),
         const SizedBox(height: 8),
@@ -662,13 +673,15 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
   }
 
   Widget _buildInfoTile(IconData icon, String title, String subtitle, Color iconColor) {
+    final theme = context.theme;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: theme.colors.mutedForeground.withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.colors.border),
       ),
       child: Row(
         children: [
@@ -689,17 +702,17 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                   title,
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey[600],
+                    color: theme.colors.mutedForeground,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: theme.colors.foreground,
                   ),
                 ),
               ],
@@ -711,16 +724,18 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
   }
 
   Widget _buildEnrollmentTile(BuildContext context, MapEntry<String, TrainingSchedule> enrollment) {
+    final theme = context.theme;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colors.background,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.colors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey[200]!,
+            color: theme.colors.border,
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -733,17 +748,17 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
             children: [
               Icon(
                 Icons.school,
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colors.primary,
                 size: 18,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   enrollment.key,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: Colors.black87,
+                    color: theme.colors.foreground,
                   ),
                 ),
               ),
@@ -754,14 +769,14 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
             children: [
               Icon(
                 Icons.schedule,
-                color: Colors.grey[600],
+                color: theme.colors.mutedForeground,
                 size: 14,
               ),
               const SizedBox(width: 6),
               Text(
                 '${_formatDate(enrollment.value.startDate)} - ${_formatDate(enrollment.value.endDate)}',
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: theme.colors.mutedForeground,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
                 ),
@@ -774,6 +789,8 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
   }
 
   void _toggleSubscription(BuildContext context, UserModel student, AdminProvider adminProvider) async {
+    final theme = context.theme;
+    
     try {
       await adminProvider.updateUserJobAlerts(student.uid, !student.jobAlerts);
       
@@ -784,7 +801,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
               ? '${student.fullName} subscribed to job notifications'
               : '${student.fullName} unsubscribed from job notifications',
           ),
-          backgroundColor: !student.jobAlerts ? Colors.green : Colors.orange,
+          backgroundColor: !student.jobAlerts ? theme.colors.primary : theme.colors.mutedForeground,
         ),
       );
     } catch (e) {
@@ -793,7 +810,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
           content: Text(
             'Failed to update job notifications: $e',
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: theme.colors.destructive,
         ),
       );
     }

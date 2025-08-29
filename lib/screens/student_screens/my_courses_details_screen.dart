@@ -63,7 +63,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error initializing chat: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
           ),
         );
       }
@@ -275,7 +275,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error initializing notes: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
           ),
         );
       }
@@ -287,14 +287,6 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
       }
     }
   }
-
-
-
-
-
-
-
-
 
   String _formatNoteTime(DateTime time) {
     final now = DateTime.now();
@@ -312,10 +304,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colors.background,
         body: SafeArea(
           child: Column(
             children: [
@@ -330,7 +324,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                       child: Icon(
                         Icons.arrow_back,
                         size: 16,
-                        color: const Color(0xFF666666),
+                        color: theme.colors.foreground,
                       ),
                     ),
                     SizedBox(width: 12),
@@ -340,17 +334,17 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                         children: [
                           Text(
                             widget.course['title'],
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            style: theme.typography.lg.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF1A1A1A),
+                              color: theme.colors.foreground,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             '${widget.course['category']} • ${widget.course['level']}',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFF666666),
+                            style: theme.typography.sm.copyWith(
+                              color: theme.colors.mutedForeground,
                               fontSize: 12,
                             ),
                           ),
@@ -383,16 +377,16 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                               Icons.note_outlined,
                               size: 16,
                               color: _selectedTabIndex == 0 
-                                  ? Colors.white 
-                                  : Theme.of(context).colorScheme.primary,
+                                  ? theme.colors.primaryForeground
+                                  : theme.colors.primary,
                             ),
                             SizedBox(width: 8),
                             Text(
                               'Notes',
                               style: TextStyle(
                                 color: _selectedTabIndex == 0 
-                                    ? Colors.white 
-                                    : Theme.of(context).colorScheme.primary,
+                                    ? theme.colors.primaryForeground
+                                    : theme.colors.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -418,16 +412,16 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                               Icons.chat_outlined,
                               size: 16,
                               color: _selectedTabIndex == 1 
-                                  ? Colors.white 
-                                  : Theme.of(context).colorScheme.primary,
+                                  ? theme.colors.primaryForeground
+                                  : theme.colors.primary,
                             ),
                             SizedBox(width: 8),
                             Text(
                               'Chat',
                               style: TextStyle(
                                 color: _selectedTabIndex == 1 
-                                    ? Colors.white 
-                                    : Theme.of(context).colorScheme.primary,
+                                    ? theme.colors.primaryForeground
+                                    : theme.colors.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -460,6 +454,8 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
 
 
   Widget _buildNotesTab() {
+    final theme = context.theme;
+    
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
@@ -471,14 +467,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
               Icon(
                 Icons.note_outlined,
                       size: 20,
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colors.primary,
               ),
               SizedBox(width: 8),
               Text(
                 'Course Notes',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: theme.typography.lg.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1A1A1A),
+                  color: theme.colors.foreground,
                 ),
               ),
             ],
@@ -489,7 +485,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
           // Notes List
           Expanded(
             child: _isNotesLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator(color: theme.colors.primary))
                 : _courseNotes.isEmpty
                     ? Center(
                         child: Column(
@@ -498,30 +494,27 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                             Icon(
                               Icons.note_outlined,
                               size: 64,
-                              color: Colors.grey[400],
+                              color: theme.colors.muted,
                             ),
                             SizedBox(height: 16),
                             Text(
                               'No notes yet',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.grey[600],
+                              style: theme.typography.lg.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                             SizedBox(height: 8),
                             Text(
                               'Create your first note to get started!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[500],
+                              style: theme.typography.sm.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                             SizedBox(height: 16),
                             Text(
                               'Notes will appear here when they are added by instructors.',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[500],
+                              style: theme.typography.sm.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                           ],
@@ -535,15 +528,15 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                             margin: EdgeInsets.only(bottom: 12),
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: theme.colors.background,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: theme.colors.border.withOpacity(0.1),
                                 width: 1,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: theme.colors.foreground.withOpacity(0.05),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -557,15 +550,15 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                     Icon(
                                       Icons.note_outlined,
                                       size: 16,
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color: theme.colors.primary,
                                     ),
                                     SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         note.title,
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        style: theme.typography.sm.copyWith(
                                           fontWeight: FontWeight.w600,
-                                          color: const Color(0xFF1A1A1A),
+                                          color: theme.colors.foreground,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -576,8 +569,8 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                 SizedBox(height: 8),
                                 Text(
                                   note.content,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: const Color(0xFF1A1A1A),
+                                  style: theme.typography.sm.copyWith(
+                                    color: theme.colors.foreground,
                                   ),
                                   maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
@@ -590,14 +583,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                     children: note.tags.map((tag) => Container(
                                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                        color: theme.colors.primary.withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
                                         tag,
                                         style: TextStyle(
                                           fontSize: 10,
-                                          color: Theme.of(context).colorScheme.primary,
+                                          color: theme.colors.primary,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -609,16 +602,16 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                   children: [
                                     Text(
                                       _formatNoteTime(note.updatedAt),
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: const Color(0xFF666666),
+                                      style: theme.typography.sm.copyWith(
+                                        color: theme.colors.mutedForeground,
                                         fontSize: 10,
                                       ),
                                     ),
                                     const Spacer(),
                                     Text(
                                       'by ${note.createdByName}',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: const Color(0xFF666666),
+                                      style: theme.typography.sm.copyWith(
+                                        color: theme.colors.mutedForeground,
                                         fontSize: 10,
                                       ),
                                     ),
@@ -636,6 +629,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
   }
 
     Widget _buildChatTab() {
+    final theme = context.theme;
     final currentUser = _chatService.currentUser;
     
     return Padding(
@@ -649,27 +643,27 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
               Icon(
                 Icons.chat_outlined,
                 size: 20,
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colors.primary,
               ),
               SizedBox(width: 8),
               Text(
                 'Course Chat',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: theme.typography.lg.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1A1A1A),
+                  color: theme.colors.foreground,
                 ),
               ),
               const Spacer(),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: theme.colors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'Online',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.green,
+                  style: theme.typography.sm.copyWith(
+                    color: theme.colors.primary,
                     fontWeight: FontWeight.w500,
                     fontSize: 10,
                   ),
@@ -683,7 +677,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
           // Firebase Chat Messages
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator(color: theme.colors.primary))
                 : _messages.isEmpty
                     ? Center(
                         child: Column(
@@ -692,22 +686,20 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                             Icon(
                               Icons.chat_bubble_outline,
                               size: 64,
-                              color: Colors.grey[400],
+                              color: theme.colors.muted,
                             ),
                             SizedBox(height: 16),
                             Text(
                               'No messages yet',
-                              style: TextStyle(
-                                    fontSize: 18,
-                                color: Colors.grey[600],
+                              style: theme.typography.lg.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                             SizedBox(height: 8),
                             Text(
                               'Start the conversation!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[500],
+                              style: theme.typography.sm.copyWith(
+                                color: theme.colors.mutedForeground,
                               ),
                             ),
                           ],
@@ -733,13 +725,13 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                 if (!isMe) ...[
                                   CircleAvatar(
                                     radius: 16,
-                                    backgroundColor: Colors.orange,
+                                    backgroundColor: theme.colors.secondary,
                                     child: Text(
                                       message.senderName[0].toUpperCase(),
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: theme.colors.background,
                                       ),
                                     ),
                                   ),
@@ -752,11 +744,11 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                       vertical: 12,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: isMe ? Theme.of(context).colorScheme.primary : Colors.white,
+                                      color: isMe ? theme.colors.primary : theme.colors.background,
                                       borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
+                                          color: theme.colors.foreground.withOpacity(0.1),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
@@ -771,7 +763,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                           message.message,
                                           style: TextStyle(
                                             fontSize: 16,
-                                            color: isMe ? Colors.white : Colors.black87,
+                                            color: isMe ? theme.colors.primaryForeground : theme.colors.foreground,
                                           ),
                                         ),
                                         SizedBox(height: 4),
@@ -780,8 +772,8 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                           style: TextStyle(
                                                     fontSize: 12,
                                             color: isMe
-                                                ? Colors.white.withOpacity(0.8)
-                                                : Colors.grey[600],
+                                                ? theme.colors.primaryForeground.withOpacity(0.8)
+                                                : theme.colors.mutedForeground,
                                           ),
                                         ),
                                       ],
@@ -792,13 +784,13 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                   SizedBox(width: 8),
                                   CircleAvatar(
                                     radius: 16,
-                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    backgroundColor: theme.colors.primary,
                                     child: Text(
                                       (currentUser?.displayName?[0] ?? 'U').toUpperCase(),
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: theme.colors.primaryForeground,
                                       ),
                                     ),
                                   ),
@@ -814,14 +806,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.colors.background,
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: theme.colors.muted,
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: TextField(
@@ -843,7 +835,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                 SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colors.primary,
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: IconButton(
@@ -851,12 +843,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                         ? SizedBox(
                             width: 20,
                             height: 20,
-                            child: const CircularProgressIndicator(
+                            child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
                             ),
                           )
-                        : Icon(Icons.send, size: 20, color: Colors.white),
+                        : Icon(Icons.send, size: 20, color: theme.colors.primaryForeground),
                     onPressed: _isSendingMessage ? null : _sendMessage,
                   ),
                 ),
@@ -963,7 +955,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error sending message: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: context.theme.colors.destructive,
           ),
         );
       }
