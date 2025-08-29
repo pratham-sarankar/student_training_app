@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:learn_work/screens/student_screens/email_verification_screen.dart';
 import '../../services/auth_service.dart';
 import 'phone_verification.dart';
 import 'main_screen.dart';
@@ -174,9 +175,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // Navigate to email verification screen
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => PhoneVerificationScreen(
-                phoneNumber: _phoneController.text.trim(),
-              ),
+              builder: (context) => const EmailVerificationScreen(),
             ),
           );
         }
