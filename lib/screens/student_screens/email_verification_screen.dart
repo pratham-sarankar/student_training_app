@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
 import 'package:learn_work/services/user_service.dart';
@@ -16,7 +15,7 @@ class EmailVerificationScreen extends StatefulWidget {
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool _isResendEnabled = true;
-  int _resendCountdown = 60;
+  int _resendCountdown = 60;        
   Timer? _verificationCheckTimer;
   bool _isVerificationInProgress = false; // Add flag to prevent duplicate verification
 
@@ -148,28 +147,28 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.all(24.w),
+                padding: EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 100.w,
-                      height: 100.h,
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(25.r),
+                        borderRadius: BorderRadius.circular(25),
                         border: Border.all(
                           color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                          width: 1.w,
+                          width: 1,
                         ),
                       ),
                       child: Icon(
                         Icons.email_outlined,
-                        size: 48.sp,
+                        size: 48,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 32),
                     Text(
                       'Verify your email',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -178,7 +177,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16),
                     Text(
                       'We\'ve sent a verification email to:',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -186,7 +185,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 8),
                     Text(
                       user?.email ?? '',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -195,7 +194,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 24),
                     Text(
                       'Please check your email and click the verification link to continue.',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -203,10 +202,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
-                      height: 56.h,
+                      height: 56,
                       child: FButton(
                         onPress: _isResendEnabled ? _onResendEmail : null,
                         style: FButtonStyle.primary,
@@ -221,7 +220,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: 16),
                     FButton(
                       style: FButtonStyle.ghost,
                       onPress: () {
@@ -238,7 +237,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 12.h),
+                    SizedBox(height: 12),
                     FButton(
                       style: FButtonStyle.ghost,
                       onPress: () {

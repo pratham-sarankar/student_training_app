@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_work/services/auth_service.dart';
-import 'package:learn_work/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'login_screen.dart';
-import 'email_verification_screen.dart';
+import 'package:provider/provider.dart';
+import '../../services/auth_service.dart';
+import '../../providers/admin_provider.dart';
+import 'phone_verification.dart';
+import 'main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -156,18 +155,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
         // Create user document in Firestore using UserService
-        final userService = UserService();
-        await userService.createOrUpdateUserBasic(
-          uid: userCredential.user!.uid,
-          firstName: firstName,
-          lastName: lastName,
-          email: _emailController.text.trim(),
-          phoneNumber: _phoneController.text.trim(),
-        );
+        // final userService = UserService(); // This line was removed as per the new_code
+        // await userService.createOrUpdateUserBasic( // This line was removed as per the new_code
+        //   uid: userCredential.user!.uid, // This line was removed as per the new_code
+        //   firstName: firstName, // This line was removed as per the new_code
+        //   lastName: lastName, // This line was removed as per the new_code
+        //   email: _emailController.text.trim(), // This line was removed as per the new_code
+        //   phoneNumber: _phoneController.text.trim(), // This line was removed as per the new_code
+        // ); // This line was removed as per the new_code
 
         // Save phone number locally as backup
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('phoneNumber', _phoneController.text.trim());
+        // final prefs = await SharedPreferences.getInstance(); // This line was removed as per the new_code
+        // await prefs.setString('phoneNumber', _phoneController.text.trim()); // This line was removed as per the new_code
 
         // Send email verification
         print('Sending email verification to: ${_emailController.text.trim()}');
@@ -178,7 +177,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // Navigate to email verification screen
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const EmailVerificationScreen(),
+              builder: (context) => PhoneVerificationScreen(
+                phoneNumber: _phoneController.text.trim(),
+              ),
             ),
           );
         }
@@ -209,32 +210,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Form(
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(height: 24.h),
+                  const SizedBox(height: 24),
                 
                 // App Logo/Title
                 Container(
-                  width: 80.w,
-                  height: 80.h,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20.r),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                      width: 1.w,
+                      width: 1,
                     ),
                   ),
                   child: Icon(
                     Icons.school_outlined,
-                    size: 40.sp,
+                    size: 40,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                SizedBox(height: 20.h),
+                const SizedBox(height: 20),
                 
                 // Create Account Text
                 Text(
@@ -245,7 +246,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 6.h),
+                const SizedBox(height: 6),
                 Text(
                   'Join us and start your learning adventure',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -253,7 +254,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 24.h),
+                const SizedBox(height: 24),
                 
                 // Full Name Field
                 Column(
@@ -266,7 +267,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    const SizedBox(height: 6),
                     FTextField(
                       controller: _fullNameController,
                       hint: 'Enter your full name',
@@ -274,7 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+                const SizedBox(height: 16),
                 
                 // Email Field
                 Column(
@@ -287,7 +288,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    const SizedBox(height: 6),
                     FTextField(
                       controller: _emailController,
                       hint: 'Enter your email',
@@ -296,7 +297,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+                const SizedBox(height: 16),
                 
                 // Phone Field
                 Column(
@@ -309,7 +310,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    const SizedBox(height: 6),
                     FTextField(
                       controller: _phoneController,
                       hint: 'Enter your phone number',
@@ -318,7 +319,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16),
                 
                 // Password Field
                 Column(
@@ -331,7 +332,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    SizedBox(height: 6),
                     FTextField(
                       controller: _passwordController,
                       hint: 'Create a strong password',
@@ -340,7 +341,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16),
                 
                 // Confirm Password Field
                 Column(
@@ -353,7 +354,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    SizedBox(height: 6),
                     FTextField(
                       controller: _confirmPasswordController,
                       hint: 'Confirm your password',
@@ -362,7 +363,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
                 
                 // Terms and Conditions using Forui Checkbox
                 Row(
@@ -404,7 +405,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 
                 // Register Button
                 FButton(
@@ -412,8 +413,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: _acceptedTerms ? FButtonStyle.primary : FButtonStyle.primary,
                   child: _isLoading
                       ? SizedBox(
-                          height: 18.h,
-                          width: 18.w,
+                          height: 18,
+                          width: 18,
                           child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -428,7 +429,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 12),
                 
                 // Login Link
                 Row(
@@ -445,7 +446,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPress: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
+                            builder: (context) => const MainScreen(),
                           ),
                         );
                       },
@@ -459,7 +460,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16),
               ],
             ),
           ),

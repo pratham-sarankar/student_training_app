@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:learn_work/providers/admin_provider.dart';
-import 'package:learn_work/models/traning.dart';
+import 'package:provider/provider.dart';
+import '../../models/traning.dart';
+import '../../services/course_service.dart';
 
 class AddEditTrainingScreen extends StatefulWidget {
   final Training? training; // null for add, non-null for edit
@@ -22,7 +25,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
 
   List<TrainingSchedule> _schedules = [];
   bool _isLoading = false;
-
+      
   @override
   void initState() {
     super.initState();
@@ -55,7 +58,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
           children: [
             // Compact header
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
                   FButton(
@@ -63,11 +66,11 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                     style: FButtonStyle.outline,
                     child: Icon(
                       Icons.arrow_back,
-                      size: 16.sp,
+                      size: 16,
                       color: const Color(0xFF666666),
                     ),
                   ),
-                  SizedBox(width: 12.w),
+                  SizedBox(width: 12),
                   Text(
                     isEditMode ? 'Edit Training' : 'Add New Training',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -84,13 +87,13 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
               child: Form(
                 key: _formKey,
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Basic Information Section
                       _buildSectionHeader('Basic Information'),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 12),
 
                       // Title field
                       _buildTextField(
@@ -104,7 +107,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 16),
 
                       // Description field
                       _buildTextField(
@@ -119,7 +122,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 16),
 
                       // Price field
                       _buildTextField(
@@ -138,11 +141,11 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 24.h),
+                      SizedBox(height: 24),
 
                       // Schedules Section
                       _buildSectionHeader('Training Schedules'),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: 8),
 
                       if (_schedules.isEmpty)
                         _buildEmptySchedulesState()
@@ -153,7 +156,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           return _buildScheduleCard(index, schedule);
                         }).toList(),
 
-                      SizedBox(height: 24.h),
+                      SizedBox(height: 24),
 
                       // Add Schedule Button
                       Center(
@@ -162,22 +165,22 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           style: FButtonStyle.outline,
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 8.h,
+                              horizontal: 16,
+                              vertical: 8,
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   Icons.add,
-                                  size: 16.sp,
+                                  size: 16,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
-                                SizedBox(width: 6.w),
+                                SizedBox(width: 6),
                                 Text(
                                   'Add Schedule',
                                   style: TextStyle(
-                                    fontSize: 13.sp,
+                                    fontSize: 13,
                                     color:
                                         Theme.of(context).colorScheme.primary,
                                   ),
@@ -189,7 +192,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                       ),
 
                       SizedBox(
-                        height: 120.h,
+                        height: 120,
                       ), // Increased space for FAB to avoid overlap
                     ],
                   ),
@@ -201,19 +204,19 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: 16.h),
+        padding: EdgeInsets.only(bottom: 16),
         child: FButton(
           onPress: _isLoading ? null : _saveTraining,
           style: FButtonStyle.primary,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child:
                 _isLoading
                     ? SizedBox(
-                      width: 16.w,
-                      height: 16.w,
+                      width: 16,
+                      height: 16,
                       child: CircularProgressIndicator(
-                        strokeWidth: 2.w,
+                        strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
@@ -222,14 +225,14 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                       children: [
                         Icon(
                           isEditMode ? Icons.save : Icons.add,
-                          size: 16.sp,
+                          size: 16,
                           color: Colors.white,
                         ),
-                        SizedBox(width: 6.w),
+                        SizedBox(width: 6),
                         Text(
                           isEditMode ? 'Update Training' : 'Create Training',
                           style: TextStyle(
-                            fontSize: 13.sp,
+                              fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
@@ -268,10 +271,10 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
             color: const Color(0xFF1A1A1A),
-            fontSize: 13.sp,
+            fontSize: 13,
           ),
         ),
-        SizedBox(height: 6.h),
+        SizedBox(height: 6),
         FTextField(
           controller: controller,
           maxLines: maxLines,
@@ -287,29 +290,29 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   Widget _buildEmptySchedulesState() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[200]!),
       ),
       child: Column(
         children: [
-          Icon(Icons.schedule_outlined, size: 32.sp, color: Colors.grey[400]),
-          SizedBox(height: 8.h),
+          Icon(Icons.schedule_outlined, size: 32, color: Colors.grey[400]),
+          SizedBox(height: 8),
           Text(
             'No schedules added yet',
             style: TextStyle(
               color: Colors.grey[600],
-              fontSize: 13.sp,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: 4),
           Text(
             'Add at least one schedule for students to enroll',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey[500], fontSize: 11.sp),
+            style: TextStyle(color: Colors.grey[500], fontSize: 11),
           ),
         ],
       ),
@@ -318,11 +321,11 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
 
   Widget _buildScheduleCard(int index, TrainingSchedule schedule) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.all(12.w),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
@@ -341,7 +344,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                 'Schedule ${index + 1}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  fontSize: 13.sp,
+                  fontSize: 13,
                   color: const Color(0xFF1A1A1A),
                 ),
               ),
@@ -351,19 +354,19 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                 style: FButtonStyle.outline,
                 child: Icon(
                   Icons.edit,
-                  size: 14.sp,
+                  size: 14,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              SizedBox(width: 6.w),
+              SizedBox(width: 6),
               FButton(
                 onPress: () => _showDeleteScheduleDialog(index),
                 style: FButtonStyle.outline,
-                child: Icon(Icons.delete, size: 14.sp, color: Colors.red[400]),
+                child: Icon(Icons.delete, size: 14, color: Colors.red[400]),
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -372,7 +375,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                   'Start: ${_formatDate(schedule.startDate)}',
                 ),
               ),
-              SizedBox(width: 12.w),
+              SizedBox(width: 12),
               Expanded(
                 child: _buildScheduleInfo(
                   Icons.access_time,
@@ -381,7 +384,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
               ),
             ],
           ),
-          SizedBox(height: 6.h),
+          SizedBox(height: 6),
           Row(
             children: [
               Expanded(
@@ -390,7 +393,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                   'Capacity: ${schedule.capacity}',
                 ),
               ),
-              SizedBox(width: 12.w),
+              SizedBox(width: 12),
               Expanded(
                 child: _buildScheduleInfo(
                   Icons.school,
@@ -407,12 +410,12 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   Widget _buildScheduleInfo(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 14.sp, color: Colors.grey[600]),
-        SizedBox(width: 4.w),
+        Icon(icon, size: 14, color: Colors.grey[600]),
+        SizedBox(width: 4),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(fontSize: 11.sp, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -751,7 +754,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
     final isEditMode = widget.schedule != null;
 
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(16),
       child: Form(
         key: _formKey,
         child: Column(
@@ -778,7 +781,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
                 ),
               ],
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 24),
 
             // Start Date
             _buildDateField(
@@ -786,7 +789,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
               value: _startDate,
               onChanged: (date) => setState(() => _startDate = date),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 16),
 
             // End Date
             _buildDateField(
@@ -794,11 +797,11 @@ class _ScheduleDialogState extends State<ScheduleDialog>
               value: _endDate,
               onChanged: (date) => setState(() => _endDate = date),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 16),
 
             // Time
             _buildTimeField(),
-            SizedBox(height: 16.h),
+            SizedBox(height: 16),
 
             // Capacity
             _buildTextField(
@@ -818,7 +821,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
               },
             ),
 
-            SizedBox(height: 32.h),
+            SizedBox(height: 32),
 
             // Actions
             Row(
@@ -830,7 +833,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
                     child: const Text('Cancel'),
                   ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: 12),
                 Expanded(
                   child: FButton(
                     onPress: _saveSchedule,
@@ -840,7 +843,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
                 ),
               ],
             ),
-            SizedBox(height: 32.h), // Increased bottom padding for keyboard safety
+            SizedBox(height: 32), // Increased bottom padding for keyboard safety
           ],
         ),
       ),
@@ -857,9 +860,9 @@ class _ScheduleDialogState extends State<ScheduleDialog>
       children: [
         Text(
           label,
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.sp),
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
         ),
-        SizedBox(height: 6.h),
+        SizedBox(height: 6),
         FDateField.calendar(
           controller: FDateFieldController(vsync: this, initialDate: value),
           start:
@@ -886,18 +889,18 @@ class _ScheduleDialogState extends State<ScheduleDialog>
       children: [
         Text(
           'Time',
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.sp),
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
         ),
-        SizedBox(height: 6.h),
+        SizedBox(height: 6),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey[300]!),
           ),
           child: SizedBox(
-            height: 44.h, // Fixed height to prevent infinite constraints
+              height: 44, // Fixed height to prevent infinite constraints
             child: FTimePicker(
               controller: FTimePickerController(),
               onChange: (time) {
@@ -936,9 +939,9 @@ class _ScheduleDialogState extends State<ScheduleDialog>
       children: [
         Text(
           label,
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13.sp),
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
         ),
-        SizedBox(height: 6.h),
+        SizedBox(height: 6),
         FTextField(
           controller: controller,
           keyboardType: keyboardType,

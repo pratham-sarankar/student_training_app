@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/screens/student_screens/phone_verification.dart';
-import 'package:learn_work/screens/student_screens/register_screen.dart';
-import 'package:learn_work/screens/student_screens/forgot_password_screen.dart';
-import 'package:learn_work/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import '../../services/auth_service.dart';
+import '../../providers/admin_provider.dart';
+import 'main_screen.dart';
+import 'phone_verification.dart';
+import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -221,32 +223,32 @@ class _LoginScreenState extends State<LoginScreen> {
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Form(
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(height: 24.h),
+                  const SizedBox(height: 24),
                 
                 // App Logo/Title
                 Container(
-                  width: 80.w,
-                  height: 80.h,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20.r),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                      width: 1.w,
+                      width: 1,
                     ),
                   ),
                   child: Icon(
                     _isPhoneMode ? Icons.phone_android : Icons.school_outlined,
-                    size: 36.sp,
+                    size: 36,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                SizedBox(height: 20.h),
+                const SizedBox(height: 20),
                 
                 // Welcome Text
                 Text(
@@ -257,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 4.h),
+                const SizedBox(height: 4),
                 Text(
                   _isPhoneMode 
                     ? 'Sign in with your Indian phone number'
@@ -267,14 +269,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 24.h),
+                const SizedBox(height: 24),
                 
                 // Login Mode Toggle
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
@@ -315,7 +317,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 24.h),
+                const SizedBox(height: 24),
                 
                 // Email/Phone Fields
                 if (!_isPhoneMode) ...[
@@ -330,7 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: const Color(0xFF1A1A1A),
                         ),
                       ),
-                      SizedBox(height: 6.h),
+                      const SizedBox(height: 6),
                       FTextField(
                         controller: _emailController,
                         hint: 'Enter your email',
@@ -339,7 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.h),
+                  const SizedBox(height: 16),
                   
                   // Password Field
                   Column(
@@ -352,7 +354,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: const Color(0xFF1A1A1A),
                         ),
                       ),
-                      SizedBox(height: 6.h),
+                      const SizedBox(height: 6),
                       FTextField(
                         controller: _passwordController,
                         hint: 'Enter your password',
@@ -361,7 +363,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8.h),
+                  const SizedBox(height: 8),
                   
                   // Forgot Password
                   Row(
@@ -397,22 +399,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: const Color(0xFF1A1A1A),
                         ),
                       ),
-                      SizedBox(height: 6.h),
+                      const SizedBox(height: 6),
                       FTextField(
                         controller: _phoneController,
                         hint: 'Enter 10-digit number',
                         keyboardType: TextInputType.phone,
                         textInputAction: TextInputAction.done,
                       ),
-                      SizedBox(height: 8.h),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           Icon(
                             Icons.info_outline,
-                            size: 16.sp,
+                            size: 16,
                             color: const Color(0xFF888888),
                           ),
-                          SizedBox(width: 4.w),
+                          const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               'Enter your 10-digit Indian mobile number (e.g., 9876543210)',
@@ -423,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4.h),
+                      const SizedBox(height: 4),
                       Text(
                         'Country code +91 will be automatically added',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -434,7 +436,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ],
-                SizedBox(height: 20.h),
+                const SizedBox(height: 20),
                 
                 // Login/Verify Button
                 FButton(
@@ -442,8 +444,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: FButtonStyle.primary,
                   child: _isLoading
                       ? SizedBox(
-                          height: 18.h,
-                          width: 18.w,
+                          height: 18,
+                          width: 18,
                           child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -458,7 +460,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                 ),
-                SizedBox(height: 12.h),
+                const SizedBox(height: 12),
                 
                 // Register Link
                 Row(
@@ -489,7 +491,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+                const SizedBox(height: 16),
               ],
             ),
           ),

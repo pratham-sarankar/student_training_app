@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
@@ -20,27 +19,27 @@ class WelcomeScreen extends StatelessWidget {
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 24.h),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
             child: Column(
               children: [
-                SizedBox(height: 60.h),
+                const SizedBox(height: 60),
 
                 // Professional Logo Section
                 Container(
-                  width: 120.w,
-                  height: 120.h,
+                  width: 120,
+                  height: 120,
                   decoration: BoxDecoration(
                     color: theme.colors.primaryForeground,
-                    borderRadius: BorderRadius.circular(30.r),
-                    border: Border.all(color: theme.colors.border, width: 1.w),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: theme.colors.border, width: 1),
                   ),
                   child: Icon(
                     Icons.school_outlined,
-                    size: 56.sp,
+                    size: 56,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                SizedBox(height: 40.h),
+                const SizedBox(height: 40),
 
                 // Main Title
                 Text(
@@ -48,7 +47,7 @@ class WelcomeScreen extends StatelessWidget {
                   style: typography.xl3.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 12.h),
+                const SizedBox(height: 12),
 
                 // Subtitle
                 Text(
@@ -69,7 +68,7 @@ class WelcomeScreen extends StatelessWidget {
                   },
                   child: Text('Sign In'),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Secondary Action Button
                 FButton(
                   style: FButtonStyle.outline,
@@ -82,12 +81,12 @@ class WelcomeScreen extends StatelessWidget {
                   },
                   child: Text('Create Account'),
                 ),
-                SizedBox(height: 20.h),
+                const SizedBox(height: 20),
 
                 // Admin Login Button
                 SizedBox(
                   width: double.infinity,
-                  height: 48.h,
+                  height: 48,
                   child: FButton(
                     style: FButtonStyle.ghost,
                     onPress: () {
@@ -106,10 +105,10 @@ class WelcomeScreen extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.admin_panel_settings,
-                          size: 20.sp,
+                          size: 20,
                           color: const Color(0xFF666666),
                         ),
-                        SizedBox(width: 8.w),
+                        const SizedBox(width: 8),
                         Text(
                           'Login as Admin',
                           style: Theme.of(
@@ -123,7 +122,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 40.h),
+                const SizedBox(height: 40),
               ],
             ),
           ),

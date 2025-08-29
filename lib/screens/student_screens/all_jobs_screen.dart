@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learn_work/screens/student_screens/job_details_screen.dart';
 import '../../models/job.dart';
@@ -58,7 +57,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               // Header Title
               Center(
                 child: Padding(
-                  padding: EdgeInsets.only(top: 16.h),
+                  padding: EdgeInsets.only(top: 16),
                   child: Text(
                     'All Jobs',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -68,18 +67,18 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16),
               
               // Search Bar
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: const Color(0xFFE5E5E5),
-                      width: 1.w,
+                      width: 1,
                     ),
                   ),
                   child: TextField(
@@ -88,17 +87,17 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                       hintText: 'Search jobs...',
                       hintStyle: TextStyle(
                         color: Colors.grey.shade500,
-                        fontSize: 14.sp,
+                        fontSize: 14,
                       ),
                       prefixIcon: Icon(
                         Icons.search,
                         color: Colors.grey.shade500,
-                        size: 20.sp,
+                        size: 20,
                       ),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 12.h,
+                        horizontal: 16,
+                        vertical: 12,
                       ),
                     ),
                     onChanged: (value) {
@@ -109,7 +108,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10.h),
+              SizedBox(height: 10),
               
               // Jobs List
               Expanded(
@@ -153,14 +152,14 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 children: [
                   Icon(
                     Icons.work_outline,
-                    size: 64.sp,
+                    size: 64,
                     color: Colors.grey.shade400,
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16),
                   Text(
                     'No jobs available',
                     style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 18,
                       color: Colors.grey.shade600,
                     ),
                   ),
@@ -170,7 +169,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           }
           
           return ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
@@ -207,22 +206,22 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 children: [
                   Icon(
                     Icons.search_off,
-                    size: 64.sp,
+                    size: 64,
                     color: Colors.grey.shade400,
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16),
                   Text(
                     'No jobs found for "$_searchQuery"',
                     style: TextStyle(
-                      fontSize: 18.sp,
+                              fontSize: 18,
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8),
                   Text(
                     'Try different keywords or check spelling',
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 14,
                       color: Colors.grey.shade500,
                     ),
                   ),
@@ -232,7 +231,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           }
           
           return ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
@@ -257,14 +256,14 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         );
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 10.h),
-        padding: EdgeInsets.all(16.w),
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: const Color(0xFFE5E5E5),
-            width: 1.w,
+            width: 1,
           ),
           boxShadow: [
             BoxShadow(
@@ -281,24 +280,24 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               children: [
                 // Company Logo
                 Container(
-                  width: 48.w,
-                  height: 48.h,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
                     child: Text(
                       job.logo,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: 12),
                 
                 // Job Info
                 Expanded(
@@ -312,7 +311,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                           color: const Color(0xFF1A1A1A),
                         ),
                       ),
-                      SizedBox(height: 4.h),
+                      SizedBox(height: 4),
                       Text(
                         job.company,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -325,32 +324,32 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 16),
             
             // Job Details Row
             Row(
               children: [
                 _buildJobDetail(Icons.location_on_outlined, job.location),
-                SizedBox(width: 16.w),
+                      SizedBox(width: 16),
                 _buildJobDetail(Icons.work_outline, job.type),
-                SizedBox(width: 16.w),
+                SizedBox(width: 16),
                 _buildJobDetail(Icons.access_time, job.posted),
               ],
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 12),
             
             // Salary
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 job.salary,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
-                  fontSize: 12.sp,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -367,15 +366,15 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
       children: [
         Icon(
           icon,
-          size: 16.sp,
+          size: 16,
           color: const Color(0xFF999999),
         ),
-        SizedBox(width: 4.w),
+        SizedBox(width: 4),
         Text(
           text,
           style: TextStyle(
             color: const Color(0xFF666666),
-            fontSize: 12.sp,
+            fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
         ),

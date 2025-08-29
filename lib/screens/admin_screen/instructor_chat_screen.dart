@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import '../../models/chat_message.dart';
+
 
 class InstructorChatScreen extends StatefulWidget {
   final String courseId;
@@ -251,7 +251,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
             children: [
               // Header
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
@@ -268,12 +268,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                       onPress: () => Navigator.of(context).pop(),
                       style: FButtonStyle.outline,
                       child: Icon(
-                        Icons.arrow_back,
-                        size: 16.sp,
+                        Icons.arrow_back,   
+                        size: 16,
                         color: const Color(0xFF666666),
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,24 +291,24 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                             'Chat with ${widget.studentName}',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: const Color(0xFF666666),
-                              fontSize: 12.sp,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.green.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         'Instructor',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.green,
                           fontWeight: FontWeight.w500,
-                          fontSize: 10.sp,
+                          fontSize: 10,
                         ),
                       ),
                     ),
@@ -327,22 +327,22 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                               children: [
                                 Icon(
                                   Icons.chat_bubble_outline,
-                                  size: 64.sp,
+                                  size: 64,
                                   color: Colors.grey[400],
                                 ),
-                                SizedBox(height: 16.h),
+                                SizedBox(height: 16),
                                 Text(
                                   'No messages yet',
                                   style: TextStyle(
-                                    fontSize: 18.sp,
+                                    fontSize: 18,
                                     color: Colors.grey[600],
                                   ),
                                 ),
-                                SizedBox(height: 8.h),
+                                SizedBox(height: 8),
                                 Text(
                                   'Start the conversation with your student!',
                                   style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 14,
                                     color: Colors.grey[500],
                                   ),
                                 ),
@@ -353,7 +353,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                             controller: _scrollController,
                             key: const ValueKey('instructor_chat_messages'),
                             reverse: true,
-                            padding: EdgeInsets.all(16.w),
+                            padding: EdgeInsets.all(16),
                             itemCount: _messages.length,
                             itemBuilder: (context, index) {
                               final message = _messages[index];
@@ -361,7 +361,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
 
                               return Container(
                                 key: ValueKey(message.id),
-                                margin: EdgeInsets.only(bottom: 8.h),
+                                margin: EdgeInsets.only(bottom: 8),
                                 child: Row(
                                   mainAxisAlignment: isInstructor
                                       ? MainAxisAlignment.end
@@ -369,30 +369,30 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                   children: [
                                     if (!isInstructor) ...[
                                       CircleAvatar(
-                                        radius: 16.r,
+                                        radius: 16,
                                         backgroundColor: Colors.blue,
                                         child: Text(
                                           widget.studentName[0].toUpperCase(),
                                           style: TextStyle(
-                                            fontSize: 12.sp,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 8.w),
+                                      SizedBox(width: 8),
                                     ],
                                     Flexible(
                                       child: Container(
                                         padding: EdgeInsets.symmetric(
-                                          horizontal: 16.w,
-                                          vertical: 12.h,
+                                          horizontal: 16,
+                                          vertical: 12,
                                         ),
                                         decoration: BoxDecoration(
                                           color: isInstructor 
                                               ? Theme.of(context).colorScheme.primary 
                                               : Colors.white,
-                                          borderRadius: BorderRadius.circular(20.r),
+                                          borderRadius: BorderRadius.circular(20),
                                           boxShadow: [
                                             BoxShadow(
                                               color: Colors.black.withOpacity(0.1),
@@ -409,15 +409,15 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                             Text(
                                               message.message,
                                               style: TextStyle(
-                                                fontSize: 16.sp,
+                                                fontSize: 16,
                                                 color: isInstructor ? Colors.white : Colors.black87,
                                               ),
                                             ),
-                                            SizedBox(height: 4.h),
+                                            SizedBox(height: 4),
                                             Text(
                                               _formatMessageTime(message.timestamp),
                                               style: TextStyle(
-                                                fontSize: 12.sp,
+                                                fontSize: 12,
                                                 color: isInstructor
                                                     ? Colors.white.withOpacity(0.8)
                                                     : Colors.grey[600],
@@ -428,13 +428,13 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                       ),
                                     ),
                                     if (isInstructor) ...[
-                                      SizedBox(width: 8.w),
+                                      SizedBox(width: 8),
                                       CircleAvatar(
-                                        radius: 16.r,
+                                        radius: 16,
                                         backgroundColor: Theme.of(context).colorScheme.primary,
                                         child: Icon(
                                           Icons.school,
-                                          size: 16.sp,
+                                          size: 16,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -448,7 +448,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
 
               // Message Input
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
@@ -465,7 +465,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(25.r),
+                          borderRadius: BorderRadius.circular(25),
                         ),
                         child: TextField(
                           controller: _messageController,
@@ -473,8 +473,8 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                             hintText: 'Type your message...',
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(
-                              horizontal: 20.w,
-                              vertical: 12.h,
+                              horizontal: 20,
+                              vertical: 12,
                             ),
                           ),
                           maxLines: null,
@@ -483,23 +483,23 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(25.r),
+                        borderRadius: BorderRadius.circular(25),
                       ),
                       child: IconButton(
                         icon: _isSendingMessage
                             ? SizedBox(
-                                width: 20.w,
-                                height: 20.h,
+                                width: 20,
+                                height: 20,
                                 child: const CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                 ),
                               )
-                            : Icon(Icons.send, size: 20.sp, color: Colors.white),
+                                : Icon(Icons.send, size: 20, color: Colors.white),
                         onPressed: _isSendingMessage ? null : _sendMessage,
                       ),
                     ),

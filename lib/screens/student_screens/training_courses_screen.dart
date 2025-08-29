@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/course.dart';
 import '../../services/course_service.dart';
@@ -51,7 +51,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
               // Header Title
               Center(
                 child: Padding(
-                  padding: EdgeInsets.only(top: 16.h),
+                  padding: EdgeInsets.only(top: 16),
                   child: Text(
                     'Training Courses',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -64,7 +64,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
       
               // Category Filter using Forui FButtons
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 child: _isInitialized
                     ? StreamBuilder<List<String>>(
                         stream: _courseService.getCourseCategories(),
@@ -86,9 +86,9 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                               children: categories.map((category) {
                                 bool isSelected = _selectedCategory == category;
                                 return Container(
-                                  margin: EdgeInsets.only(right: 12.w),
+                                  margin: EdgeInsets.only(right: 12),
                                   decoration: isSelected ? BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r),
+                                    borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
@@ -130,11 +130,11 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                       )
                     : const Center(child: CircularProgressIndicator()),
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16),
       
               // Results Header
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -163,7 +163,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: 12),
       
               // Courses List
               Expanded(
@@ -195,17 +195,17 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                 children: [
                                   Icon(
                                     Icons.search_off,
-                                    size: 48.sp,
+                                    size: 48,
                                     color: Colors.grey,
                                   ),
-                                  SizedBox(height: 16.h),
+                                  SizedBox(height: 16),
                                   Text(
                                     'No courses found for "$_selectedCategory"',
                                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       color: Colors.grey,
                                     ),
                                   ),
-                                  SizedBox(height: 8.h),
+                                  SizedBox(height: 8),
                                   Text(
                                     'Try selecting a different category',
                                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -218,12 +218,12 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                           }
                           
                           return ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            padding: EdgeInsets.symmetric(horizontal: 24),
                             itemCount: courses.length,
                             itemBuilder: (context, index) {
                               final course = courses[index];
                               return Container(
-                                margin: EdgeInsets.only(bottom: 12.h),
+                                margin: EdgeInsets.only(bottom: 12),
                                 child: _buildCourseCard(context, course),
                               );
                             },
@@ -247,13 +247,13 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: double.infinity,
-          padding: EdgeInsets.all(16.w),
+                    padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: const Color(0xFFE5E5E5),
-              width: 1.w,
+              width: 1,
             ),
             boxShadow: [
               BoxShadow(
@@ -272,17 +272,17 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                 children: [
                   // Course Image
                   Container(
-                    width: 80.w,
-                    height: 60.h,
+                    width: 80,
+                    height: 60,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.r),
+                      borderRadius: BorderRadius.circular(8),
                       image: DecorationImage(
                         image: NetworkImage(course.image),
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                  SizedBox(width: 12.w),
+                  SizedBox(width: 12),
                   
                   // Course Info
                   Expanded(
@@ -298,16 +298,16 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: 8),
                         Wrap(
-                          spacing: 6.w,
-                          runSpacing: 4.h,
+                          spacing: 6,
+                          runSpacing: 4,
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 course.category,
@@ -318,10 +318,10 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                               ),
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.orange.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 course.level,
@@ -339,7 +339,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                 ],
               ),
               
-              SizedBox(height: 12.h),
+              SizedBox(height: 12),
               
               // Course Description (shortened)
               Text(
@@ -351,7 +351,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
               
-              SizedBox(height: 8.h),
+              SizedBox(height: 8),
               // View Details hint
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -363,10 +363,10 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-                  SizedBox(width: 4.w),
+                        SizedBox(width: 4),
                   Icon(
                     Icons.arrow_forward_ios,
-                    size: 12.sp,
+                          size: 12,
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                   ),
                 ],

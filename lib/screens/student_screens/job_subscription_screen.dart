@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class JobSubscriptionScreen extends StatefulWidget {
   const JobSubscriptionScreen({super.key});
@@ -27,13 +26,13 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
             icon: Icon(
               Icons.arrow_back,
               color: const Color(0xFF1A1A1A),
-              size: 20.sp,
+              size: 20,
             ),
           ),
           title: Text(
             'Job Subscription',
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF1A1A1A),
             ),
@@ -42,20 +41,20 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header Section
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(16.w),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                      width: 1.w,
+                      width: 1,
                     ),
                   ),
                   child: Column(
@@ -63,10 +62,10 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     children: [
                       Icon(
                         Icons.work_outline,
-                        size: 32.sp,
+                        size: 32,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 12),
                       Text(
                         'Stay Updated with Job Opportunities',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -74,7 +73,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                           color: const Color(0xFF1A1A1A),
                         ),
                       ),
-                      SizedBox(height: 4.h),
+                      SizedBox(height: 4),
                       Text(
                         'Get notified about new job postings, career opportunities, and industry updates directly to your email.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -84,7 +83,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
       
                 // Subscription Status
                 Text(
@@ -94,21 +93,21 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     color: const Color(0xFF1A1A1A),
                   ),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 12),
       
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(16.w),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: _isSubscribed 
                         ? Theme.of(context).colorScheme.primary.withOpacity(0.05)
                         : Colors.grey.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(8.r),
+                            borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: _isSubscribed 
                           ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
                           : Colors.grey.withOpacity(0.15),
-                      width: 1.w,
+                      width: 1,
                     ),
                   ),
                   child: Row(
@@ -118,9 +117,9 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                         color: _isSubscribed 
                             ? Theme.of(context).colorScheme.primary
                             : Colors.grey,
-                        size: 24.sp,
+                        size: 24,
                       ),
-                      SizedBox(width: 12.w),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,14 +131,14 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                                 color: const Color(0xFF1A1A1A),
                               ),
                             ),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             Text(
                               _isSubscribed 
                                   ? 'You\'re receiving job updates and notifications'
                                   : 'Subscribe to start receiving job opportunities',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: const Color(0xFF666666),
-                                fontSize: 11.sp,
+                                fontSize: 11,
                               ),
                             ),
                           ],
@@ -148,7 +147,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
       
                 // Benefits Section
                 Text(
@@ -158,34 +157,34 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     color: const Color(0xFF1A1A1A),
                   ),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 12),
       
                 _buildBenefitCard(
                   icon: Icons.email_outlined,
                   title: 'Direct Email Updates',
                   description: 'Job postings sent directly to your inbox',
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
       
                 _buildBenefitCard(
                   icon: Icons.admin_panel_settings_outlined,
                   title: 'Admin Posts',
                   description: 'Automatic notifications when admins post new opportunities',
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
       
                 _buildBenefitCard(
                   icon: Icons.schedule_outlined,
                   title: 'Timely Notifications',
                   description: 'Stay ahead with early access to new opportunities',
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
       
                 // Action Buttons
                 if (_isSubscribed) ...[
                   SizedBox(
                     width: double.infinity,
-                    height: 48.h,
+                    height: 48,
                     child: FButton(
                       onPress: () {
                         setState(() {
@@ -210,7 +209,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                 ] else ...[
                   SizedBox(
                     width: double.infinity,
-                    height: 48.h,
+                    height: 48,
                     child: FButton(
                       onPress: () {
                         setState(() {
@@ -233,7 +232,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     ),
                   ),
                 ],
-                SizedBox(height: 16.h),
+                      SizedBox(height: 16),
               ],
             ),
           ),
@@ -249,13 +248,13 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
   }) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(12.w),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: const Color(0xFFE5E5E5),
-          width: 1.w,
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -268,18 +267,18 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(8.w),
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(6.r),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(
               icon,
-              size: 20.sp,
+              size: 20,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,12 +290,12 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     color: const Color(0xFF1A1A1A),
                   ),
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 2),
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: const Color(0xFF666666),
-                    fontSize: 11.sp,
+                    fontSize: 11,
                   ),
                 ),
               ],

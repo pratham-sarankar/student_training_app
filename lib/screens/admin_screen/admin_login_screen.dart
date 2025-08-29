@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../providers/admin_provider.dart';
+import '../../services/admin_service.dart';
 import '../student_screens/forgot_password_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -110,30 +111,30 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
               children: [
-                SizedBox(height: 80.h),
+                SizedBox(height: 80),
                 
                 // Admin Icon
                 Container(
-                  width: 80.w,
-                  height: 80.h,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20.r),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                      width: 1.w,
+                      width: 1,
                     ),
                   ),
                   child: Icon(
                     Icons.admin_panel_settings,
-                    size: 36.sp,
+                    size: 36,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 
                 // Title
                 Text(
@@ -144,7 +145,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 4.h),
+                SizedBox(height: 4),
                 
                 // Subtitle
                 Text(
@@ -154,7 +155,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: 24),
                 
                 // Email Field
                 Column(
@@ -167,7 +168,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    SizedBox(height: 6),
                     FTextField(
                       controller: _emailController,
                       hint: 'Enter admin email',
@@ -176,7 +177,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 12),
                 
                 // Password Field
                 Column(
@@ -189,7 +190,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         color: const Color(0xFF1A1A1A),
                       ),
                     ),
-                    SizedBox(height: 6.h),
+                    SizedBox(height: 6),
                     Stack(
                       children: [
                         FTextField(
@@ -200,7 +201,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         ),
                         // Password visibility toggle positioned inside the field
                         Positioned(
-                          right: 12.w,
+                          right: 12,
                           top: 0,
                           bottom: 0,
                           child: Center(
@@ -211,10 +212,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 });
                               },
                               child: Container(
-                                padding: EdgeInsets.all(8.w),
+                                    padding: EdgeInsets.all(8),
                                 child: Icon(
                                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                  size: 20.sp,
+                                  size: 20,
                                   color: const Color(0xFF666666),
                                 ),
                               ),
@@ -224,7 +225,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       ],
                     ),
                     // Forgot Password Link positioned under password field
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -243,7 +244,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w500,
-                              fontSize: 14.sp,
+                              fontSize: 14,
                             ),
                           ),
                         ),
@@ -251,7 +252,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16),
                 
                 // Login Button
                 Consumer<AdminProvider>(
@@ -260,10 +261,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       onPress: adminProvider.isLoading ? null : _handleAdminLogin,
                       child: adminProvider.isLoading
                           ? SizedBox(
-                              width: 24.w,
-                              height: 24.h,
+                              width: 24,
+                              height: 24,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2.w,
+                                strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                   Colors.white,
                                 ),
@@ -286,11 +287,11 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   builder: (context, adminProvider, child) {
                     if (adminProvider.errorMessage != null) {
                       return Container(
-                        margin: EdgeInsets.only(top: 16.h),
-                        padding: EdgeInsets.all(12.w),
+                        margin: EdgeInsets.only(top: 16),
+                        padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.red.shade50,
-                          borderRadius: BorderRadius.circular(8.r),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.red.shade200),
                         ),
                         child: Row(
@@ -298,15 +299,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                             Icon(
                               Icons.error_outline,
                               color: Colors.red.shade600,
-                              size: 20.sp,
+                              size: 20,
                             ),
-                            SizedBox(width: 8.w),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 adminProvider.errorMessage!,
                                 style: TextStyle(
                                   color: Colors.red.shade700,
-                                  fontSize: 14.sp,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
@@ -315,7 +316,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               icon: Icon(
                                 Icons.close,
                                 color: Colors.red.shade600,
-                                size: 18.sp,
+                                    size: 18,
                               ),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:learn_work/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: RefreshIndicator(
             onRefresh: _loadCourseCount,
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(16.w),
+              padding: EdgeInsets.all(16),
               child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -107,23 +107,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     children: [
                       Container(
-                        width: 80.w,
-                        height: 80.h,
+                        width: 80,
+                        height: 80,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                           border: Border.all(
                             color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                            width: 2.w,
+                            width: 2,
                           ),
                         ),
                         child: Icon(
                           Icons.person,
-                          size: 40.sp,
+                          size: 40,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 12),
                       Text(
                         _userName,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -131,43 +131,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: const Color(0xFF1A1A1A),
                         ),
                       ),
-                      SizedBox(height: 2.h),
+                      SizedBox(height: 2),
                       Text(
                         _userEmail,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: const Color(0xFF666666),
                         ),
                       ),
-                      SizedBox(height: 6.h),
+                      SizedBox(height: 6),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16.r),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           'Student',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w600,
-                            fontSize: 10.sp,
+                            fontSize: 10,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 
                 // My Courses Section
                 Container(
-                  padding: EdgeInsets.all(16.w),
+                        padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                      width: 1.w,
+                      width: 1,
                     ),
                   ),
                   child: Column(
@@ -176,18 +176,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(8.w),
+                            padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(8.r),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               Icons.school,
-                              size: 20.sp,
+                              size: 20,
                               color: Colors.white,
                             ),
                           ),
-                          SizedBox(width: 12.w),
+                          SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,24 +203,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   'View all your purchased courses',
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: const Color(0xFF666666),
-                                    fontSize: 11.sp,
+                                    fontSize: 11,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12.r),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             child: _isLoadingCourseCount
                                 ? SizedBox(
-                                    width: 12.sp,
-                                    height: 12.sp,
+                                    width: 12,
+                                    height: 12,
                                     child: CircularProgressIndicator(
-                                      strokeWidth: 1.5.w,
+                                      strokeWidth: 1.5,
                                       valueColor: AlwaysStoppedAnimation<Color>(
                                         Theme.of(context).colorScheme.primary,
                                       ),
@@ -231,16 +231,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: Theme.of(context).colorScheme.primary,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 10.sp,
+                                      fontSize: 10,
                                     ),
                                   ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 12.h),
+                              SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
-                        height: 48.h,
+                        height: 48,
                         child: FButton(
                           style: FButtonStyle.primary,
                           onPress: () async {
@@ -266,7 +266,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 
                 // Profile Options
                 
@@ -284,7 +284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -299,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -314,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -325,7 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // TODO: Navigate to privacy settings
                   },
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -336,7 +336,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // TODO: Navigate to help
                   },
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
                 
                 _buildProfileOption(
                   context,
@@ -347,12 +347,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // TODO: Navigate to about
                   },
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 
                 // Logout Button
                 SizedBox(
                   width: double.infinity,
-                  height: 48.h,
+                  height: 48,
                   child: FButton(
                     style: FButtonStyle.outline,
                     onPress: () async {
@@ -392,7 +392,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16),
               ],
             ),
           ),
@@ -411,30 +411,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: const Color(0xFFE5E5E5),
-            width: 1.w,
+            width: 1,
           ),
         ),
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(8.w),
+                    padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(6.r),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
                 icon,
-                size: 20.sp,
+                size: 20,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            SizedBox(width: 12.w),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,12 +446,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: const Color(0xFF1A1A1A),
                     ),
                   ),
-                  SizedBox(height: 2.h),
+                  SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: const Color(0xFF666666),
-                      fontSize: 11.sp,
+                      fontSize: 11,
                     ),
                   ),
                 ],
@@ -460,7 +460,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Icon(
               Icons.chevron_right,
               color: const Color(0xFF999999),
-              size: 16.sp,
+                size: 16,
             ),
           ],
         ),

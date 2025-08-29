@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'instructor_chat_screen.dart';
@@ -134,7 +133,7 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
             children: [
               // Header
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
@@ -152,11 +151,11 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                       style: FButtonStyle.outline,
                       child: Icon(
                         Icons.arrow_back,
-                        size: 16.sp,
+                        size: 16,
                         color: const Color(0xFF666666),
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,24 +171,24 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                             'Manage student conversations',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: const Color(0xFF666666),
-                              fontSize: 12.sp,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.green.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${_courseChats.length}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.green,
                           fontWeight: FontWeight.w600,
-                          fontSize: 12.sp,
+                          fontSize: 12,
                         ),
                       ),
                     ),
@@ -208,22 +207,22 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                               children: [
                                 Icon(
                                   Icons.chat_bubble_outline,
-                                  size: 64.sp,
+                                  size: 64,
                                   color: Colors.grey[400],
                                 ),
-                                SizedBox(height: 16.h),
+                                SizedBox(height: 16),
                                 Text(
                                   'No course chats yet',
                                   style: TextStyle(
-                                    fontSize: 18.sp,
+                                    fontSize: 18,
                                     color: Colors.grey[600],
                                   ),
                                 ),
-                                SizedBox(height: 8.h),
+                                SizedBox(height: 8),
                                 Text(
                                   'Course chats will appear here when students\nstart conversations',
                                   style: TextStyle(
-                                    fontSize: 14.sp,
+                                    fontSize: 14,
                                     color: Colors.grey[500],
                                   ),
                                   textAlign: TextAlign.center,
@@ -232,27 +231,27 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                             ),
                           )
                         : ListView.builder(
-                            padding: EdgeInsets.all(16.w),
+                            padding: EdgeInsets.all(16),
                             itemCount: _courseChats.length,
                             itemBuilder: (context, index) {
                               final chat = _courseChats[index];
                               final isInstructorMessage = chat['lastSenderId'] != chat['userId'];
 
                               return Container(
-                                margin: EdgeInsets.only(bottom: 12.h),
+                                    margin: EdgeInsets.only(bottom: 12),
                                 child: Material(
                                   color: Colors.transparent,
                                   child: InkWell(
-                                    borderRadius: BorderRadius.circular(12.r),
+                                    borderRadius: BorderRadius.circular(12),
                                     onTap: () => _openChat(chat),
                                     child: Container(
-                                      padding: EdgeInsets.all(16.w),
+                                      padding: EdgeInsets.all(16),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12.r),
+                                        borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
                                           color: Colors.grey.withOpacity(0.1),
-                                          width: 1.w,
+                                          width: 1,
                                         ),
                                         boxShadow: [
                                           BoxShadow(
@@ -269,18 +268,18 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                                           Row(
                                             children: [
                                               Container(
-                                                padding: EdgeInsets.all(8.w),
+                                                padding: EdgeInsets.all(8),
                                                 decoration: BoxDecoration(
                                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                                  borderRadius: BorderRadius.circular(8.r),
+                                                  borderRadius: BorderRadius.circular(8),
                                                 ),
                                                 child: Icon(
                                                   Icons.school,
-                                                  size: 16.sp,
+                                                  size: 16,
                                                   color: Theme.of(context).colorScheme.primary,
                                                 ),
                                               ),
-                                              SizedBox(width: 12.w),
+                                              SizedBox(width: 12),
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,50 +297,50 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                                                       '${chat['courseCategory']} • ${chat['courseLevel']}',
                                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                         color: const Color(0xFF666666),
-                                                        fontSize: 11.sp,
+                                                        fontSize: 11,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
                                               Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                 decoration: BoxDecoration(
                                                   color: isInstructorMessage 
                                                       ? Colors.green.withOpacity(0.1)
                                                       : Colors.blue.withOpacity(0.1),
-                                                  borderRadius: BorderRadius.circular(8.r),
+                                                  borderRadius: BorderRadius.circular(8),
                                                 ),
                                                 child: Text(
                                                   isInstructorMessage ? 'Instructor' : 'Student',
                                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                     color: isInstructorMessage ? Colors.green : Colors.blue,
                                                     fontWeight: FontWeight.w500,
-                                                    fontSize: 10.sp,
+                                                    fontSize: 10,
                                                   ),
                                                 ),
                                               ),
                                             ],
                                           ),
                                           
-                                          SizedBox(height: 12.h),
+                                          SizedBox(height: 12),
                                           
                                           // Student Info
                                           Row(
                                             children: [
                                               CircleAvatar(
-                                                radius: 16.r,
+                                                radius: 16,
                                                 backgroundColor: Colors.blue,
                                                 child: Text(
                                                   chat['userName'][0].toUpperCase(),
                                                   style: TextStyle(
-                                                    fontSize: 12.sp,
+                                                    fontSize: 12,
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: 8.w),
+                                                      SizedBox(width: 8),
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,7 +356,7 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                                                       chat['userEmail'],
                                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                         color: const Color(0xFF666666),
-                                                        fontSize: 11.sp,
+                                                        fontSize: 11,
                                                       ),
                                                     ),
                                                   ],
@@ -366,7 +365,7 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                                             ],
                                           ),
                                           
-                                          SizedBox(height: 12.h),
+                                          SizedBox(height: 12),
                                           
                                           // Last Message and Time
                                           Row(
@@ -379,23 +378,23 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                                                       chat['lastMessage'],
                                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                         color: const Color(0xFF666666),
-                                                        fontSize: 12.sp,
+                                                        fontSize: 12,
                                                       ),
                                                       maxLines: 2,
                                                       overflow: TextOverflow.ellipsis,
                                                     ),
-                                                    SizedBox(height: 4.h),
+                                                    SizedBox(height: 4),
                                                     Text(
                                                       '${chat['messageCount']} messages',
                                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                         color: const Color(0xFF999999),
-                                                        fontSize: 10.sp,
+                                                        fontSize: 10,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                              SizedBox(width: 8.w),
+                                              SizedBox(width: 8),
                                               Column(
                                                 crossAxisAlignment: CrossAxisAlignment.end,
                                                 children: [
@@ -403,14 +402,14 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                                                     _formatTime(chat['lastMessageTime']?.toDate()),
                                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                       color: const Color(0xFF666666),
-                                                      fontSize: 10.sp,
+                                                        fontSize: 10,
                                                     ),
                                                   ),
-                                                  SizedBox(height: 4.h),
+                                                  SizedBox(height: 4),
                                                   if (chat['isActive'])
                                                     Container(
-                                                      width: 8.w,
-                                                      height: 8.h,
+                                                      width: 8,
+                                                      height: 8,
                                                       decoration: BoxDecoration(
                                                         color: Colors.green,
                                                         shape: BoxShape.circle,

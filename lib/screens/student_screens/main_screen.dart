@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_work/screens/student_screens/all_jobs_screen.dart';
-import 'training_courses_screen.dart';
+import 'package:forui/forui.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import '../../providers/admin_provider.dart';
 import 'profile_screen.dart';
+import 'my_courses_screen.dart';
+import 'all_jobs_screen.dart';
+import 'training_courses_screen.dart';
+import 'notification_screen.dart';
+import 'job_subscription_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -22,18 +28,18 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<BottomNavigationBarItem> _bottomNavItems = [
     BottomNavigationBarItem(
-      icon: Icon(Icons.work_outline, size: 24.sp),
-      activeIcon: Icon(Icons.work, size: 24.sp),
+      icon: Icon(Icons.work_outline, size: 24),
+      activeIcon: Icon(Icons.work, size: 24),
       label: 'All Jobs',
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.school_outlined, size: 24.sp),
-      activeIcon: Icon(Icons.school, size: 24.sp),
+      icon: Icon(Icons.school_outlined, size: 24),
+      activeIcon: Icon(Icons.school, size: 24),
       label: 'Courses',
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.person_outline, size: 24.sp),
-      activeIcon: Icon(Icons.person, size: 24.sp),
+      icon: Icon(Icons.person_outline, size: 24),
+      activeIcon: Icon(Icons.person, size: 24),
       label: 'Profile',
     ),
   ];
@@ -67,11 +73,11 @@ class _MainScreenState extends State<MainScreen> {
           unselectedItemColor: const Color(0xFF999999),
           selectedLabelStyle: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 12.sp,
+            fontSize: 12,
           ),
           unselectedLabelStyle: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: 12.sp,
+            fontSize: 12,
           ),
           elevation: 0,
           items: _bottomNavItems,

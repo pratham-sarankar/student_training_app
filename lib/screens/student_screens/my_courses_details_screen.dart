@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -322,7 +321,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
             children: [
               // Header
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     FButton(
@@ -330,11 +329,11 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                       style: FButtonStyle.outline,
                       child: Icon(
                         Icons.arrow_back,
-                        size: 16.sp,
+                        size: 16,
                         color: const Color(0xFF666666),
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,7 +351,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                             '${widget.course['category']} • ${widget.course['level']}',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: const Color(0xFF666666),
-                              fontSize: 12.sp,
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -364,7 +363,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
       
               // Tabs
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
                     Expanded(
@@ -382,12 +381,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                           children: [
                             Icon(
                               Icons.note_outlined,
-                              size: 16.sp,
+                              size: 16,
                               color: _selectedTabIndex == 0 
                                   ? Colors.white 
                                   : Theme.of(context).colorScheme.primary,
                             ),
-                            SizedBox(width: 8.w),
+                            SizedBox(width: 8),
                             Text(
                               'Notes',
                               style: TextStyle(
@@ -401,7 +400,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: 12),
                     Expanded(
                       child: FButton(
                         onPress: () {
@@ -417,12 +416,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                           children: [
                             Icon(
                               Icons.chat_outlined,
-                              size: 16.sp,
+                              size: 16,
                               color: _selectedTabIndex == 1 
                                   ? Colors.white 
                                   : Theme.of(context).colorScheme.primary,
                             ),
-                            SizedBox(width: 8.w),
+                            SizedBox(width: 8),
                             Text(
                               'Chat',
                               style: TextStyle(
@@ -440,7 +439,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                 ),
               ),
       
-              SizedBox(height: 16.h),
+              SizedBox(height: 16),
       
               // Tab Content
               Expanded(
@@ -462,7 +461,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
 
   Widget _buildNotesTab() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -471,10 +470,10 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
             children: [
               Icon(
                 Icons.note_outlined,
-                size: 20.sp,
+                      size: 20,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 8),
               Text(
                 'Course Notes',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -485,7 +484,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
             ],
           ),
           
-          SizedBox(height: 16.h),
+          SizedBox(height: 16),
 
           // Notes List
           Expanded(
@@ -498,30 +497,30 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                           children: [
                             Icon(
                               Icons.note_outlined,
-                              size: 64.sp,
+                              size: 64,
                               color: Colors.grey[400],
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 16),
                             Text(
                               'No notes yet',
                               style: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 18,
                                 color: Colors.grey[600],
                               ),
                             ),
-                            SizedBox(height: 8.h),
+                            SizedBox(height: 8),
                             Text(
                               'Create your first note to get started!',
                               style: TextStyle(
-                                fontSize: 14.sp,
+                                fontSize: 14,
                                 color: Colors.grey[500],
                               ),
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 16),
                             Text(
                               'Notes will appear here when they are added by instructors.',
                               style: TextStyle(
-                                fontSize: 12.sp,
+                                fontSize: 12,
                                 color: Colors.grey[500],
                               ),
                             ),
@@ -533,14 +532,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                         itemBuilder: (context, index) {
                           final note = _courseNotes[index];
                           return Container(
-                            margin: EdgeInsets.only(bottom: 12.h),
-                            padding: EdgeInsets.all(16.w),
+                            margin: EdgeInsets.only(bottom: 12),
+                            padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12.r),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: Colors.grey.withOpacity(0.1),
-                                width: 1.w,
+                                width: 1,
                               ),
                               boxShadow: [
                                 BoxShadow(
@@ -557,10 +556,10 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                   children: [
                                     Icon(
                                       Icons.note_outlined,
-                                      size: 16.sp,
+                                      size: 16,
                                       color: Theme.of(context).colorScheme.primary,
                                     ),
-                                    SizedBox(width: 8.w),
+                                    SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         note.title,
@@ -574,7 +573,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 8.h),
+                                SizedBox(height: 8),
                                 Text(
                                   note.content,
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -584,20 +583,20 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 if (note.tags.isNotEmpty) ...[
-                                  SizedBox(height: 8.h),
+                                        SizedBox(height: 8),
                                   Wrap(
-                                    spacing: 8.w,
-                                    runSpacing: 4.h,
+                                    spacing: 8,
+                                    runSpacing: 4,
                                     children: note.tags.map((tag) => Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
                                         color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(12.r),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
                                         tag,
                                         style: TextStyle(
-                                          fontSize: 10.sp,
+                                          fontSize: 10,
                                           color: Theme.of(context).colorScheme.primary,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -605,14 +604,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                     )).toList(),
                                   ),
                                 ],
-                                SizedBox(height: 8.h),
+                                SizedBox(height: 8),
                                 Row(
                                   children: [
                                     Text(
                                       _formatNoteTime(note.updatedAt),
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: const Color(0xFF666666),
-                                        fontSize: 10.sp,
+                                        fontSize: 10,
                                       ),
                                     ),
                                     const Spacer(),
@@ -620,7 +619,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                       'by ${note.createdByName}',
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: const Color(0xFF666666),
-                                        fontSize: 10.sp,
+                                        fontSize: 10,
                                       ),
                                     ),
                                   ],
@@ -640,7 +639,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
     final currentUser = _chatService.currentUser;
     
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -649,10 +648,10 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
             children: [
               Icon(
                 Icons.chat_outlined,
-                size: 20.sp,
+                size: 20,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 8),
               Text(
                 'Course Chat',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -662,24 +661,24 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
               ),
               const Spacer(),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.green.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'Online',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.green,
                     fontWeight: FontWeight.w500,
-                    fontSize: 10.sp,
+                    fontSize: 10,
                   ),
                 ),
               ),
             ],
           ),
           
-          SizedBox(height: 16.h),
+          SizedBox(height: 16),
 
           // Firebase Chat Messages
           Expanded(
@@ -692,22 +691,22 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                           children: [
                             Icon(
                               Icons.chat_bubble_outline,
-                              size: 64.sp,
+                              size: 64,
                               color: Colors.grey[400],
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 16),
                             Text(
                               'No messages yet',
                               style: TextStyle(
-                                fontSize: 18.sp,
+                                    fontSize: 18,
                                 color: Colors.grey[600],
                               ),
                             ),
-                            SizedBox(height: 8.h),
+                            SizedBox(height: 8),
                             Text(
                               'Start the conversation!',
                               style: TextStyle(
-                                fontSize: 14.sp,
+                                fontSize: 14,
                                 color: Colors.grey[500],
                               ),
                             ),
@@ -717,7 +716,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                     : ListView.builder(
                         key: const ValueKey('chat_messages'), // Add key for better performance
                         reverse: true,
-                        padding: EdgeInsets.all(16.w),
+                        padding: EdgeInsets.all(16),
                         itemCount: _messages.length,
                         itemBuilder: (context, index) {
                           final message = _messages[index];
@@ -725,7 +724,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
 
                           return Container(
                             key: ValueKey(message.id), // Add key for each message
-                            margin: EdgeInsets.only(bottom: 8.h),
+                            margin: EdgeInsets.only(bottom: 8),
                             child: Row(
                               mainAxisAlignment: isMe
                                   ? MainAxisAlignment.end
@@ -733,28 +732,28 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                               children: [
                                 if (!isMe) ...[
                                   CircleAvatar(
-                                    radius: 16.r,
+                                    radius: 16,
                                     backgroundColor: Colors.orange,
                                     child: Text(
                                       message.senderName[0].toUpperCase(),
                                       style: TextStyle(
-                                        fontSize: 12.sp,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 8.w),
+                                  SizedBox(width: 8),
                                 ],
                                 Flexible(
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w,
-                                      vertical: 12.h,
+                                      horizontal: 16,
+                                      vertical: 12,
                                     ),
                                     decoration: BoxDecoration(
                                       color: isMe ? Theme.of(context).colorScheme.primary : Colors.white,
-                                      borderRadius: BorderRadius.circular(20.r),
+                                      borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.black.withOpacity(0.1),
@@ -771,15 +770,15 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                         Text(
                                           message.message,
                                           style: TextStyle(
-                                            fontSize: 16.sp,
+                                            fontSize: 16,
                                             color: isMe ? Colors.white : Colors.black87,
                                           ),
                                         ),
-                                        SizedBox(height: 4.h),
+                                        SizedBox(height: 4),
                                         Text(
                                           _formatMessageTime(message.timestamp),
                                           style: TextStyle(
-                                            fontSize: 12.sp,
+                                                    fontSize: 12,
                                             color: isMe
                                                 ? Colors.white.withOpacity(0.8)
                                                 : Colors.grey[600],
@@ -790,14 +789,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                   ),
                                 ),
                                 if (isMe) ...[
-                                  SizedBox(width: 8.w),
+                                  SizedBox(width: 8),
                                   CircleAvatar(
-                                    radius: 16.r,
+                                    radius: 16,
                                     backgroundColor: Theme.of(context).colorScheme.primary,
                                     child: Text(
                                       (currentUser?.displayName?[0] ?? 'U').toUpperCase(),
                                       style: TextStyle(
-                                        fontSize: 12.sp,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
@@ -813,7 +812,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
 
           // Message Input
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
             decoration: BoxDecoration(
               color: Colors.white,
             ),
@@ -823,7 +822,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(25.r),
+                      borderRadius: BorderRadius.circular(25),
                     ),
                     child: TextField(
                       controller: _messageController,
@@ -831,8 +830,8 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                         hintText: 'Type a message...',
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 12.h,
+                          horizontal: 20,
+                          vertical: 12,
                         ),
                       ),
                       maxLines: null,
@@ -841,23 +840,23 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                     ),
                   ),
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(25.r),
+                    borderRadius: BorderRadius.circular(25),
                   ),
                   child: IconButton(
                     icon: _isSendingMessage
                         ? SizedBox(
-                            width: 20.w,
-                            height: 20.h,
+                            width: 20,
+                            height: 20,
                             child: const CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : Icon(Icons.send, size: 20.sp, color: Colors.white),
+                        : Icon(Icons.send, size: 20, color: Colors.white),
                     onPressed: _isSendingMessage ? null : _sendMessage,
                   ),
                 ),

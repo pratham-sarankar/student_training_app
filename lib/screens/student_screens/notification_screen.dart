@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -65,7 +65,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           icon: Icon(
             Icons.arrow_back,
             color: const Color(0xFF1A1A1A),
-            size: 20.sp,
+            size: 20,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -92,7 +92,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -118,7 +118,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             color: const Color(0xFF1A1A1A),
           ),
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 16),
         
         ..._notifications.map((notification) => _buildNotificationItem(notification)),
       ],
@@ -127,34 +127,34 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Widget _buildNotificationItem(NotificationItem notification) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.all(16.w),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: notification.isRead ? Colors.white : Theme.of(context).colorScheme.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: notification.isRead 
               ? const Color(0xFFE5E5E5) 
               : Theme.of(context).colorScheme.primary.withOpacity(0.2),
-          width: 1.w,
+          width: 1,
         ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(8.w),
+            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: _getNotificationColor(notification.type).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(6.r),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(
               _getNotificationIcon(notification.type),
-              size: 20.sp,
+              size: 20,
               color: _getNotificationColor(notification.type),
             ),
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,8 +172,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                     if (!notification.isRead)
                       Container(
-                        width: 8.w,
-                        height: 8.h,
+                        width: 8,
+                        height: 8,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary,
                           shape: BoxShape.circle,
@@ -181,20 +181,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                   ],
                 ),
-                SizedBox(height: 4.h),
+                SizedBox(height: 4),
                 Text(
                   notification.message,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: const Color(0xFF666666),
-                    fontSize: 12.sp,
+                        fontSize: 12,
                   ),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
                 Text(
                   notification.time,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: const Color(0xFF999999),
-                    fontSize: 10.sp,
+                    fontSize: 10,
                   ),
                 ),
               ],

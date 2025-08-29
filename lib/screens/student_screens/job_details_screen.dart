@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class JobDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> job;
@@ -27,13 +26,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
           icon: Icon(
             Icons.arrow_back,
             color: const Color(0xFF1A1A1A),
-            size: 20.sp,
+            size: 20,
           ),
         ),
         title: Text(
           'Job Details',
           style: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: const Color(0xFF1A1A1A),
           ),
@@ -46,7 +45,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
           children: [
             // Header Section
             Container(
-              padding: EdgeInsets.all(12.w),
+              padding: EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -54,24 +53,24 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Row(
                     children: [
                       Container(
-                        width: 48.w,
-                        height: 48.h,
+                        width: 48,
+                        height: 48,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8.r),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
                           child: Text(
                             widget.job['logo'],
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 12.w),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,15 +80,15 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFF1A1A1A),
-                                fontSize: 16.sp,
+                                fontSize: 16,
                               ),
                             ),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             Text(
                               widget.job['company'],
                               style: TextStyle(
                                 color: const Color(0xFF666666),
-                                fontSize: 14.sp,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -98,7 +97,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 12.h),
+                  SizedBox(height: 12),
                   
                   // Job Details Grid
                   Row(
@@ -110,7 +109,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           widget.job['location'],
                         ),
                       ),
-                      SizedBox(width: 8.w),
+                      SizedBox(width: 8),
                       Expanded(
                         child: _buildDetailCard(
                           Icons.work_outline,
@@ -120,7 +119,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8),
                   Row(
                     children: [
                       Expanded(
@@ -130,7 +129,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           widget.job['salary'],
                         ),
                       ),
-                      SizedBox(width: 8.w),
+                      SizedBox(width: 8),
                       Expanded(
                         child: _buildDetailCard(
                           Icons.category,
@@ -140,7 +139,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8),
                   _buildDetailCard(
                     Icons.access_time,
                     'Posted',
@@ -150,47 +149,47 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               ),
             ),
             
-            Divider(height: 1.h, thickness: 1.w),
+            Divider(height: 1, thickness: 1),
             
             // Job Description Section
             Padding(
-              padding: EdgeInsets.all(12.w),
+              padding: EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Job Description',
                     style: TextStyle(
-                      fontSize: 16.sp,
+                              fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF1A1A1A),
                     ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8),
                   _buildDescriptionText(),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16),
                   
                   Text(
                     'Requirements',
                     style: TextStyle(
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF1A1A1A),
                     ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8),
                   _buildRequirementsList(),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16),
                   
                   Text(
                     'Benefits',
                     style: TextStyle(
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF1A1A1A),
                     ),
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 8),
                   _buildBenefitsList(),
                 ],
               ),
@@ -198,17 +197,17 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
             
             // Apply Button
             Container(
-              padding: EdgeInsets.all(12.w),
+              padding: EdgeInsets.all(12),
               child: SizedBox(
                 width: double.infinity,
-                height: 44.h,
+                height: 44,
                 child: FButton(
                   style: FButtonStyle.primary,
                   onPress: () => _showApplicationDialog(),
                   child: Text(
                     'Apply Now',
                     style: TextStyle(
-                      fontSize: 15.sp,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
@@ -224,13 +223,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildDetailCard(IconData icon, String label, String value) {
     return Container(
-      padding: EdgeInsets.all(8.w),
+      padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(6.r),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: const Color(0xFFE5E5E5),
-          width: 1.w,
+          width: 1,
         ),
       ),
       child: Column(
@@ -238,24 +237,24 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         children: [
           Icon(
             icon,
-            size: 16.sp,
+            size: 16,
             color: const Color(0xFF666666),
           ),
-          SizedBox(height: 6.h),
+          SizedBox(height: 6),
           Text(
             label,
             style: TextStyle(
               color: const Color(0xFF999999),
-              fontSize: 11.sp,
+                        fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 2.h),
+          SizedBox(height: 2),
           Text(
             value,
             style: TextStyle(
               color: const Color(0xFF1A1A1A),
-              fontSize: 13.sp,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -272,7 +271,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       'technical skills, excellent communication abilities, and a passion for innovation.',
       style: TextStyle(
         color: const Color(0xFF666666),
-        fontSize: 13.sp,
+        fontSize: 13,
         height: 1.4,
       ),
     );
@@ -290,26 +289,26 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
     return Column(
       children: requirements.map((req) => Padding(
-        padding: EdgeInsets.only(bottom: 6.h),
+        padding: EdgeInsets.only(bottom: 6),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 4.w,
-              height: 4.h,
-              margin: EdgeInsets.only(top: 6.h),
+              width: 4,
+              height: 4,
+              margin: EdgeInsets.only(top: 6),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
                 shape: BoxShape.circle,
               ),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: 8),
             Expanded(
               child: Text(
                 req,
                 style: TextStyle(
                   color: const Color(0xFF666666),
-                  fontSize: 13.sp,
+                  fontSize: 13,
                   height: 1.3,
                 ),
               ),
@@ -332,22 +331,22 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
     return Column(
       children: benefits.map((benefit) => Padding(
-        padding: EdgeInsets.only(bottom: 6.h),
+        padding: EdgeInsets.only(bottom: 6),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(
               Icons.check_circle,
-              size: 14.sp,
+              size: 14,
               color: Colors.green,
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: 8),
             Expanded(
               child: Text(
                 benefit,
                 style: TextStyle(
                   color: const Color(0xFF666666),
-                  fontSize: 13.sp,
+                  fontSize: 13,
                   height: 1.3,
                 ),
               ),
@@ -365,14 +364,14 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         title: Text(
           'Apply for ${widget.job['title']}',
           style: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
         content: Text(
           'Are you sure you want to apply for this position? '
           'You will be redirected to the application form.',
-          style: TextStyle(fontSize: 13.sp),
+                  style: TextStyle(fontSize: 13),
         ),
         actions: [
           TextButton(
@@ -381,7 +380,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               'Cancel',
               style: TextStyle(
                 color: const Color(0xFF666666),
-                fontSize: 13.sp,
+                fontSize: 13,
               ),
             ),
           ),
@@ -395,7 +394,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               'Continue',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 13.sp,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -411,7 +410,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) => _buildApplicationForm(),
     );
@@ -419,7 +418,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildApplicationForm() {
     return Container(
-      padding: EdgeInsets.all(12.w),
+      padding: EdgeInsets.all(12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,60 +429,60 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               Text(
                 'Application Form',
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.close, size: 20.sp),
+                icon: Icon(Icons.close, size: 20),
               ),
             ],
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 12),
           
           // Form fields would go here in a real app
           Container(
-            padding: EdgeInsets.all(12.w),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(6.r),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Column(
               children: [
                 Icon(
                   Icons.check_circle,
-                  size: 40.sp,
+                  size: 40,
                   color: Colors.green,
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 12),
                 Text(
                   'Application Submitted!',
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Colors.green,
                   ),
                 ),
-                SizedBox(height: 6.h),
+                      SizedBox(height: 6),
                 Text(
                   'Your application for ${widget.job['title']} has been submitted successfully. '
                   'We will review your application and get back to you soon.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: const Color(0xFF666666),
-                    fontSize: 13.sp,
+                    fontSize: 13,
                   ),
                 ),
               ],
             ),
           ),
           
-          SizedBox(height: 16.h),
+          SizedBox(height: 16),
           
           SizedBox(
             width: double.infinity,
-            height: 44.h,
+            height: 44,
             child: FButton(
               style: FButtonStyle.primary,
               onPress: () {
@@ -500,7 +499,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               child: Text(
                 'Done',
                 style: TextStyle(
-                  fontSize: 15.sp,
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
