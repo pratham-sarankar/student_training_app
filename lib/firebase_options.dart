@@ -63,11 +63,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA0Fq15mLci3FT2Y-pmHEW3mXDSA6jg9d4',
-    appId: '1:755210924592:ios:f144bcfe58af3a76c1f3f5',
+    appId: '1:755210924592:ios:4193eb4e648596fac1f3f5',
     messagingSenderId: '755210924592',
     projectId: 'learn-work-9bbf7',
     storageBucket: 'learn-work-9bbf7.firebasestorage.app',
-    iosBundleId: 'com.example.learnWork',
+    iosBundleId: 'com.sarankar.student-app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
