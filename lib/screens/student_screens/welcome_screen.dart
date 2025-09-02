@@ -41,11 +41,10 @@ class WelcomeScreen extends StatelessWidget {
       
               // Main Title
               Text(
-                'Learn Work',
+                'Gradspark',
                 style: typography.xl3.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 12),
       
               // Subtitle
               Text(

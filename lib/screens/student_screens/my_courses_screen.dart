@@ -433,46 +433,65 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   Widget _buildEmptyState() {
     final theme = context.theme;
     
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: theme.colors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(40),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: theme.colors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Icon(
+                Icons.school_outlined,
+                size: 50,
+                color: theme.colors.primary,
+              ),
             ),
-            child: Icon(
-              Icons.school_outlined,
-              size: 40,
-              color: theme.colors.primary,
+            SizedBox(height: 24),
+            Text(
+              'No Courses Yet',
+              style: theme.typography.xl.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colors.foreground,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          SizedBox(height: 16),
-          Text(
-            'No Courses Yet',
-            style: theme.typography.lg.copyWith(
-              fontWeight: FontWeight.w600,
-              color: theme.colors.foreground,
+            SizedBox(height: 12),
+            Text(
+              'Start your learning journey by purchasing your first course from our extensive catalog',
+              style: theme.typography.base.copyWith(
+                color: theme.colors.mutedForeground,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Start your learning journey by purchasing your first course',
-            style: theme.typography.sm.copyWith(
-              color: theme.colors.mutedForeground,
+            SizedBox(height: 32),
+            FButton(
+              style: FButtonStyle.primary,
+              onPress: () => Navigator.of(context).pop(),
+                              child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  child: Text(
+                    'Browse Courses',
+                  ),
+                ),
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24),
-          FButton(
-            style: FButtonStyle.primary,
-            onPress: () => Navigator.of(context).pop(),
-            child: Text('Browse Courses'),
-          ),
-        ],
+            SizedBox(height: 16),
+            Text(
+              'Explore courses in various categories and find the perfect one for your career goals',
+              style: theme.typography.sm.copyWith(
+                color: theme.colors.mutedForeground,
+                height: 1.3,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

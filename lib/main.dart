@@ -4,7 +4,8 @@ import 'package:forui/widgets/scaffold.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'widgets/auth_wrapper.dart';
+import 'widgets/splash_screen.dart';
+import 'utils/custom_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,14 +27,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FThemes.zinc.dark;
+    final theme = CustomThemes.navy.light;
     return FTheme(
       data: theme,
       child: MaterialApp(
         theme: theme.toApproximateMaterialTheme(),
-        title: 'Learn Work',
+        title: 'Gradspark',
         debugShowCheckedModeBanner: false,
-        home: const AuthWrapper(),
+        home: const SplashScreen(),
       ),
     );
   }

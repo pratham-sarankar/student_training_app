@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learn_work/widgets/auth_wrapper.dart';
 import 'package:learn_work/screens/student_screens/edit_profile_screen.dart';
 import 'package:learn_work/screens/student_screens/notification_screen.dart';
+import 'package:learn_work/screens/student_screens/education_details_screen.dart';
 import 'my_courses_screen.dart';
 import 'job_subscription_screen.dart';
 
@@ -286,6 +287,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const EditProfileScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 8),
+                
+                _buildProfileOption(
+                  context,
+                  icon: Icons.school_outlined,
+                  title: 'Education Details',
+                  subtitle: 'Manage your educational background',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const EducationDetailsScreen(),
                       ),
                     );
                   },

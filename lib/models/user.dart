@@ -27,6 +27,9 @@ class UserModel {
   // Job-related
   final List<String> savedJobs;
   final List<String> appliedJobs;
+  
+  // Education-related
+  final String? educationId;
 
   UserModel({
     required this.uid,
@@ -50,6 +53,7 @@ class UserModel {
     this.preferredLocations = const [],
     this.savedJobs = const [],
     this.appliedJobs = const [],
+    this.educationId,
   });
 
   // Getter for full name
@@ -129,6 +133,7 @@ class UserModel {
       preferredLocations: List<String>.from(map['preferredLocations'] ?? []),
       savedJobs: List<String>.from(map['savedJobs'] ?? []),
       appliedJobs: List<String>.from(map['appliedJobs'] ?? []),
+      educationId: map['educationId'],
     );
   }
 
@@ -157,6 +162,7 @@ class UserModel {
       'preferredLocations': preferredLocations,
       'savedJobs': savedJobs,
       'appliedJobs': appliedJobs,
+      'educationId': educationId,
     };
   }
 
@@ -180,6 +186,7 @@ class UserModel {
     List<String>? preferredLocations,
     List<String>? savedJobs,
     List<String>? appliedJobs,
+    String? educationId,
   }) {
     return UserModel(
       uid: uid,
@@ -203,6 +210,7 @@ class UserModel {
       preferredLocations: preferredLocations ?? this.preferredLocations,
       savedJobs: savedJobs ?? this.savedJobs,
       appliedJobs: appliedJobs ?? this.appliedJobs,
+      educationId: educationId ?? this.educationId,
     );
   }
 

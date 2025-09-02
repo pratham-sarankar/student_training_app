@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:learn_work/screens/student_screens/job_details_screen.dart';
+import 'package:learn_work/screens/student_screens/edit_profile_screen.dart';
 import '../../models/job.dart';
+import '../../models/user.dart';
 import '../../services/job_service.dart';
+import '../../services/user_service.dart';
 
 class AllJobsScreen extends StatefulWidget {
   const AllJobsScreen({super.key});
@@ -15,14 +21,20 @@ class AllJobsScreen extends StatefulWidget {
 
 class _AllJobsScreenState extends State<AllJobsScreen> {
   final JobService _jobService = JobService();
+  final UserService _userService = UserService();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isInitialized = false;
+  UserModel? _currentUser;
+  String _currentLocation = 'Getting location...';
+  bool _isLoadingLocation = true;
 
   @override
   void initState() {
     super.initState();
     _initializeJobs();
+    _loadCurrentUser();
+    _getCurrentLocation();
   }
 
   Future<void> _initializeJobs() async {
@@ -39,6 +51,123 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
     }
   }
 
+  Future<void> _loadCurrentUser() async {
+    try {
+      final user = await _userService.getCurrentUserDataWithFallback();
+      setState(() {
+        _currentUser = user;
+      });
+    } catch (e) {
+      print('Error loading current user: $e');
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() {
+          _currentLocation = 'Location services disabled';
+          _isLoadingLocation = false;
+        });
+        return;
+      }
+
+      // Check location permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            _currentLocation = 'Location permission denied';
+            _isLoadingLocation = false;
+          });
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          _currentLocation = 'Location permission permanently denied';
+          _isLoadingLocation = false;
+        });
+        return;
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // Convert coordinates to readable address
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          String location = '';
+
+          // Build location string with local, city format
+          String local = '';
+          String city = '';
+
+          // Get local area (subLocality or neighborhood)
+          if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+            local = place.subLocality!;
+          } else if (place.thoroughfare != null &&
+              place.thoroughfare!.isNotEmpty) {
+            local = place.thoroughfare!;
+          }
+
+          // Get city (locality or administrative area)
+          if (place.locality != null && place.locality!.isNotEmpty) {
+            city = place.locality!;
+          } else if (place.administrativeArea != null &&
+              place.administrativeArea!.isNotEmpty) {
+            city = place.administrativeArea!;
+          }
+
+          // Combine local and city
+          if (local.isNotEmpty && city.isNotEmpty) {
+            location = '$local, $city';
+          } else if (city.isNotEmpty) {
+            location = city;
+          } else if (local.isNotEmpty) {
+            location = local;
+          } else {
+            location = 'Unknown location';
+          }
+
+          setState(() {
+            _currentLocation = location;
+            _isLoadingLocation = false;
+          });
+        } else {
+          setState(() {
+            _currentLocation = 'Unknown location';
+            _isLoadingLocation = false;
+          });
+        }
+      } catch (e) {
+        print('Error getting address: $e');
+        setState(() {
+          _currentLocation = 'Unknown location';
+          _isLoadingLocation = false;
+        });
+      }
+    } catch (e) {
+      print('Error getting location: $e');
+      setState(() {
+        _currentLocation = 'Error getting location';
+        _isLoadingLocation = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -48,7 +177,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -60,21 +189,65 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              // Header Title
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Text(
-                    'All Jobs',
-                    style: theme.typography.lg.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
+              // App Bar with App Name and User Avatar
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    // App Name and Location
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Gradspark',
+                            style: theme.typography.xl.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colors.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                size: 14,
+                                color: theme.colors.mutedForeground,
+                              ),
+                              const SizedBox(width: 4),
+                              _isLoadingLocation
+                                  ? SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        theme.colors.mutedForeground,
+                                      ),
+                                    ),
+                                  )
+                                  : Text(
+                                    _currentLocation,
+                                    style: theme.typography.sm.copyWith(
+                                      color: theme.colors.mutedForeground,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    // User Avatar
+                    _buildUserAvatar(theme),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Search Bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -82,10 +255,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   decoration: BoxDecoration(
                     color: theme.colors.muted,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: theme.colors.border,
-                      width: 1,
-                    ),
+                    border: Border.all(color: theme.colors.border, width: 1),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -116,22 +286,60 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              
+              const SizedBox(height: 16),
+
+              // Banner Carousel
+              _buildBannerCarousel(theme),
+              const SizedBox(height: 16),
+
               // Jobs List
               Expanded(
-                child: _isInitialized
-                    ? _buildJobsList()
-                    : Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                child:
+                    _isInitialized
+                        ? _buildJobsList()
+                        : Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              theme.colors.primary,
+                            ),
+                          ),
                         ),
-                      ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUserAvatar(FThemeData theme) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EditProfileScreen(),
+          ),
+        );
+      },
+      child: _currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty
+          ? CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage(_currentUser!.photoUrl!),
+              backgroundColor: theme.colors.muted,
+            )
+          : CircleAvatar(
+              radius: 20,
+              backgroundColor: theme.colors.primary,
+              child: Text(
+                _currentUser?.initials ?? 'U',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
     );
   }
 
@@ -143,11 +351,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(context.theme.colors.primary),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.theme.colors.primary,
+                ),
               ),
             );
           }
-          
+
           if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -159,9 +369,9 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ),
             );
           }
-          
+
           final jobs = snapshot.data ?? [];
-          
+
           if (jobs.isEmpty) {
             return Center(
               child: Column(
@@ -184,15 +394,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ),
             );
           }
-          
+
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
-              return Container(
-                child: _buildJobCard(job),
-              );
+              return Container(child: _buildJobCard(job));
             },
           );
         },
@@ -204,11 +412,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(context.theme.colors.primary),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.theme.colors.primary,
+                ),
               ),
             );
           }
-          
+
           if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -220,9 +430,9 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ),
             );
           }
-          
+
           final jobs = snapshot.data ?? [];
-          
+
           if (jobs.isEmpty) {
             return Center(
               child: Column(
@@ -253,15 +463,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ),
             );
           }
-          
+
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
-              return Container(
-                child: _buildJobCard(job),
-              );
+              return Container(child: _buildJobCard(job));
             },
           );
         },
@@ -271,7 +479,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
   Widget _buildJobCard(Job job) {
     final theme = context.theme;
-    
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -287,10 +495,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         decoration: BoxDecoration(
           color: theme.colors.background,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: theme.colors.border,
-            width: 1,
-          ),
+          border: Border.all(color: theme.colors.border, width: 1),
           boxShadow: [
             BoxShadow(
               color: theme.colors.foreground.withOpacity(0.05),
@@ -312,19 +517,56 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     color: theme.colors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Center(
-                    child: Text(
-                      job.logo,
-                      style: TextStyle(
-                        color: theme.colors.primary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                  child: job.logo.isNotEmpty && job.logo.startsWith('http')
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            job.logo,
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    theme.colors.primary,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Text(
+                                  job.company.isNotEmpty 
+                                      ? job.company.substring(0, 1).toUpperCase()
+                                      : 'C',
+                                  style: TextStyle(
+                                    color: theme.colors.primary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            job.company.isNotEmpty 
+                                ? job.company.substring(0, 1).toUpperCase()
+                                : 'C',
+                            style: TextStyle(
+                              color: theme.colors.primary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Job Info
                 Expanded(
                   child: Column(
@@ -351,7 +593,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Job Details Row
             Row(
               children: [
@@ -363,7 +605,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Salary
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -388,15 +630,11 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
   Widget _buildJobDetail(IconData icon, String text) {
     final theme = context.theme;
-    
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: theme.colors.mutedForeground,
-        ),
+        Icon(icon, size: 16, color: theme.colors.mutedForeground),
         const SizedBox(width: 4),
         Text(
           text,
@@ -405,6 +643,143 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBannerCarousel(FThemeData theme) {
+    return _CarouselWidget(theme: theme);
+  }
+}
+
+class _CarouselWidget extends StatefulWidget {
+  final FThemeData theme;
+  
+  const _CarouselWidget({required this.theme});
+  
+  @override
+  State<_CarouselWidget> createState() => _CarouselWidgetState();
+}
+
+class _CarouselWidgetState extends State<_CarouselWidget> {
+  int _currentCarouselIndex = 0;
+  
+  // Random image URLs for the carousel
+  final List<String> randomImages = [
+    'https://tse3.mm.bing.net/th/id/OIP.E-8vX505ECdMwROR-dUXvAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3',
+    'https://thumbs.dreamstime.com/b/education-vector-trendy-banner-design-concept-modern-style-thin-line-art-icons-gradient-colors-background-93713303.jpg',
+    'https://i.pinimg.com/originals/a7/d9/66/a7d96663c07fc0c8bd0dc22b7f56b986.jpg',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CarouselSlider(
+          options: CarouselOptions(
+            height: 120, // Same height as job cards
+            viewportFraction: 0.85, // Same as original job card spacing
+            enableInfiniteScroll: true,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 4),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: true,
+            enlargeFactor: 0.1,
+            scrollDirection: Axis.horizontal,
+            onPageChanged: (index, reason) {
+              setState(() {
+                _currentCarouselIndex = index;
+              });
+            },
+          ),
+          items: randomImages.map((imageUrl) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 120,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          width: double.infinity,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: widget.theme.colors.muted,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                              valueColor: AlwaysStoppedAnimation<Color>(widget.theme.colors.primary),
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: double.infinity,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: widget.theme.colors.muted,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 48,
+                                  color: widget.theme.colors.mutedForeground,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Failed to load image',
+                                  style: widget.theme.typography.sm.copyWith(
+                                    color: widget.theme.colors.mutedForeground,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 12),
+        // Dotted indicators
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: randomImages.asMap().entries.map((entry) {
+            return Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _currentCarouselIndex == entry.key
+                    ? widget.theme.colors.primary
+                    : widget.theme.colors.mutedForeground.withOpacity(0.3),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );
