@@ -61,14 +61,38 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           color: theme.colors.primaryForeground,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Center(
-                          child: Text(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
                             widget.job['logo'],
-                            style: TextStyle(
-                              color: theme.colors.primary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Text(
+                                  widget.job['company'][0].toUpperCase(),
+                                  style: TextStyle(
+                                    color: theme.colors.primary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                  strokeWidth: 2,
+                                  color: theme.colors.primary,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),

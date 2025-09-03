@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learn_work/services/auth_service.dart';
 import 'package:learn_work/services/user_service.dart';   
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:learn_work/widgets/shimmer_loading.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -163,25 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         body: SafeArea(
           child: _isDataLoading
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colors.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Loading profile...',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+              ? ShimmerLoading.profileShimmer(context)
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Form(

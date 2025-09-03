@@ -364,7 +364,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                   icon: Icons.info_outline,
                   title: 'About',
-                  subtitle: 'Learn more about Learn Work',
+                  subtitle: 'Learn more about Gradspark',
                   onTap: () {
                     // TODO: Navigate to about
                   },

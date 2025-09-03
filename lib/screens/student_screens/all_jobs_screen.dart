@@ -11,6 +11,8 @@ import '../../models/job.dart';
 import '../../models/user.dart';
 import '../../services/job_service.dart';
 import '../../services/user_service.dart';
+import '../../widgets/shimmer_loading.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AllJobsScreen extends StatefulWidget {
   const AllJobsScreen({super.key});
@@ -191,11 +193,9 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             children: [
               // App Bar with App Name and User Avatar
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // App Name and Location
                     Expanded(
@@ -222,10 +222,16 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                                   ? SizedBox(
                                     width: 12,
                                     height: 12,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        theme.colors.mutedForeground,
+                                    child: Shimmer.fromColors(
+                                      baseColor: theme.colors.muted,
+                                      highlightColor: theme.colors.muted.withOpacity(0.6),
+                                      child: Container(
+                                        width: 12,
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
                                     ),
                                   )
@@ -250,7 +256,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
               // Search Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Container(
                   decoration: BoxDecoration(
                     color: theme.colors.muted,
@@ -288,22 +294,12 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Banner Carousel
-              _buildBannerCarousel(theme),
-              const SizedBox(height: 16),
-
-              // Jobs List
+              // Jobs List with Carousel
               Expanded(
                 child:
                     _isInitialized
-                        ? _buildJobsList()
-                        : Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              theme.colors.primary,
-                            ),
-                          ),
-                        ),
+                        ? _buildJobsListWithCarousel(theme)
+                        : _buildShimmerLoading(theme),
               ),
             ],
           ),
@@ -343,19 +339,139 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
     );
   }
 
+  Widget _buildJobsListWithCarousel(FThemeData theme) {
+    if (_searchQuery.isEmpty) {
+      return StreamBuilder<List<Job>>(
+        stream: _jobService.getJobs(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildShimmerLoading(context.theme);
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error loading jobs: ${snapshot.error}',
+                style: TextStyle(
+                  color: context.theme.colors.destructive,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          }
+
+          final jobs = snapshot.data ?? [];
+
+          if (jobs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.work_outline,
+                    size: 64,
+                    color: context.theme.colors.mutedForeground,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No jobs available',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: context.theme.colors.foreground,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              // Banner Carousel
+              _buildBannerCarousel(theme),
+              const SizedBox(height: 16),
+              // Jobs
+              ...jobs.map((job) => Container(child: _buildJobCard(job))),
+            ],
+          );
+        },
+      );
+    } else {
+      return StreamBuilder<List<Job>>(
+        stream: _jobService.searchJobs(_searchQuery),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildShimmerLoading(context.theme);
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error searching jobs: ${snapshot.error}',
+                style: TextStyle(
+                  color: context.theme.colors.destructive,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          }
+
+          final jobs = snapshot.data ?? [];
+
+          if (jobs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 64,
+                    color: context.theme.colors.mutedForeground,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No jobs found for "$_searchQuery"',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: context.theme.colors.foreground,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Try different keywords or check spelling',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: context.theme.colors.mutedForeground,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              // Banner Carousel
+              _buildBannerCarousel(theme),
+              const SizedBox(height: 16),
+              // Jobs
+              ...jobs.map((job) => Container(child: _buildJobCard(job))),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   Widget _buildJobsList() {
     if (_searchQuery.isEmpty) {
       return StreamBuilder<List<Job>>(
         stream: _jobService.getJobs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  context.theme.colors.primary,
-                ),
-              ),
-            );
+            return _buildShimmerLoading(context.theme);
           }
 
           if (snapshot.hasError) {
@@ -410,13 +526,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         stream: _jobService.searchJobs(_searchQuery),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  context.theme.colors.primary,
-                ),
-              ),
-            );
+            return _buildShimmerLoading(context.theme);
           }
 
           if (snapshot.hasError) {
@@ -465,7 +575,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: jobs.length,
             itemBuilder: (context, index) {
               final job = jobs[index];
@@ -651,6 +761,26 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   Widget _buildBannerCarousel(FThemeData theme) {
     return _CarouselWidget(theme: theme);
   }
+
+  Widget _buildShimmerLoading(FThemeData theme) {
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      children: [
+        // Banner Carousel placeholder
+        Container(
+          height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: theme.colors.muted,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Job cards shimmer
+        ...List.generate(5, (index) => ShimmerLoading.jobCardShimmer(theme)),
+      ],
+    );
+  }
 }
 
 class _CarouselWidget extends StatefulWidget {
@@ -678,7 +808,8 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            height: 120, // Same height as job cards
+            clipBehavior: Clip.none,
+            height: MediaQuery.of(context).size.width * 0.85 * (9 / 16), // 16:9 aspect ratio
             viewportFraction: 0.85, // Same as original job card spacing
             enableInfiniteScroll: true,
             autoPlay: true,
@@ -704,14 +835,14 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
                       imageUrl,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                       width: double.infinity,
-                      height: 120,
+                      height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Container(
                           width: double.infinity,
-                          height: 120,
+                          height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
                           decoration: BoxDecoration(
                             color: widget.theme.colors.muted,
                             borderRadius: BorderRadius.circular(12),
@@ -730,7 +861,7 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           width: double.infinity,
-                          height: 120,
+                          height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
                           decoration: BoxDecoration(
                             color: widget.theme.colors.muted,
                             borderRadius: BorderRadius.circular(12),

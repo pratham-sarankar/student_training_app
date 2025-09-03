@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:learn_work/models/education.dart';
 import 'package:learn_work/services/education_service.dart';
+import 'package:learn_work/widgets/shimmer_loading.dart';
 
 class EducationDetailsScreen extends StatefulWidget {
   const EducationDetailsScreen({super.key});
@@ -191,11 +192,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
           centerTitle: true,
         ),
         body: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
-                ),
-              )
+            ? ShimmerLoading.educationShimmer(context)
             : SafeArea(
                 child: Form(
                   key: _formKey,
