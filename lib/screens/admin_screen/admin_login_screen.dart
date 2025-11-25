@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../providers/admin_provider.dart';
-import '../../services/admin_service.dart';
 import '../student_screens/forgot_password_screen.dart';
 
 class AdminLoginScreen extends StatefulWidget {

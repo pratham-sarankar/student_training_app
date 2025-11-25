@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
 import 'login_screen.dart';
 
@@ -34,12 +33,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       await _authService.resetPassword(_emailController.text.trim());
-      
+
       if (mounted) {
         setState(() {
           _emailSent = true;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Password reset email sent! Check your inbox.'),
@@ -50,10 +49,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -98,16 +94,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 child: Column(
                   children: [
                     SizedBox(height: 40),
-                    
+
                     // Icon
                     Container(
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
@@ -118,18 +118,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                     ),
                     SizedBox(height: 32),
-                    
+
                     // Title
                     Text(
                       'Reset Password',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF1A1A1A),
                       ),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 16),
-                    
+
                     if (!_emailSent) ...[
                       Text(
                         'Enter your email address and we\'ll send you a link to reset your password.',
@@ -139,29 +141,31 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 40),
-                      
-                                            // Email Field
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Email',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF1A1A1A),
-                              ),
+
+                      // Email Field
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Email',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF1A1A1A),
                             ),
-                            SizedBox(height: 8),
-                            FTextField(
-                              controller: _emailController,
-                              hint: 'Enter your email address',
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.done,
-                            ),
-                          ],
-                        ),
-                            SizedBox(height: 32),
-                      
+                          ),
+                          SizedBox(height: 8),
+                          FTextField(
+                            controller: _emailController,
+                            hint: 'Enter your email address',
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.done,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 32),
+
                       // Reset Button
                       SizedBox(
                         width: double.infinity,
@@ -169,23 +173,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         child: FButton(
                           onPress: _isLoading ? null : _resetPassword,
                           style: FButtonStyle.primary,
-                          child: _isLoading
-                              ? SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          child:
+                              _isLoading
+                                  ? SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                  : Text(
+                                    'Send Reset Link',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.2,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  'Send Reset Link',
-                                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.2,
-                                    color: Colors.white,
-                                  ),
-                                ),
                         ),
                       ),
                     ] else ...[
@@ -193,10 +202,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       Container(
                         padding: EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Colors.green.withOpacity(0.3),
+                            color: Colors.green.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -210,7 +219,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             SizedBox(height: 16),
                             Text(
                               'Check Your Email',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: Colors.green,
                               ),
@@ -225,7 +236,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             SizedBox(height: 8),
                             Text(
                               _emailController.text.trim(),
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
@@ -235,7 +248,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                       ),
                       SizedBox(height: 32),
-                      
+
                       // Back to Login Button
                       SizedBox(
                         width: double.infinity,
@@ -251,7 +264,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           style: FButtonStyle.primary,
                           child: Text(
                             'Back to Login',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelLarge?.copyWith(
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.2,
                               color: Colors.white,
@@ -260,7 +275,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                       ),
                     ],
-                    
+
                     SizedBox(height: 24),
                   ],
                 ),

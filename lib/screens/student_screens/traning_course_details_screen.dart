@@ -4,23 +4,22 @@ import 'package:forui/forui.dart';
 
 class TraningCourseDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> course;
-  
-  const TraningCourseDetailsScreen({
-    super.key,
-    required this.course,
-  });
+
+  const TraningCourseDetailsScreen({super.key, required this.course});
 
   @override
-  State<TraningCourseDetailsScreen> createState() => _TraningCourseDetailsScreenState();
+  State<TraningCourseDetailsScreen> createState() =>
+      _TraningCourseDetailsScreenState();
 }
 
-class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen> {
+class _TraningCourseDetailsScreenState
+    extends State<TraningCourseDetailsScreen> {
   Map<String, dynamic>? _selectedSchedule;
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -86,9 +85,12 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
-                            color: theme.colors.primary.withOpacity(0.1),
+                            color: theme.colors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -102,9 +104,12 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
+                            color: Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -187,14 +192,22 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                           child: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: isSelected 
-                                  ? theme.colors.primary.withOpacity(0.05)
-                                  : Colors.transparent,
+                              color:
+                                  isSelected
+                                      ? theme.colors.primary.withValues(
+                                        alpha: 0.05,
+                                      )
+                                      : Colors.transparent,
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                color: isSelected 
-                                    ? theme.colors.primary.withOpacity(0.3)
-                                    : theme.colors.border.withOpacity(0.2),
+                                color:
+                                    isSelected
+                                        ? theme.colors.primary.withValues(
+                                          alpha: 0.3,
+                                        )
+                                        : theme.colors.border.withValues(
+                                          alpha: 0.2,
+                                        ),
                                 width: isSelected ? 1.5 : 0.5,
                               ),
                             ),
@@ -202,7 +215,8 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         schedule['time'],
@@ -232,7 +246,8 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                                     });
                                   },
                                   activeColor: theme.colors.primary,
-                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
                               ],
                             ),
@@ -249,56 +264,66 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
           ],
         ),
       ),
-      floatingActionButton: _selectedSchedule != null
-          ? Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: FButton(
-                onPress: () => _showPurchaseDialog(context, widget.course, _selectedSchedule!),
-                style: FButtonStyle.primary,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.shopping_cart,
-                        size: 16,
-                        color: theme.colors.primaryForeground,
+      floatingActionButton:
+          _selectedSchedule != null
+              ? Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: FButton(
+                  onPress:
+                      () => _showPurchaseDialog(
+                        context,
+                        widget.course,
+                        _selectedSchedule!,
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Purchase Course - ₹${widget.course['cost']}',
-                        style: theme.typography.sm.copyWith(
-                          fontWeight: FontWeight.w600,
+                  style: FButtonStyle.primary,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.shopping_cart,
+                          size: 16,
                           color: theme.colors.primaryForeground,
-                          fontSize: 13,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Text(
+                          'Purchase Course - ₹${widget.course['cost']}',
+                          style: theme.typography.sm.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: theme.colors.primaryForeground,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )
-          : null,
+              )
+              : null,
     );
   }
 
-  Widget _buildSimpleDetail(IconData icon, String label, String value, Color color) {
+  Widget _buildSimpleDetail(
+    IconData icon,
+    String label,
+    String value,
+    Color color,
+  ) {
     final theme = context.theme;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: color,
-          ),
+          Icon(icon, size: 18, color: color),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -327,9 +352,13 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
     );
   }
 
-  void _showPurchaseDialog(BuildContext context, Map<String, dynamic> course, Map<String, dynamic> schedule) {
+  void _showPurchaseDialog(
+    BuildContext context,
+    Map<String, dynamic> course,
+    Map<String, dynamic> schedule,
+  ) {
     final theme = context.theme;
-    
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -363,7 +392,7 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                     ],
                   ),
                 ),
-                
+
                 // Simple content
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -394,7 +423,7 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.colors.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
@@ -419,7 +448,7 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
                     ],
                   ),
                 ),
-                
+
                 // Simple actions
                 Padding(
                   padding: const EdgeInsets.all(16),
@@ -451,17 +480,16 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
     );
   }
 
-  void _processPurchase(Map<String, dynamic> course, Map<String, dynamic> schedule) {
+  void _processPurchase(
+    Map<String, dynamic> course,
+    Map<String, dynamic> schedule,
+  ) {
     // TODO: Implement actual purchase logic
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(
-              Icons.check_circle,
-              color: Colors.white,
-              size: 16,
-            ),
+            Icon(Icons.check_circle, color: Colors.white, size: 16),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
@@ -474,12 +502,10 @@ class _TraningCourseDetailsScreenState extends State<TraningCourseDetailsScreen>
         backgroundColor: Colors.green,
         duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       ),
     );
-    
+
     // Navigate back to courses screen
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pop();

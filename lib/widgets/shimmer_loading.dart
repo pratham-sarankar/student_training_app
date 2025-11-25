@@ -5,10 +5,10 @@ import 'package:forui/forui.dart';
 class ShimmerLoading {
   static Widget profileShimmer(BuildContext context) {
     final theme = context.theme;
-    
+
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withOpacity(0.6),
-      highlightColor: theme.colors.muted.withOpacity(0.3),
+      baseColor: theme.colors.muted.withValues(alpha: 0.6),
+      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -106,10 +106,10 @@ class ShimmerLoading {
 
   static Widget educationShimmer(BuildContext context) {
     final theme = context.theme;
-    
+
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withOpacity(0.6),
-      highlightColor: theme.colors.muted.withOpacity(0.3),
+      baseColor: theme.colors.muted.withValues(alpha: 0.6),
+      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -249,8 +249,8 @@ class ShimmerLoading {
 
   static Widget jobCardShimmer(FThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withOpacity(0.6),
-      highlightColor: theme.colors.muted.withOpacity(0.3),
+      baseColor: theme.colors.muted.withValues(alpha: 0.6),
+      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
@@ -274,7 +274,7 @@ class ShimmerLoading {
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Job Info placeholders
                 Expanded(
                   child: Column(
@@ -303,7 +303,7 @@ class ShimmerLoading {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Job Details Row placeholders
             Row(
               children: [
@@ -315,7 +315,7 @@ class ShimmerLoading {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Salary placeholder
             Container(
               height: 24,
@@ -333,8 +333,8 @@ class ShimmerLoading {
 
   static Widget courseCardShimmer(FThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withOpacity(0.6),
-      highlightColor: theme.colors.muted.withOpacity(0.3),
+      baseColor: theme.colors.muted.withValues(alpha: 0.6),
+      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
@@ -359,7 +359,7 @@ class ShimmerLoading {
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Course Info placeholders
                 Expanded(
                   child: Column(
@@ -401,7 +401,7 @@ class ShimmerLoading {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Description placeholders
             Container(
               height: 12,
@@ -421,7 +421,7 @@ class ShimmerLoading {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             // View details placeholder
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -453,20 +453,23 @@ class ShimmerLoading {
 
   static Widget categoryButtonShimmer(FThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withOpacity(0.6),
-      highlightColor: theme.colors.muted.withOpacity(0.3),
+      baseColor: theme.colors.muted.withValues(alpha: 0.6),
+      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: List.generate(4, (index) => Container(
-            margin: const EdgeInsets.only(right: 12),
-            height: 36,
-            width: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
+          children: List.generate(
+            4,
+            (index) => Container(
+              margin: const EdgeInsets.only(right: 12),
+              height: 36,
+              width: 80,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          )),
+          ),
         ),
       ),
     );

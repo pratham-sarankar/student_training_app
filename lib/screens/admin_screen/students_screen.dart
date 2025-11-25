@@ -12,51 +12,40 @@ class StudentsScreen extends StatefulWidget {
   State<StudentsScreen> createState() => _StudentsScreenState();
 }
 
-class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObserver {
-  
+class _StudentsScreenState extends State<StudentsScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
-  
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-  
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // Refresh students list when app is resumed
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+          final adminProvider = Provider.of<AdminProvider>(
+            context,
+            listen: false,
+          );
           adminProvider.loadAllStudents();
         }
       });
     }
   }
 
-  void _exportStudentsList(List<UserModel> students) {
-    // For now, just show a message
-    // In a real implementation, this would generate a CSV or PDF file
-    final theme = context.theme;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Export functionality for ${students.length} students needs to be implemented',
-        ),
-        backgroundColor: theme.colors.primary,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         return Scaffold(
@@ -113,26 +102,29 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
                     const SizedBox(height: 6),
                     // Students Table - Expanded to fill remaining space
                     Expanded(
-                      child: adminProvider.isLoading 
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+                      child:
+                          adminProvider.isLoading
+                              ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        theme.colors.primary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Loading students...',
+                                      style: TextStyle(
+                                        color: theme.colors.mutedForeground,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Loading students...',
-                                  style: TextStyle(
-                                    color: theme.colors.mutedForeground,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : _buildStudentsTable(context, adminProvider),
+                              )
+                              : _buildStudentsTable(context, adminProvider),
                     ),
                   ],
                 );
@@ -144,12 +136,15 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
     );
   }
 
-  Widget _buildStudentsTable(BuildContext context, AdminProvider adminProvider) {
+  Widget _buildStudentsTable(
+    BuildContext context,
+    AdminProvider adminProvider,
+  ) {
     final theme = context.theme;
-    
+
     // Use original students list directly
     final studentsList = adminProvider.allStudents;
-    
+
     if (studentsList.isEmpty) {
       return Center(
         child: Column(
@@ -180,240 +175,302 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
         ),
       );
     }
-    
+
     // Sort students by name
     final sortedStudents = List<UserModel>.from(studentsList)
       ..sort((a, b) => a.fullName.compareTo(b.fullName));
 
     return RefreshIndicator(
       onRefresh: () async {
-        final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+        final adminProvider = Provider.of<AdminProvider>(
+          context,
+          listen: false,
+        );
         await adminProvider.loadAllStudents();
       },
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         child: DataTable(
-        columnSpacing: 12,
-        horizontalMargin: 12,
-        dataRowHeight: 36,
-        headingRowHeight: 32,
-        columns: [
-          DataColumn(
-            label: Text(
-              'Name',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: theme.colors.foreground,
-                letterSpacing: 0.2,
+          columnSpacing: 12,
+          horizontalMargin: 12,
+          headingRowHeight: 32,
+          columns: [
+            DataColumn(
+              label: Text(
+                'Name',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.colors.foreground,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
-          ),
-          DataColumn(
-            label: Text(
-              'Email',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: theme.colors.foreground,
-                letterSpacing: 0.2,
+            DataColumn(
+              label: Text(
+                'Email',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.colors.foreground,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
-          ),
-          DataColumn(
-            label: Text(
-              'Registration Date',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: theme.colors.foreground,
-                letterSpacing: 0.2,
+            DataColumn(
+              label: Text(
+                'Registration Date',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.colors.foreground,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
-          ),
-          DataColumn(
-            label: Text(
-              'Profile Status',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: theme.colors.foreground,
-                letterSpacing: 0.2,
+            DataColumn(
+              label: Text(
+                'Profile Status',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.colors.foreground,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
-          ),
-          DataColumn(
-            label: Text(
-              'Job Notifications',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: theme.colors.foreground,
-                letterSpacing: 0.2,
+            DataColumn(
+              label: Text(
+                'Job Notifications',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.colors.foreground,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
-          ),
-          DataColumn(
-            label: Text(
-              'Training Status',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: theme.colors.foreground,
-                letterSpacing: 0.2,
+            DataColumn(
+              label: Text(
+                'Training Status',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.colors.foreground,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
-          ),
-          DataColumn(
-            label: Text(
-              'Actions',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-                color: theme.colors.foreground,
-                letterSpacing: 0.2,
+            DataColumn(
+              label: Text(
+                'Actions',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  color: theme.colors.foreground,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
-          ),
-        ],
-        rows: sortedStudents.map((student) {
-          // Find which trainings this student is enrolled in
-          final enrolledTrainings = <String>[];
-          for (final training in adminProvider.trainings) {
-            for (final schedule in training.schedules) {
-              if (schedule.enrolledStudents.any((s) => s.id == student.uid)) {
-                enrolledTrainings.add(training.title);
-                break; // Only add training once even if student has multiple schedules
-              }
-            }
-          }
+          ],
+          rows:
+              sortedStudents.map((student) {
+                // Find which trainings this student is enrolled in
+                final enrolledTrainings = <String>[];
+                for (final training in adminProvider.trainings) {
+                  for (final schedule in training.schedules) {
+                    if (schedule.enrolledStudents.any(
+                      (s) => s.id == student.uid,
+                    )) {
+                      enrolledTrainings.add(training.title);
+                      break; // Only add training once even if student has multiple schedules
+                    }
+                  }
+                }
 
-          return DataRow(
-            cells: [
-              DataCell(
-                Text(
-                  student.fullName,
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              DataCell(
-                Text(
-                  student.email,
-                  style: const TextStyle(fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              DataCell(
-                Text(
-                  _formatDate(student.createdAt),
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: student.hasCompletedProfile ? theme.colors.primary.withOpacity(0.1) : theme.colors.mutedForeground.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      student.hasCompletedProfile ? 'Complete' : 'Incomplete',
-                      style: TextStyle(
-                        color: student.hasCompletedProfile ? theme.colors.primary : theme.colors.mutedForeground,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
+                return DataRow(
+                  cells: [
+                    DataCell(
+                      Text(
+                        student.fullName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: student.jobAlerts ? theme.colors.primary.withOpacity(0.1) : theme.colors.destructive.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
-                      style: TextStyle(
-                        color: student.jobAlerts ? theme.colors.primary : theme.colors.destructive,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
+                    DataCell(
+                      Text(
+                        student.email,
+                        style: const TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              DataCell(
-                Text(
-                  enrolledTrainings.isNotEmpty 
-                    ? enrolledTrainings.join(', ')
-                    : 'Not enrolled',
-                  style: TextStyle(
-                    color: enrolledTrainings.isNotEmpty ? theme.colors.mutedForeground : theme.colors.mutedForeground,
-                    fontSize: 11,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              DataCell(
-                Center(
-                  child: PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert, size: 18),
-                    tooltip: 'Actions',
-                    color: theme.colors.background,
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: theme.colors.border),
+                    DataCell(
+                      Text(
+                        _formatDate(student.createdAt),
+                        style: const TextStyle(fontSize: 12),
+                      ),
                     ),
-                    onSelected: (value) {
-                      if (value == 'details') {
-                        _showStudentDetails(context, student, adminProvider);
-                      } else if (value == 'toggle') {
-                        _toggleSubscription(context, student, adminProvider);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem<String>(
-                        value: 'details',
-                        child: Row(
-                          children: [
-                            Icon(Icons.info, color: theme.colors.primary, size: 16),
-                            const SizedBox(width: 8),
-                            const Text('View Details', style: TextStyle(fontSize: 13)),
-                          ],
+                    DataCell(
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                student.hasCompletedProfile
+                                    ? theme.colors.primary.withValues(
+                                      alpha: 0.1,
+                                    )
+                                    : theme.colors.mutedForeground.withValues(
+                                      alpha: 0.1,
+                                    ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            student.hasCompletedProfile
+                                ? 'Complete'
+                                : 'Incomplete',
+                            style: TextStyle(
+                              color:
+                                  student.hasCompletedProfile
+                                      ? theme.colors.primary
+                                      : theme.colors.mutedForeground,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ),
-                      PopupMenuItem<String>(
-                        value: 'toggle',
-                        child: Row(
-                          children: [
-                            Icon(
-                              student.jobAlerts ? Icons.notifications_off : Icons.notifications_active,
-                              color: student.jobAlerts ? theme.colors.mutedForeground : theme.colors.primary,
-                              size: 16,
+                    ),
+                    DataCell(
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                student.jobAlerts
+                                    ? theme.colors.primary.withValues(
+                                      alpha: 0.1,
+                                    )
+                                    : theme.colors.destructive.withValues(
+                                      alpha: 0.1,
+                                    ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
+                            style: TextStyle(
+                              color:
+                                  student.jobAlerts
+                                      ? theme.colors.primary
+                                      : theme.colors.destructive,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              student.jobAlerts ? 'Unsubscribe' : 'Subscribe',
-                              style: TextStyle(fontSize: 13),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
-        }).toList(),
+                    ),
+                    DataCell(
+                      Text(
+                        enrolledTrainings.isNotEmpty
+                            ? enrolledTrainings.join(', ')
+                            : 'Not enrolled',
+                        style: TextStyle(
+                          color:
+                              enrolledTrainings.isNotEmpty
+                                  ? theme.colors.mutedForeground
+                                  : theme.colors.mutedForeground,
+                          fontSize: 11,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert, size: 18),
+                          tooltip: 'Actions',
+                          color: theme.colors.background,
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: theme.colors.border),
+                          ),
+                          onSelected: (value) {
+                            if (value == 'details') {
+                              _showStudentDetails(
+                                context,
+                                student,
+                                adminProvider,
+                              );
+                            } else if (value == 'toggle') {
+                              _toggleSubscription(
+                                context,
+                                student,
+                                adminProvider,
+                              );
+                            }
+                          },
+                          itemBuilder:
+                              (context) => [
+                                PopupMenuItem<String>(
+                                  value: 'details',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info,
+                                        color: theme.colors.primary,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Text(
+                                        'View Details',
+                                        style: TextStyle(fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'toggle',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        student.jobAlerts
+                                            ? Icons.notifications_off
+                                            : Icons.notifications_active,
+                                        color:
+                                            student.jobAlerts
+                                                ? theme.colors.mutedForeground
+                                                : theme.colors.primary,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        student.jobAlerts
+                                            ? 'Unsubscribe'
+                                            : 'Subscribe',
+                                        style: TextStyle(fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
         ),
       ),
     );
@@ -423,12 +480,16 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _showStudentDetails(BuildContext context, UserModel student, AdminProvider adminProvider) {
+  void _showStudentDetails(
+    BuildContext context,
+    UserModel student,
+    AdminProvider adminProvider,
+  ) {
     final theme = context.theme;
-    
+
     // Find all schedules this student is enrolled in
     final enrollments = <MapEntry<String, TrainingSchedule>>[];
-    
+
     for (final training in adminProvider.trainings) {
       for (final schedule in training.schedules) {
         if (schedule.enrolledStudents.any((s) => s.id == student.uid)) {
@@ -437,224 +498,258 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
       }
     }
 
-        showModalBottomSheet(
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        maxChildSize: 0.9,
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: theme.colors.background,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          child: Column(
-            children: [
-              // Handle bar
-              Container(
-                margin: const EdgeInsets.only(top: 6),
-                width: 32,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: theme.colors.mutedForeground,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: theme.colors.primaryForeground,
-                      child: Icon(
-                        Icons.person,
-                        color: theme.colors.primary,
-                        size: 22,
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.6,
+            minChildSize: 0.4,
+            maxChildSize: 0.9,
+            builder:
+                (context, scrollController) => Container(
+                  decoration: BoxDecoration(
+                    color: theme.colors.background,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            student.fullName,
-                            style: theme.typography.lg.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            'Student Details',
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.mutedForeground,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.close, size: 20),
-                      style: IconButton.styleFrom(
-                        backgroundColor: theme.colors.mutedForeground.withOpacity(0.1),
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(8),
-                        minimumSize: const Size(32, 32),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Content
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Basic Info Section
-                      _buildInfoSection(
-                        'Basic Information',
-                        [
-                          _buildInfoTile(
-                            Icons.email,
-                            'Email',
-                            student.email,
-                            theme.colors.primary,
-                          ),
-                          if (student.phoneNumber != null && student.phoneNumber!.isNotEmpty)
-                            _buildInfoTile(
-                              Icons.phone,
-                              'Phone',
-                              student.phoneNumber!,
-                              theme.colors.primary,
-                            ),
-                          _buildInfoTile(
-                            Icons.calendar_today,
-                            'Registration Date',
-                            _formatDate(student.createdAt),
-                            theme.colors.primary,
-                          ),
-                          if (student.dateOfBirth != null)
-                            _buildInfoTile(
-                              Icons.cake,
-                              'Date of Birth',
-                              student.formattedDateOfBirth ?? 'N/A',
-                              theme.colors.primary,
-                            ),
-                          _buildInfoTile(
-                            student.jobAlerts ? Icons.notifications_active : Icons.notifications_off,
-                            'Job Notifications',
-                            student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
-                            student.jobAlerts ? theme.colors.primary : theme.colors.destructive,
-                          ),
-                          _buildInfoTile(
-                            student.hasCompletedProfile ? Icons.check_circle : Icons.info_outline,
-                            'Profile Status',
-                            student.hasCompletedProfile ? 'Complete' : 'Incomplete',
-                            student.hasCompletedProfile ? theme.colors.primary : theme.colors.mutedForeground,
-                          ),
-                        ],
+                      // Handle bar
+                      Container(
+                        margin: const EdgeInsets.only(top: 6),
+                        width: 32,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: theme.colors.mutedForeground,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                      if (student.bio != null && student.bio!.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        _buildInfoSection(
-                          'Bio',
-                          [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: theme.colors.mutedForeground.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: theme.colors.border),
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: theme.colors.primaryForeground,
+                              child: Icon(
+                                Icons.person,
+                                color: theme.colors.primary,
+                                size: 22,
                               ),
-                              child: Text(
-                                student.bio!,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: theme.colors.foreground,
-                                ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    student.fullName,
+                                    style: theme.typography.lg.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Student Details',
+                                    style: theme.typography.sm.copyWith(
+                                      color: theme.colors.mutedForeground,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: Icon(Icons.close, size: 20),
+                              style: IconButton.styleFrom(
+                                backgroundColor: theme.colors.mutedForeground
+                                    .withValues(alpha: 0.1),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(8),
+                                minimumSize: const Size(32, 32),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                      if (student.jobCategories.isNotEmpty || student.preferredLocations.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        _buildInfoSection(
-                          'Preferences',
-                          [
-                            if (student.jobCategories.isNotEmpty)
-                              _buildInfoTile(
-                                Icons.work,
-                                'Job Categories',
-                                student.jobCategories.join(', '),
-                                theme.colors.primary,
-                              ),
-                            if (student.preferredLocations.isNotEmpty)
-                              _buildInfoTile(
-                                Icons.location_on,
-                                'Preferred Locations',
-                                student.preferredLocations.join(', '),
-                                theme.colors.primary,
-                              ),
-                          ],
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      // Enrollments Section
-                      _buildInfoSection(
-                        enrollments.isNotEmpty 
-                          ? 'Enrolled in ${enrollments.length} schedule(s)'
-                          : 'Not enrolled in any training schedules',
-                        enrollments.isNotEmpty 
-                          ? enrollments.map((enrollment) => _buildEnrollmentTile(context, enrollment)).toList()
-                          : [
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: theme.colors.mutedForeground.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: theme.colors.border),
+                      ),
+                      // Content
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Basic Info Section
+                              _buildInfoSection('Basic Information', [
+                                _buildInfoTile(
+                                  Icons.email,
+                                  'Email',
+                                  student.email,
+                                  theme.colors.primary,
                                 ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.info_outline, color: theme.colors.mutedForeground, size: 18),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        'This student has not enrolled in any training schedules yet.',
-                                        style: TextStyle(
-                                          color: theme.colors.mutedForeground,
-                                          fontSize: 12,
-                                        ),
+                                if (student.phoneNumber != null &&
+                                    student.phoneNumber!.isNotEmpty)
+                                  _buildInfoTile(
+                                    Icons.phone,
+                                    'Phone',
+                                    student.phoneNumber!,
+                                    theme.colors.primary,
+                                  ),
+                                _buildInfoTile(
+                                  Icons.calendar_today,
+                                  'Registration Date',
+                                  _formatDate(student.createdAt),
+                                  theme.colors.primary,
+                                ),
+                                if (student.dateOfBirth != null)
+                                  _buildInfoTile(
+                                    Icons.cake,
+                                    'Date of Birth',
+                                    student.formattedDateOfBirth ?? 'N/A',
+                                    theme.colors.primary,
+                                  ),
+                                _buildInfoTile(
+                                  student.jobAlerts
+                                      ? Icons.notifications_active
+                                      : Icons.notifications_off,
+                                  'Job Notifications',
+                                  student.jobAlerts
+                                      ? 'Subscribed'
+                                      : 'Not Subscribed',
+                                  student.jobAlerts
+                                      ? theme.colors.primary
+                                      : theme.colors.destructive,
+                                ),
+                                _buildInfoTile(
+                                  student.hasCompletedProfile
+                                      ? Icons.check_circle
+                                      : Icons.info_outline,
+                                  'Profile Status',
+                                  student.hasCompletedProfile
+                                      ? 'Complete'
+                                      : 'Incomplete',
+                                  student.hasCompletedProfile
+                                      ? theme.colors.primary
+                                      : theme.colors.mutedForeground,
+                                ),
+                              ]),
+                              if (student.bio != null &&
+                                  student.bio!.isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                _buildInfoSection('Bio', [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: theme.colors.mutedForeground
+                                          .withValues(alpha: 0.05),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: theme.colors.border,
                                       ),
                                     ),
-                                  ],
-                                ),
+                                    child: Text(
+                                      student.bio!,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: theme.colors.foreground,
+                                      ),
+                                    ),
+                                  ),
+                                ]),
+                              ],
+                              if (student.jobCategories.isNotEmpty ||
+                                  student.preferredLocations.isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                _buildInfoSection('Preferences', [
+                                  if (student.jobCategories.isNotEmpty)
+                                    _buildInfoTile(
+                                      Icons.work,
+                                      'Job Categories',
+                                      student.jobCategories.join(', '),
+                                      theme.colors.primary,
+                                    ),
+                                  if (student.preferredLocations.isNotEmpty)
+                                    _buildInfoTile(
+                                      Icons.location_on,
+                                      'Preferred Locations',
+                                      student.preferredLocations.join(', '),
+                                      theme.colors.primary,
+                                    ),
+                                ]),
+                              ],
+                              const SizedBox(height: 16),
+                              // Enrollments Section
+                              _buildInfoSection(
+                                enrollments.isNotEmpty
+                                    ? 'Enrolled in ${enrollments.length} schedule(s)'
+                                    : 'Not enrolled in any training schedules',
+                                enrollments.isNotEmpty
+                                    ? enrollments
+                                        .map(
+                                          (enrollment) => _buildEnrollmentTile(
+                                            context,
+                                            enrollment,
+                                          ),
+                                        )
+                                        .toList()
+                                    : [
+                                      Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: theme.colors.mutedForeground
+                                              .withValues(alpha: 0.05),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          border: Border.all(
+                                            color: theme.colors.border,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.info_outline,
+                                              color:
+                                                  theme.colors.mutedForeground,
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Text(
+                                                'This student has not enrolled in any training schedules yet.',
+                                                style: TextStyle(
+                                                  color:
+                                                      theme
+                                                          .colors
+                                                          .mutedForeground,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                               ),
+                              const SizedBox(height: 16),
                             ],
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
 
   Widget _buildInfoSection(String title, List<Widget> children) {
     final theme = context.theme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -672,14 +767,19 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
     );
   }
 
-  Widget _buildInfoTile(IconData icon, String title, String subtitle, Color iconColor) {
+  Widget _buildInfoTile(
+    IconData icon,
+    String title,
+    String subtitle,
+    Color iconColor,
+  ) {
     final theme = context.theme;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colors.mutedForeground.withOpacity(0.05),
+        color: theme.colors.mutedForeground.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: theme.colors.border),
       ),
@@ -688,7 +788,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
+              color: iconColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(icon, color: iconColor, size: 18),
@@ -723,9 +823,12 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
     );
   }
 
-  Widget _buildEnrollmentTile(BuildContext context, MapEntry<String, TrainingSchedule> enrollment) {
+  Widget _buildEnrollmentTile(
+    BuildContext context,
+    MapEntry<String, TrainingSchedule> enrollment,
+  ) {
     final theme = context.theme;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -746,11 +849,7 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
         children: [
           Row(
             children: [
-              Icon(
-                Icons.school,
-                color: theme.colors.primary,
-                size: 18,
-              ),
+              Icon(Icons.school, color: theme.colors.primary, size: 18),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -788,28 +887,33 @@ class _StudentsScreenState extends State<StudentsScreen> with WidgetsBindingObse
     );
   }
 
-  void _toggleSubscription(BuildContext context, UserModel student, AdminProvider adminProvider) async {
+  void _toggleSubscription(
+    BuildContext context,
+    UserModel student,
+    AdminProvider adminProvider,
+  ) async {
     final theme = context.theme;
-    
+
     try {
       await adminProvider.updateUserJobAlerts(student.uid, !student.jobAlerts);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            !student.jobAlerts 
-              ? '${student.fullName} subscribed to job notifications'
-              : '${student.fullName} unsubscribed from job notifications',
+            !student.jobAlerts
+                ? '${student.fullName} subscribed to job notifications'
+                : '${student.fullName} unsubscribed from job notifications',
           ),
-          backgroundColor: !student.jobAlerts ? theme.colors.primary : theme.colors.mutedForeground,
+          backgroundColor:
+              !student.jobAlerts
+                  ? theme.colors.primary
+                  : theme.colors.mutedForeground,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to update job notifications: $e',
-          ),
+          content: Text('Failed to update job notifications: $e'),
           backgroundColor: theme.colors.destructive,
         ),
       );

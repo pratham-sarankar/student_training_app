@@ -37,19 +37,17 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-              setState(() {
-        _errorMessage = 'User not authenticated';
-        _isLoading = false;
-        _isRefreshing = false;
-      });
-      return;
+        setState(() {
+          _errorMessage = 'User not authenticated';
+          _isLoading = false;
+          _isRefreshing = false;
+        });
+        return;
       }
 
       // Fetch user's purchased courses from Firestore
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(currentUser.uid)
-          .get();
+      final userDoc =
+          await _firestore.collection('users').doc(currentUser.uid).get();
 
       if (!userDoc.exists) {
         setState(() {
@@ -61,7 +59,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       }
 
       final userData = userDoc.data() as Map<String, dynamic>;
-      final purchasedCourseIds = List<String>.from(userData['purchasedCourses'] ?? []);
+      final purchasedCourseIds = List<String>.from(
+        userData['purchasedCourses'] ?? [],
+      );
 
       if (purchasedCourseIds.isEmpty) {
         setState(() {
@@ -76,10 +76,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       final courses = <Map<String, dynamic>>[];
       for (final courseId in purchasedCourseIds) {
         try {
-          final courseDoc = await _firestore
-              .collection('courses')
-              .doc(courseId)
-              .get();
+          final courseDoc =
+              await _firestore.collection('courses').doc(courseId).get();
 
           if (courseDoc.exists) {
             final courseData = courseDoc.data() as Map<String, dynamic>;
@@ -88,7 +86,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
               'title': courseData['title'] ?? 'Untitled Course',
               'category': courseData['category'] ?? 'General',
               'level': courseData['level'] ?? 'Beginner',
-              'image': courseData['image'] ?? 'https://picsum.photos/300/200?random=1',
+              'image':
+                  courseData['image'] ??
+                  'https://picsum.photos/300/200?random=1',
               'duration': courseData['duration'] ?? '8 weeks',
               'cost': courseData['cost']?.toString() ?? '0',
               'instructor': courseData['instructor'] ?? 'Unknown Instructor',
@@ -135,10 +135,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       final currentUser = _auth.currentUser;
       if (currentUser == null) return;
 
-      await _firestore
-          .collection('users')
-          .doc(currentUser.uid)
-          .update({
+      await _firestore.collection('users').doc(currentUser.uid).update({
         'courseLastAccessed.$courseId': Timestamp.now(),
       });
     } catch (e) {
@@ -149,7 +146,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
@@ -183,7 +180,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: theme.colors.primary.withOpacity(0.1),
+                        color: theme.colors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -198,67 +195,75 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   ],
                 ),
               ),
-      
+
               // Content
               Expanded(
-                child: _isLoading
-                    ? _buildLoadingState()
-                    : _errorMessage != null
+                child:
+                    _isLoading
+                        ? _buildLoadingState()
+                        : _errorMessage != null
                         ? _buildErrorState()
                         : _purchasedCourses.isEmpty
-                            ? _buildEmptyState()
-                            : RefreshIndicator(
-                                onRefresh: _loadUserCourses,
-                                child: Stack(
-                                  children: [
-                                    ListView.builder(
-                                      padding: EdgeInsets.symmetric(horizontal: 16),
-                                      itemCount: _purchasedCourses.length,
-                                      itemBuilder: (context, index) {
-                                        final course = _purchasedCourses[index];
-                                        return _buildSimpleCourseCard(course);
-                                      },
-                                    ),
-                                    if (_isRefreshing)
-                                      Positioned(
-                                        top: 20,
-                                        left: 0,
-                                        right: 0,
-                                        child: Center(
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                            decoration: BoxDecoration(
-                                              color: theme.colors.foreground.withOpacity(0.87),
-                                              borderRadius: BorderRadius.circular(20),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                SizedBox(
-                                                  width: 16,
-                                                  height: 16,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    valueColor: AlwaysStoppedAnimation<Color>(theme.colors.background),
+                        ? _buildEmptyState()
+                        : RefreshIndicator(
+                          onRefresh: _loadUserCourses,
+                          child: Stack(
+                            children: [
+                              ListView.builder(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                itemCount: _purchasedCourses.length,
+                                itemBuilder: (context, index) {
+                                  final course = _purchasedCourses[index];
+                                  return _buildSimpleCourseCard(course);
+                                },
+                              ),
+                              if (_isRefreshing)
+                                Positioned(
+                                  top: 20,
+                                  left: 0,
+                                  right: 0,
+                                  child: Center(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.colors.foreground
+                                            .withValues(alpha: 0.87),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    theme.colors.background,
                                                   ),
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  'Refreshing...',
-                                                  style: theme.typography.sm.copyWith(
-                                                    color: theme.colors.background,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
                                             ),
                                           ),
-                                        ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'Refreshing...',
+                                            style: theme.typography.sm.copyWith(
+                                              color: theme.colors.background,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                  ],
+                                    ),
+                                  ),
                                 ),
-                              ),
+                            ],
+                          ),
+                        ),
               ),
             ],
           ),
@@ -269,7 +274,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
   Widget _buildLoadingState() {
     final theme = context.theme;
-    
+
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 16),
       itemCount: 3, // Show 3 skeleton cards while loading
@@ -280,12 +285,12 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             color: theme.colors.background,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: theme.colors.border.withOpacity(0.1),
+              color: theme.colors.border.withValues(alpha: 0.1),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: theme.colors.foreground.withOpacity(0.05),
+                color: theme.colors.foreground.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -306,7 +311,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   ),
                 ),
                 SizedBox(height: 6),
-                
+
                 // Tags skeleton
                 Row(
                   children: [
@@ -335,7 +340,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                 Row(
                   children: [
                     Container(
-                                height: 12,
+                      height: 12,
                       width: 80,
                       decoration: BoxDecoration(
                         color: theme.colors.muted,
@@ -385,7 +390,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
   Widget _buildErrorState() {
     final theme = context.theme;
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -394,7 +399,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: theme.colors.destructive.withOpacity(0.1),
+              color: theme.colors.destructive.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(40),
             ),
             child: Icon(
@@ -403,7 +408,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
               color: theme.colors.destructive,
             ),
           ),
-                    SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Error Loading Courses',
             style: theme.typography.lg.copyWith(
@@ -432,7 +437,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
   Widget _buildEmptyState() {
     final theme = context.theme;
-    
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       child: Center(
@@ -443,7 +448,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: theme.colors.primary.withOpacity(0.1),
+                color: theme.colors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Icon(
@@ -474,12 +479,10 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             FButton(
               style: FButtonStyle.primary,
               onPress: () => Navigator.of(context).pop(),
-                              child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  child: Text(
-                    'Browse Courses',
-                  ),
-                ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: Text('Browse Courses'),
+              ),
             ),
             SizedBox(height: 16),
             Text(
@@ -496,21 +499,21 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
     );
   }
 
-    Widget _buildSimpleCourseCard(Map<String, dynamic> course) {
+  Widget _buildSimpleCourseCard(Map<String, dynamic> course) {
     final theme = context.theme;
-    
+
     return Container(
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: theme.colors.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: theme.colors.border.withOpacity(0.1),
+          color: theme.colors.border.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.colors.foreground.withOpacity(0.05),
+            color: theme.colors.foreground.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -534,15 +537,18 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                          SizedBox(height: 6),
-                  
+                  SizedBox(height: 6),
+
                   // Tags
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: theme.colors.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -556,9 +562,12 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       ),
                       SizedBox(width: 6),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: theme.colors.secondary.withOpacity(0.1),
+                          color: theme.colors.secondary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -602,7 +611,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                           course['instructor'],
                           style: theme.typography.sm.copyWith(
                             color: theme.colors.mutedForeground,
-                                  fontSize: 10,
+                            fontSize: 10,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -682,17 +691,21 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                         if (mounted) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => MyCoursesDetailsScreen(course: course),
+                              builder:
+                                  (context) =>
+                                      MyCoursesDetailsScreen(course: course),
                             ),
                           );
                         }
                       },
                       child: Text(
-                        course['progress'] == 1.0 ? 'Review Course' : 'Continue Learning',
+                        course['progress'] == 1.0
+                            ? 'Review Course'
+                            : 'Continue Learning',
                         style: theme.typography.sm.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colors.primaryForeground,
-                            fontSize: 12,
+                          fontSize: 12,
                         ),
                       ),
                     ),
@@ -706,4 +719,3 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
     );
   }
 }
-

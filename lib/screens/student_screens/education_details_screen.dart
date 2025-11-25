@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:learn_work/models/education.dart';
 import 'package:learn_work/services/education_service.dart';
 import 'package:learn_work/widgets/shimmer_loading.dart';
 
@@ -15,10 +14,9 @@ class EducationDetailsScreen extends StatefulWidget {
 class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   final _educationService = EducationService();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isLoading = false;
   bool _isSaving = false;
-  EducationModel? _currentEducation;
 
   // Form controllers
   bool _isCurrentlyPursuing = false;
@@ -61,10 +59,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     'Others',
   ];
 
-  static const List<String> _mediumOptions = [
-    'English',
-    'Hindi',
-  ];
+  static const List<String> _mediumOptions = ['English', 'Hindi'];
 
   static const List<String> _careerGoalOptions = [
     'Job/ Career',
@@ -87,15 +82,15 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
       final education = await _educationService.getCurrentUserEducation();
       if (education != null) {
         setState(() {
-          _currentEducation = education;
           _isCurrentlyPursuing = education.isCurrentlyPursuing;
           _selectedHighestEducation = education.highestEducation;
           _selectedDegree = education.degree;
           _selectedSpecialization = education.specialization;
           _collegeName = education.collegeName;
-          _completionDate = education.completionYear != null 
-              ? DateTime(education.completionYear!, 1, 1) 
-              : null;
+          _completionDate =
+              education.completionYear != null
+                  ? DateTime(education.completionYear!, 1, 1)
+                  : null;
           _selectedMedium = education.medium;
           _selectedCareerGoals.clear();
           _selectedCareerGoals.addAll(education.careerGoals);
@@ -166,7 +161,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -191,265 +186,278 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
           ),
           centerTitle: true,
         ),
-        body: _isLoading
-            ? ShimmerLoading.educationShimmer(context)
-            : SafeArea(
-                child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Header
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: theme.colors.primary.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: theme.colors.primary.withOpacity(0.1),
-                              width: 1,
+        body:
+            _isLoading
+                ? ShimmerLoading.educationShimmer(context)
+                : SafeArea(
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: theme.colors.primary.withValues(
+                                alpha: 0.05,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: theme.colors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: theme.colors.primary,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.school,
+                                    size: 20,
+                                    color: theme.colors.primaryForeground,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Education Information',
+                                        style: theme.typography.lg.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: theme.colors.foreground,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Tell us about your educational background',
+                                        style: theme.typography.sm.copyWith(
+                                          color: theme.colors.mutedForeground,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: theme.colors.primary,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.school,
-                                  size: 20,
-                                  color: theme.colors.primaryForeground,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Education Information',
-                                      style: theme.typography.lg.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: theme.colors.foreground,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Tell us about your educational background',
-                                      style: theme.typography.sm.copyWith(
-                                        color: theme.colors.mutedForeground,
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          const SizedBox(height: 24),
+
+                          // Currently Pursuing Education
+                          _buildSectionTitle('Currently Pursuing Education'),
+                          const SizedBox(height: 8),
+                          _buildYesNoSelector(
+                            value: _isCurrentlyPursuing,
+                            onChanged: (value) {
+                              setState(() {
+                                _isCurrentlyPursuing = value;
+                              });
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
-                        // Currently Pursuing Education
-                        _buildSectionTitle('Currently Pursuing Education'),
-                        const SizedBox(height: 8),
-                        _buildYesNoSelector(
-                          value: _isCurrentlyPursuing,
-                          onChanged: (value) {
-                            setState(() {
-                              _isCurrentlyPursuing = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Highest Education
-                        _buildSectionTitle('Highest Education'),
-                        const SizedBox(height: 8),
-                        _buildDropdownField(
-                          value: _selectedHighestEducation,
-                          items: _highestEducationOptions,
-                          hint: 'Select your highest education',
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedHighestEducation = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select your highest education';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Degree
-                        _buildSectionTitle('Degree'),
-                        const SizedBox(height: 8),
-                        _buildDropdownField(
-                          value: _selectedDegree,
-                          items: _degreeOptions,
-                          hint: 'Select your degree',
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedDegree = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select your degree';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Specialization
-                        _buildSectionTitle('Specialization'),
-                        const SizedBox(height: 8),
-                        _buildDropdownField(
-                          value: _selectedSpecialization,
-                          items: _specializationOptions,
-                          hint: 'Select your specialization',
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedSpecialization = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select your specialization';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // College Name
-                        _buildSectionTitle('College Name'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          value: _collegeName,
-                          hint: 'Enter your college name',
-                          onChanged: (value) {
-                            setState(() {
-                              _collegeName = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your college name';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Completion Date
-                        _buildSectionTitle('Completion Date'),
-                        const SizedBox(height: 8),
-                        _buildDateField(
-                          value: _completionDate,
-                          hint: 'Select completion date',
-                          onChanged: (value) {
-                            setState(() {
-                              _completionDate = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Please select completion date';
-                            }
-                            final currentDate = DateTime.now();
-                            final minDate = DateTime(1950, 1, 1);
-                            final maxDate = DateTime(currentDate.year + 5, 12, 31);
-                            if (value.isBefore(minDate) || value.isAfter(maxDate)) {
-                              return 'Please select a valid date between 1950 and ${currentDate.year + 5}';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Medium
-                        _buildSectionTitle('Medium'),
-                        const SizedBox(height: 8),
-                        _buildDropdownField(
-                          value: _selectedMedium,
-                          items: _mediumOptions,
-                          hint: 'Select your medium',
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedMedium = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select your medium';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Career Goals
-                        _buildSectionTitle('I am looking for'),
-                        const SizedBox(height: 8),
-                        _buildMultiSelectField(
-                          selectedItems: _selectedCareerGoals,
-                          items: _careerGoalOptions,
-                          onChanged: (selectedItems) {
-                            setState(() {
-                              _selectedCareerGoals.clear();
-                              _selectedCareerGoals.addAll(selectedItems);
-                            });
-                          },
-                          validator: (value) {
-                            if (_selectedCareerGoals.isEmpty) {
-                              return 'Please select at least one career goal';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Save Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: FButton(
-                            style: FButtonStyle.primary,
-                            onPress: _isSaving ? null : _saveEducation,
-                            child: _isSaving
-                                ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        theme.colors.primaryForeground,
-                                      ),
-                                    ),
-                                  )
-                                : Text(
-                                    'Save Education Details',
-                                    style: theme.typography.sm.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.colors.primaryForeground,
-                                    ),
-                                  ),
+                          // Highest Education
+                          _buildSectionTitle('Highest Education'),
+                          const SizedBox(height: 8),
+                          _buildDropdownField(
+                            value: _selectedHighestEducation,
+                            items: _highestEducationOptions,
+                            hint: 'Select your highest education',
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedHighestEducation = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select your highest education';
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                          const SizedBox(height: 24),
+
+                          // Degree
+                          _buildSectionTitle('Degree'),
+                          const SizedBox(height: 8),
+                          _buildDropdownField(
+                            value: _selectedDegree,
+                            items: _degreeOptions,
+                            hint: 'Select your degree',
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedDegree = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select your degree';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Specialization
+                          _buildSectionTitle('Specialization'),
+                          const SizedBox(height: 8),
+                          _buildDropdownField(
+                            value: _selectedSpecialization,
+                            items: _specializationOptions,
+                            hint: 'Select your specialization',
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedSpecialization = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select your specialization';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+
+                          // College Name
+                          _buildSectionTitle('College Name'),
+                          const SizedBox(height: 8),
+                          _buildTextField(
+                            value: _collegeName,
+                            hint: 'Enter your college name',
+                            onChanged: (value) {
+                              setState(() {
+                                _collegeName = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your college name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Completion Date
+                          _buildSectionTitle('Completion Date'),
+                          const SizedBox(height: 8),
+                          _buildDateField(
+                            value: _completionDate,
+                            hint: 'Select completion date',
+                            onChanged: (value) {
+                              setState(() {
+                                _completionDate = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select completion date';
+                              }
+                              final currentDate = DateTime.now();
+                              final minDate = DateTime(1950, 1, 1);
+                              final maxDate = DateTime(
+                                currentDate.year + 5,
+                                12,
+                                31,
+                              );
+                              if (value.isBefore(minDate) ||
+                                  value.isAfter(maxDate)) {
+                                return 'Please select a valid date between 1950 and ${currentDate.year + 5}';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Medium
+                          _buildSectionTitle('Medium'),
+                          const SizedBox(height: 8),
+                          _buildDropdownField(
+                            value: _selectedMedium,
+                            items: _mediumOptions,
+                            hint: 'Select your medium',
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedMedium = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select your medium';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Career Goals
+                          _buildSectionTitle('I am looking for'),
+                          const SizedBox(height: 8),
+                          _buildMultiSelectField(
+                            selectedItems: _selectedCareerGoals,
+                            items: _careerGoalOptions,
+                            onChanged: (selectedItems) {
+                              setState(() {
+                                _selectedCareerGoals.clear();
+                                _selectedCareerGoals.addAll(selectedItems);
+                              });
+                            },
+                            validator: (value) {
+                              if (_selectedCareerGoals.isEmpty) {
+                                return 'Please select at least one career goal';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 32),
+
+                          // Save Button
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: FButton(
+                              style: FButtonStyle.primary,
+                              onPress: _isSaving ? null : _saveEducation,
+                              child:
+                                  _isSaving
+                                      ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                theme.colors.primaryForeground,
+                                              ),
+                                        ),
+                                      )
+                                      : Text(
+                                        'Save Education Details',
+                                        style: theme.typography.sm.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: theme.colors.primaryForeground,
+                                        ),
+                                      ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
       ),
     );
   }
@@ -470,7 +478,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     required ValueChanged<bool> onChanged,
   }) {
     final theme = context.theme;
-    
+
     return Row(
       children: [
         Expanded(
@@ -491,7 +499,10 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                 textAlign: TextAlign.center,
                 style: theme.typography.sm.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: value ? theme.colors.primaryForeground : theme.colors.foreground,
+                  color:
+                      value
+                          ? theme.colors.primaryForeground
+                          : theme.colors.foreground,
                 ),
               ),
             ),
@@ -516,7 +527,10 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                 textAlign: TextAlign.center,
                 style: theme.typography.sm.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: !value ? theme.colors.primaryForeground : theme.colors.foreground,
+                  color:
+                      !value
+                          ? theme.colors.primaryForeground
+                          : theme.colors.foreground,
                 ),
               ),
             ),
@@ -534,20 +548,21 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     String? Function(String?)? validator,
   }) {
     final theme = context.theme;
-    
+
     return DropdownButtonFormField<String>(
       value: value,
-      items: items.map((String item) {
-        return DropdownMenuItem<String>(
-          value: item,
-          child: Text(
-            item,
-            style: theme.typography.sm.copyWith(
-              color: theme.colors.foreground,
-            ),
-          ),
-        );
-      }).toList(),
+      items:
+          items.map((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(
+                item,
+                style: theme.typography.sm.copyWith(
+                  color: theme.colors.foreground,
+                ),
+              ),
+            );
+          }).toList(),
       onChanged: onChanged,
       validator: validator,
       decoration: InputDecoration(
@@ -573,10 +588,16 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: theme.colors.destructive),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
       ),
       dropdownColor: theme.colors.background,
-      icon: Icon(Icons.keyboard_arrow_down, color: theme.colors.mutedForeground),
+      icon: Icon(
+        Icons.keyboard_arrow_down,
+        color: theme.colors.mutedForeground,
+      ),
     );
   }
 
@@ -587,7 +608,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     String? Function(String?)? validator,
   }) {
     final theme = context.theme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -597,51 +618,70 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
-            children: items.map((item) {
-              final isSelected = selectedItems.contains(item);
-              return GestureDetector(
-                onTap: () {
-                  final newSelection = List<String>.from(selectedItems);
-                  if (isSelected) {
-                    newSelection.remove(item);
-                  } else {
-                    newSelection.add(item);
-                  }
-                  onChanged(newSelection);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected ? theme.colors.primary.withOpacity(0.1) : theme.colors.background,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: theme.colors.border,
-                        width: items.indexOf(item) == items.length - 1 ? 0 : 1,
+            children:
+                items.map((item) {
+                  final isSelected = selectedItems.contains(item);
+                  return GestureDetector(
+                    onTap: () {
+                      final newSelection = List<String>.from(selectedItems);
+                      if (isSelected) {
+                        newSelection.remove(item);
+                      } else {
+                        newSelection.add(item);
+                      }
+                      onChanged(newSelection);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isSelected ? Icons.check_box : Icons.check_box_outline_blank,
-                        color: isSelected ? theme.colors.primary : theme.colors.mutedForeground,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          item,
-                          style: theme.typography.sm.copyWith(
-                            color: isSelected ? theme.colors.primary : theme.colors.foreground,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      decoration: BoxDecoration(
+                        color:
+                            isSelected
+                                ? theme.colors.primary.withValues(alpha: 0.1)
+                                : theme.colors.background,
+                        border: Border(
+                          bottom: BorderSide(
+                            color: theme.colors.border,
+                            width:
+                                items.indexOf(item) == items.length - 1 ? 0 : 1,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                      child: Row(
+                        children: [
+                          Icon(
+                            isSelected
+                                ? Icons.check_box
+                                : Icons.check_box_outline_blank,
+                            color:
+                                isSelected
+                                    ? theme.colors.primary
+                                    : theme.colors.mutedForeground,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: theme.typography.sm.copyWith(
+                                color:
+                                    isSelected
+                                        ? theme.colors.primary
+                                        : theme.colors.foreground,
+                                fontWeight:
+                                    isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
           ),
         ),
         if (validator != null && validator(null) != null)
@@ -666,7 +706,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     String? Function(String?)? validator,
   }) {
     final theme = context.theme;
-    
+
     return TextFormField(
       initialValue: value,
       onChanged: onChanged,
@@ -694,11 +734,12 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: theme.colors.destructive),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
       ),
-      style: theme.typography.sm.copyWith(
-        color: theme.colors.foreground,
-      ),
+      style: theme.typography.sm.copyWith(color: theme.colors.foreground),
     );
   }
 
@@ -709,7 +750,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     String? Function(DateTime?)? validator,
   }) {
     final theme = context.theme;
-    
+
     return GestureDetector(
       onTap: () async {
         final DateTime? picked = await showDatePicker(
@@ -746,11 +787,14 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
           children: [
             Expanded(
               child: Text(
-                value != null 
+                value != null
                     ? '${_getMonthName(value.month)} ${value.year}'
                     : hint,
                 style: theme.typography.sm.copyWith(
-                  color: value != null ? theme.colors.foreground : theme.colors.mutedForeground,
+                  color:
+                      value != null
+                          ? theme.colors.foreground
+                          : theme.colors.mutedForeground,
                 ),
               ),
             ),
@@ -767,8 +811,18 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
 
   String _getMonthName(int month) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[month - 1];
   }

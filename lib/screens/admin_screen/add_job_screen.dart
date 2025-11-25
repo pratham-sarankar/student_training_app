@@ -141,7 +141,11 @@ class _AddJobScreenState extends State<AddJobScreen> {
         elevation: 0,
         toolbarHeight: 48,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colors.foreground, size: 18),
+          icon: Icon(
+            Icons.arrow_back,
+            color: theme.colors.foreground,
+            size: 18,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -154,7 +158,11 @@ class _AddJobScreenState extends State<AddJobScreen> {
         actions: [
           if (isEditing)
             IconButton(
-              icon: Icon(Icons.delete, color: theme.colors.destructive, size: 18),
+              icon: Icon(
+                Icons.delete,
+                color: theme.colors.destructive,
+                size: 18,
+              ),
               onPressed: _showDeleteConfirmation,
               tooltip: 'Delete Job',
             ),
@@ -172,10 +180,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: theme.colors.primary.withOpacity(0.05),
+                    color: theme.colors.primary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: theme.colors.primary.withOpacity(0.1),
+                      color: theme.colors.primary.withValues(alpha: 0.1),
                     ),
                   ),
                   child: Row(
@@ -183,7 +191,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: theme.colors.primary.withOpacity(0.1),
+                          color: theme.colors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Icon(
@@ -514,7 +522,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     Icons.arrow_drop_down,
                     color: theme.colors.primary,
                   ),
-                  style: TextStyle(fontSize: 14, color: theme.colors.foreground),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: theme.colors.foreground,
+                  ),
                 ),
                 const SizedBox(height: 8),
 
@@ -569,7 +580,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     Icons.arrow_drop_down,
                     color: theme.colors.primary,
                   ),
-                  style: TextStyle(fontSize: 14, color: theme.colors.foreground),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: theme.colors.foreground,
+                  ),
                 ),
                 const SizedBox(height: 8),
 
@@ -590,7 +604,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colors.primary.withOpacity(0.05),
+                          color: theme.colors.primary.withValues(alpha: 0.05),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8),
@@ -601,7 +615,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withOpacity(0.1),
+                                color: theme.colors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Icon(
@@ -690,13 +706,17 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                       decoration: InputDecoration(
                                         hintText: 'Enter a new requirement...',
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                           borderSide: BorderSide(
                                             color: theme.colors.border,
                                           ),
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                           borderSide: BorderSide(
                                             color: theme.colors.primary,
                                           ),
@@ -716,7 +736,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                                   icon: Icon(
                                                     Icons.clear,
                                                     size: 16,
-                                                    color: theme.colors.mutedForeground,
+                                                    color:
+                                                        theme
+                                                            .colors
+                                                            .mutedForeground,
                                                   ),
                                                   onPressed:
                                                       () =>
@@ -786,7 +809,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colors.primary.withOpacity(0.05),
+                          color: theme.colors.primary.withValues(alpha: 0.05),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             topRight: Radius.circular(8),
@@ -797,7 +820,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withOpacity(0.1),
+                                color: theme.colors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Icon(
@@ -875,56 +900,64 @@ class _AddJobScreenState extends State<AddJobScreen> {
                               const SizedBox(height: 12),
                             ],
 
-                                                         // Input field for new responsibilities
-                             Row(
-                               children: [
-                                 Expanded(
-                                   child: Container(
-                                     height: 38,
-                                     child: TextFormField(
-                                       controller: _responsibilitiesController,
-                                       decoration: InputDecoration(
-                                         hintText: 'Enter a new responsibility...',
-                                         border: OutlineInputBorder(
-                                           borderRadius: BorderRadius.circular(4),
-                                           borderSide: BorderSide(
-                                             color: theme.colors.border,
-                                           ),
-                                         ),
-                                         focusedBorder: OutlineInputBorder(
-                                           borderRadius: BorderRadius.circular(4),
-                                           borderSide: BorderSide(
-                                             color: theme.colors.primary,
-                                           ),
-                                         ),
-                                         contentPadding:
-                                             const EdgeInsets.symmetric(
-                                               horizontal: 10,
-                                               vertical: 8,
-                                             ),
-                                         filled: true,
-                                         fillColor: theme.colors.background,
-                                         suffixIcon:
-                                             _responsibilitiesController
-                                                     .text
-                                                     .isNotEmpty
-                                                 ? IconButton(
-                                                   icon: Icon(
-                                                     Icons.clear,
-                                                     size: 16,
-                                                     color: theme.colors.mutedForeground,
-                                                   ),
-                                                   onPressed:
-                                                       () =>
-                                                           _responsibilitiesController
-                                                               .clear(),
-                                                   tooltip: 'Clear',
-                                                 )
-                                                 : null,
-                                       ),
-                                     ),
-                                   ),
-                                 ),
+                            // Input field for new responsibilities
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 38,
+                                    child: TextFormField(
+                                      controller: _responsibilitiesController,
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            'Enter a new responsibility...',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: theme.colors.border,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                          borderSide: BorderSide(
+                                            color: theme.colors.primary,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 8,
+                                            ),
+                                        filled: true,
+                                        fillColor: theme.colors.background,
+                                        suffixIcon:
+                                            _responsibilitiesController
+                                                    .text
+                                                    .isNotEmpty
+                                                ? IconButton(
+                                                  icon: Icon(
+                                                    Icons.clear,
+                                                    size: 16,
+                                                    color:
+                                                        theme
+                                                            .colors
+                                                            .mutedForeground,
+                                                  ),
+                                                  onPressed:
+                                                      () =>
+                                                          _responsibilitiesController
+                                                              .clear(),
+                                                  tooltip: 'Clear',
+                                                )
+                                                : null,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(width: 6),
                                 Container(
                                   height: 38,
@@ -969,9 +1002,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: theme.colors.primary.withOpacity(0.02),
+                    color: theme.colors.primary.withValues(alpha: 0.02),
                     border: Border.all(
-                      color: theme.colors.primary.withOpacity(0.2),
+                      color: theme.colors.primary.withValues(alpha: 0.2),
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -1117,22 +1150,22 @@ class _AddJobScreenState extends State<AddJobScreen> {
         print('Final requirements list: $requirements');
         print('Final responsibilities list: $responsibilities');
 
-                 // Ensure salary has rupee symbol
-         String salary = _salaryController.text.trim();
-         if (salary.isNotEmpty && !salary.startsWith('₹')) {
-           salary = '₹$salary';
-         }
-         
-         final job = Job(
-           id:
-               widget.job?.id ??
-               DateTime.now().millisecondsSinceEpoch.toString(),
-           title: _titleController.text.trim(),
-           company: _companyController.text.trim(),
-           location: _locationController.text.trim(),
-           type: _typeController.text.trim(),
-           salary: salary,
-           category: _categoryController.text.trim(),
+        // Ensure salary has rupee symbol
+        String salary = _salaryController.text.trim();
+        if (salary.isNotEmpty && !salary.startsWith('₹')) {
+          salary = '₹$salary';
+        }
+
+        final job = Job(
+          id:
+              widget.job?.id ??
+              DateTime.now().millisecondsSinceEpoch.toString(),
+          title: _titleController.text.trim(),
+          company: _companyController.text.trim(),
+          location: _locationController.text.trim(),
+          type: _typeController.text.trim(),
+          salary: salary,
+          category: _categoryController.text.trim(),
           posted:
               widget.job?.posted ??
               'Just now', // Preserve original posted date when editing
@@ -1219,7 +1252,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   Navigator.of(context).pop();
                   _deleteJob();
                 },
-                style: TextButton.styleFrom(foregroundColor: theme.colors.destructive),
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colors.destructive,
+                ),
                 child: const Text('Delete'),
               ),
             ],

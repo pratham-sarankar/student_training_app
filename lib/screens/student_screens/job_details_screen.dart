@@ -4,10 +4,7 @@ import 'package:forui/forui.dart';
 class JobDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> job;
 
-  const JobDetailsScreen({
-    super.key,
-    required this.job,
-  });
+  const JobDetailsScreen({super.key, required this.job});
 
   @override
   State<JobDetailsScreen> createState() => _JobDetailsScreenState();
@@ -17,7 +14,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return Scaffold(
       backgroundColor: theme.colors.background,
       appBar: AppBar(
@@ -84,10 +81,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                               if (loadingProgress == null) return child;
                               return Center(
                                 child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
+                                  value:
+                                      loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress
+                                                  .expectedTotalBytes!
+                                          : null,
                                   strokeWidth: 2,
                                   color: theme.colors.primary,
                                 ),
@@ -124,7 +124,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Job Details Grid
                   Row(
                     children: [
@@ -174,9 +174,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 ],
               ),
             ),
-            
+
             Divider(height: 1, thickness: 1, color: theme.colors.border),
-            
+
             // Job Description Section
             Padding(
               padding: const EdgeInsets.all(12),
@@ -194,7 +194,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 8),
                   _buildDescriptionText(),
                   const SizedBox(height: 16),
-                  
+
                   Text(
                     'Requirements',
                     style: TextStyle(
@@ -206,7 +206,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 8),
                   _buildRequirementsList(),
                   const SizedBox(height: 16),
-                  
+
                   Text(
                     'Benefits',
                     style: TextStyle(
@@ -220,7 +220,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 ],
               ),
             ),
-            
+
             // Apply Button
             Container(
               padding: const EdgeInsets.all(12),
@@ -249,25 +249,18 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildDetailCard(IconData icon, String label, String value) {
     final theme = context.theme;
-    
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: theme.colors.mutedForeground.withOpacity(0.05),
+        color: theme.colors.mutedForeground.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: theme.colors.border,
-          width: 1,
-        ),
+        border: Border.all(color: theme.colors.border, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 16,
-            color: theme.colors.mutedForeground,
-          ),
+          Icon(icon, size: 16, color: theme.colors.mutedForeground),
           const SizedBox(height: 6),
           Text(
             label,
@@ -293,7 +286,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildDescriptionText() {
     final theme = context.theme;
-    
+
     return Text(
       'We are looking for a talented and experienced professional to join our team. '
       'This role involves working on exciting projects, collaborating with cross-functional teams, '
@@ -309,7 +302,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildRequirementsList() {
     final theme = context.theme;
-    
+
     final requirements = [
       'Bachelor\'s degree in related field',
       '3+ years of relevant experience',
@@ -320,40 +313,45 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     ];
 
     return Column(
-      children: requirements.map((req) => Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 4,
-              height: 4,
-              margin: const EdgeInsets.only(top: 6),
-              decoration: BoxDecoration(
-                color: theme.colors.primary,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                req,
-                style: TextStyle(
-                  color: theme.colors.mutedForeground,
-                  fontSize: 13,
-                  height: 1.3,
+      children:
+          requirements
+              .map(
+                (req) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 6),
+                        decoration: BoxDecoration(
+                          color: theme.colors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          req,
+                          style: TextStyle(
+                            color: theme.colors.mutedForeground,
+                            fontSize: 13,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      )).toList(),
+              )
+              .toList(),
     );
   }
 
   Widget _buildBenefitsList() {
     final theme = context.theme;
-    
+
     final benefits = [
       'Competitive salary and benefits package',
       'Flexible working hours and remote options',
@@ -364,89 +362,95 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     ];
 
     return Column(
-      children: benefits.map((benefit) => Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              Icons.check_circle,
-              size: 14,
-              color: theme.colors.primary,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                benefit,
-                style: TextStyle(
-                  color: theme.colors.mutedForeground,
-                  fontSize: 13,
-                  height: 1.3,
+      children:
+          benefits
+              .map(
+                (benefit) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        size: 14,
+                        color: theme.colors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          benefit,
+                          style: TextStyle(
+                            color: theme.colors.mutedForeground,
+                            fontSize: 13,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      )).toList(),
+              )
+              .toList(),
     );
   }
 
   void _showApplicationDialog() {
     final theme = context.theme;
-    
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Apply for ${widget.job['title']}',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: theme.colors.foreground,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to apply for this position? '
-          'You will be redirected to the application form.',
-          style: TextStyle(
-            fontSize: 13,
-            color: theme.colors.mutedForeground,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Apply for ${widget.job['title']}',
               style: TextStyle(
-                color: theme.colors.mutedForeground,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          FButton(
-            style: FButtonStyle.primary,
-            onPress: () {
-              Navigator.pop(context);
-              _showApplicationForm();
-            },
-            child: Text(
-              'Continue',
-              style: TextStyle(
-                color: theme.colors.primaryForeground,
-                fontSize: 13,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
+                color: theme.colors.foreground,
               ),
             ),
+            content: Text(
+              'Are you sure you want to apply for this position? '
+              'You will be redirected to the application form.',
+              style: TextStyle(
+                fontSize: 13,
+                color: theme.colors.mutedForeground,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: theme.colors.mutedForeground,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              FButton(
+                style: FButtonStyle.primary,
+                onPress: () {
+                  Navigator.pop(context);
+                  _showApplicationForm();
+                },
+                child: Text(
+                  'Continue',
+                  style: TextStyle(
+                    color: theme.colors.primaryForeground,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showApplicationForm() {
     final theme = context.theme;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -460,7 +464,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildApplicationForm() {
     final theme = context.theme;
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -480,26 +484,26 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.close, size: 20, color: theme.colors.mutedForeground),
+                icon: Icon(
+                  Icons.close,
+                  size: 20,
+                  color: theme.colors.mutedForeground,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Form fields would go here in a real app
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: theme.colors.mutedForeground.withOpacity(0.05),
+              color: theme.colors.mutedForeground.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Column(
               children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 40,
-                  color: theme.colors.primary,
-                ),
+                Icon(Icons.check_circle, size: 40, color: theme.colors.primary),
                 const SizedBox(height: 12),
                 Text(
                   'Application Submitted!',
@@ -522,9 +526,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           SizedBox(
             width: double.infinity,
             height: 44,

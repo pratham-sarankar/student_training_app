@@ -4,8 +4,6 @@ import 'package:forui/forui.dart';
 import 'package:learn_work/screens/student_screens/email_verification_screen.dart';
 import 'package:learn_work/screens/student_screens/login_screen.dart';
 import '../../services/auth_service.dart';
-import 'phone_verification.dart';
-import 'main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -57,8 +55,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       return;
     }
-    
-    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text.trim())) {
+
+    if (!RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(_emailController.text.trim())) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please enter a valid email'),
@@ -89,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       return;
     }
-    
+
     if (_passwordController.text.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -110,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       return;
     }
-    
+
     if (_confirmPasswordController.text != _passwordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -149,9 +149,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
 
         // Parse first and last name
-        final nameParts = _fullNameController.text.trim().split(' ');
-        final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
-        final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
         // Create user document in Firestore using UserService
         // final userService = UserService(); // This line was removed as per the new_code
@@ -202,7 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return Scaffold(
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle(
@@ -219,258 +216,261 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 24),
-                
-                // App Logo/Title
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: theme.colors.primaryForeground,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: theme.colors.border,
-                      width: 1,
+
+                  // App Logo/Title
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: theme.colors.primaryForeground,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: theme.colors.border, width: 1),
+                    ),
+                    child: Icon(
+                      Icons.school_outlined,
+                      size: 40,
+                      color: theme.colors.primary,
                     ),
                   ),
-                  child: Icon(
-                    Icons.school_outlined,
-                    size: 40,
-                    color: theme.colors.primary,
+                  const SizedBox(height: 20),
+
+                  // Create Account Text
+                  Text(
+                    'Create Account',
+                    style: theme.typography.lg.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colors.foreground,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                const SizedBox(height: 20),
-                
-                // Create Account Text
-                Text(
-                  'Create Account',
-                  style: theme.typography.lg.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colors.foreground,
+                  const SizedBox(height: 6),
+                  Text(
+                    'Join us and start your learning adventure',
+                    style: theme.typography.sm.copyWith(
+                      color: theme.colors.foreground,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Join us and start your learning adventure',
-                  style: theme.typography.sm.copyWith(
-                    color: theme.colors.foreground,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                
-                // Full Name Field
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Full Name',
-                      style: theme.typography.sm.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    FTextField(
-                      controller: _fullNameController,
-                      hint: 'Enter your full name',
-                      textInputAction: TextInputAction.next,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                
-                // Email Field
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Email',
-                      style: theme.typography.sm.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    FTextField(
-                      controller: _emailController,
-                      hint: 'Enter your email',
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                
-                // Phone Field
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Phone Number',
-                      style: theme.typography.sm.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    FTextField(
-                      controller: _phoneController,
-                      hint: 'Enter your phone number',
-                      keyboardType: TextInputType.phone,
-                      textInputAction: TextInputAction.next,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                
-                // Password Field
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Password',
-                      style: theme.typography.sm.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    FTextField(
-                      controller: _passwordController,
-                      hint: 'Create a strong password',
-                      obscureText: true,
-                      textInputAction: TextInputAction.next,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                
-                // Confirm Password Field
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Confirm Password',
-                      style: theme.typography.sm.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    FTextField(
-                      controller: _confirmPasswordController,
-                      hint: 'Confirm your password',
-                      obscureText: true,
-                      textInputAction: TextInputAction.done,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                
-                // Terms and Conditions using Forui Checkbox
-                Row(
-                  children: [
-                    FCheckbox(
-                      value: _acceptedTerms,
-                      onChange: (value) {
-                        setState(() {
-                          _acceptedTerms = value;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          style: theme.typography.sm.copyWith(
-                            color: theme.colors.foreground,
-                          ),
-                          children: [
-                            const TextSpan(text: 'I agree to the '),
-                            TextSpan(
-                              text: 'Terms of Service',
-                              style: TextStyle(
-                                color: theme.colors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const TextSpan(text: ' and '),
-                            TextSpan(
-                              text: 'Privacy Policy',
-                              style: TextStyle(
-                                color: theme.colors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                
-                // Register Button
-                FButton(
-                  onPress: _acceptedTerms && !_isLoading ? _createAccount : null,
-                  style: _acceptedTerms ? FButtonStyle.primary : FButtonStyle.primary,
-                  child: _isLoading
-                      ? SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
-                          ),
-                        )
-                      : Text(
-                          'Create Account',
-                          style: theme.typography.sm.copyWith(
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.2,
-                            color: theme.colors.primaryForeground,
-                          ),
-                        ),
-                ),
-                const SizedBox(height: 12),
-                
-                // Login Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account? ',
-                      style: theme.typography.sm.copyWith(
-                        color: theme.colors.foreground,
-                      ),
-                    ),
-                    FButton(
-                      style: FButtonStyle.ghost,
-                      onPress: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: theme.colors.primary,
+                  const SizedBox(height: 24),
+
+                  // Full Name Field
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Full Name',
+                        style: theme.typography.sm.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: theme.colors.foreground,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-              ],
+                      const SizedBox(height: 6),
+                      FTextField(
+                        controller: _fullNameController,
+                        hint: 'Enter your full name',
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Email Field
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Email',
+                        style: theme.typography.sm.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      FTextField(
+                        controller: _emailController,
+                        hint: 'Enter your email',
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Phone Field
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Phone Number',
+                        style: theme.typography.sm.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      FTextField(
+                        controller: _phoneController,
+                        hint: 'Enter your phone number',
+                        keyboardType: TextInputType.phone,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Password Field
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Password',
+                        style: theme.typography.sm.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      FTextField(
+                        controller: _passwordController,
+                        hint: 'Create a strong password',
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Confirm Password Field
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Confirm Password',
+                        style: theme.typography.sm.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      FTextField(
+                        controller: _confirmPasswordController,
+                        hint: 'Confirm your password',
+                        obscureText: true,
+                        textInputAction: TextInputAction.done,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Terms and Conditions using Forui Checkbox
+                  Row(
+                    children: [
+                      FCheckbox(
+                        value: _acceptedTerms,
+                        onChange: (value) {
+                          setState(() {
+                            _acceptedTerms = value;
+                          });
+                        },
+                      ),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: theme.typography.sm.copyWith(
+                              color: theme.colors.foreground,
+                            ),
+                            children: [
+                              const TextSpan(text: 'I agree to the '),
+                              TextSpan(
+                                text: 'Terms of Service',
+                                style: TextStyle(
+                                  color: theme.colors.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const TextSpan(text: ' and '),
+                              TextSpan(
+                                text: 'Privacy Policy',
+                                style: TextStyle(
+                                  color: theme.colors.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Register Button
+                  FButton(
+                    onPress:
+                        _acceptedTerms && !_isLoading ? _createAccount : null,
+                    style:
+                        _acceptedTerms
+                            ? FButtonStyle.primary
+                            : FButtonStyle.primary,
+                    child:
+                        _isLoading
+                            ? SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  theme.colors.primaryForeground,
+                                ),
+                              ),
+                            )
+                            : Text(
+                              'Create Account',
+                              style: theme.typography.sm.copyWith(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.2,
+                                color: theme.colors.primaryForeground,
+                              ),
+                            ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Login Link
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: theme.typography.sm.copyWith(
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                      FButton(
+                        style: FButtonStyle.ghost,
+                        onPress: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Sign In',
+                          style: TextStyle(
+                            color: theme.colors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
-          ),
           ),
         ),
       ),
     );
   }
 }
-

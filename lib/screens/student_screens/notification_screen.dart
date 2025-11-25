@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -10,7 +9,6 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-
   final List<NotificationItem> _notifications = [
     NotificationItem(
       id: '1',
@@ -39,7 +37,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
     NotificationItem(
       id: '4',
       title: 'Welcome to Learn Work!',
-      message: 'Thank you for joining our platform. Start exploring courses and jobs.',
+      message:
+          'Thank you for joining our platform. Start exploring courses and jobs.',
       type: NotificationType.system,
       time: '1 week ago',
       isRead: true,
@@ -95,17 +94,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
           padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-            // Notifications List
-            _buildNotificationsList(),
-          ],
+            children: [
+              // Notifications List
+              _buildNotificationsList(),
+            ],
           ),
         ),
       ),
     );
   }
-
-
 
   Widget _buildNotificationsList() {
     return Column(
@@ -119,8 +116,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
         ),
         SizedBox(height: 16),
-        
-        ..._notifications.map((notification) => _buildNotificationItem(notification)),
+
+        ..._notifications.map(
+          (notification) => _buildNotificationItem(notification),
+        ),
       ],
     );
   }
@@ -130,14 +129,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: notification.isRead 
-            ? Theme.of(context).cardColor 
-            : Theme.of(context).colorScheme.primary.withOpacity(0.05),
+        color:
+            notification.isRead
+                ? Theme.of(context).cardColor
+                : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: notification.isRead 
-              ? Theme.of(context).dividerColor
-              : Theme.of(context).colorScheme.primary.withOpacity(0.2),
+          color:
+              notification.isRead
+                  ? Theme.of(context).dividerColor
+                  : Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -147,7 +150,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Container(
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _getNotificationColor(notification.type).withOpacity(0.1),
+              color: _getNotificationColor(
+                notification.type,
+              ).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(
@@ -167,7 +172,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       child: Text(
                         notification.title,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w600,
+                          fontWeight:
+                              notification.isRead
+                                  ? FontWeight.w500
+                                  : FontWeight.w600,
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
@@ -195,7 +203,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 Text(
                   notification.time,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.color?.withValues(alpha: 0.7),
                     fontSize: 10,
                   ),
                 ),
@@ -217,8 +227,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
         return Colors.orange;
       case NotificationType.system:
         return Colors.purple;
-      default:
-        return Theme.of(context).colorScheme.primary;
     }
   }
 
@@ -232,8 +240,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
         return Icons.local_offer;
       case NotificationType.system:
         return Icons.info;
-      default:
-        return Icons.notifications;
     }
   }
 
@@ -243,7 +249,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         notification.isRead = true;
       }
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('All notifications marked as read'),
@@ -271,9 +277,4 @@ class NotificationItem {
   });
 }
 
-enum NotificationType {
-  job,
-  course,
-  promotional,
-  system,
-}
+enum NotificationType { job, course, promotional, system }

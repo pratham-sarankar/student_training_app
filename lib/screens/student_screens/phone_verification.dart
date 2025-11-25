@@ -5,19 +5,16 @@ import 'package:forui/forui.dart';
 import 'package:pinput/pinput.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
 import 'package:learn_work/services/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
 class PhoneVerificationScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const PhoneVerificationScreen({
-    super.key,
-    required this.phoneNumber,
-  });
+  const PhoneVerificationScreen({super.key, required this.phoneNumber});
 
   @override
-  State<PhoneVerificationScreen> createState() => _PhoneVerificationScreenState();
+  State<PhoneVerificationScreen> createState() =>
+      _PhoneVerificationScreenState();
 }
 
 class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
@@ -51,10 +48,10 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   void _startResendTimer() {
     _canResend = false;
     _resendTimer = 60;
-    
+
     // Cancel any existing timer
     _timer?.cancel();
-    
+
     // Create a new timer that ticks every second
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
@@ -90,7 +87,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     try {
       print('🔐 Attempting to verify code: ${_otpController.text}');
       await _authService.verifyPhoneNumberWithCode(_otpController.text);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -99,28 +96,30 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
           ),
         );
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const MainScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false,
         );
       }
     } catch (e) {
       print('❌ Verification error: $e');
       if (mounted) {
-        String errorMessage = 'Verification failed. Please check your code and try again.';
+        String errorMessage =
+            'Verification failed. Please check your code and try again.';
         if (e.toString().contains('invalid-verification-code')) {
-          errorMessage = 'Invalid verification code. Please check and try again.';
+          errorMessage =
+              'Invalid verification code. Please check and try again.';
         } else if (e.toString().contains('session-expired')) {
-          errorMessage = 'Verification session expired. Please request a new code.';
+          errorMessage =
+              'Verification session expired. Please request a new code.';
         } else if (e.toString().contains('too-many-requests')) {
           errorMessage = 'Too many attempts. Please wait before trying again.';
         } else if (e.toString().contains('quota-exceeded')) {
           errorMessage = 'SMS quota exceeded. Please try again later.';
         } else if (e.toString().contains('BILLING_NOT_ENABLED')) {
-          errorMessage = 'Firebase billing not enabled. Phone verification requires the Blaze plan.';
+          errorMessage =
+              'Firebase billing not enabled. Phone verification requires the Blaze plan.';
         }
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
@@ -148,11 +147,11 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     try {
       print('🔄 Attempting to resend code to: ${widget.phoneNumber}');
       await _authService.resendVerificationCode(widget.phoneNumber);
-      
+
       if (mounted) {
         // Reset the timer after successful resend
         _startResendTimer();
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Verification code resent successfully!'),
@@ -174,9 +173,10 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         } else if (e.toString().contains('network-error')) {
           errorMessage = 'Network error. Please check your connection.';
         } else if (e.toString().contains('BILLING_NOT_ENABLED')) {
-          errorMessage = 'Firebase billing not enabled. Phone verification requires the Blaze plan.';
+          errorMessage =
+              'Firebase billing not enabled. Phone verification requires the Blaze plan.';
         }
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
@@ -203,7 +203,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return Scaffold(
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle(
@@ -218,7 +218,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 24),
-                
+
                 // Back Button
                 Row(
                   children: [
@@ -234,7 +234,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // App Logo/Title
                 Container(
                   width: 80,
@@ -242,10 +242,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   decoration: BoxDecoration(
                     color: theme.colors.primaryForeground,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: theme.colors.border,
-                      width: 1,
-                    ),
+                    border: Border.all(color: theme.colors.border, width: 1),
                   ),
                   child: Icon(
                     Icons.phone_android,
@@ -254,7 +251,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Title
                 Text(
                   'Verify Phone Number',
@@ -283,23 +280,22 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Colors.green.withOpacity(0.3),
+                      color: Colors.green.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.check_circle,
-                        size: 16,
-                        color: Colors.green,
-                      ),
+                      Icon(Icons.check_circle, size: 16, color: Colors.green),
                       const SizedBox(width: 8),
                       Text(
                         'Code sent successfully',
@@ -312,7 +308,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // OTP Input
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,9 +326,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       length: 6,
                       focusNode: _otpFocusNode,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       defaultPinTheme: PinTheme(
                         width: 48,
                         height: 48,
@@ -365,7 +359,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colors.primary.withOpacity(0.1),
+                              color: theme.colors.primary.withValues(
+                                alpha: 0.1,
+                              ),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -415,16 +411,16 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Helpful Information
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: theme.colors.primary.withOpacity(0.05),
+                    color: theme.colors.primary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: theme.colors.primary.withOpacity(0.2),
+                      color: theme.colors.primary.withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -467,27 +463,30 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   child: FButton(
                     onPress: _isLoading ? null : _verifyCode,
                     style: FButtonStyle.primary,
-                    child: _isLoading
-                        ? SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
+                    child:
+                        _isLoading
+                            ? SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  theme.colors.primaryForeground,
+                                ),
+                              ),
+                            )
+                            : Text(
+                              'Verify',
+                              style: theme.typography.sm.copyWith(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.2,
+                                color: theme.colors.primaryForeground,
+                              ),
                             ),
-                          )
-                        : Text(
-                            'Verify',
-                            style: theme.typography.sm.copyWith(
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.2,
-                              color: theme.colors.primaryForeground,
-                            ),
-                          ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Resend Code
                 Column(
                   children: [
@@ -504,24 +503,26 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                           FButton(
                             style: FButtonStyle.ghost,
                             onPress: _isResending ? null : _resendCode,
-                            child: _isResending
-                                ? SizedBox(
-                                    height: 14,
-                                    width: 14,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        theme.colors.foreground,
+                            child:
+                                _isResending
+                                    ? SizedBox(
+                                      height: 14,
+                                      width: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              theme.colors.foreground,
+                                            ),
+                                      ),
+                                    )
+                                    : Text(
+                                      'Resend',
+                                      style: TextStyle(
+                                        color: theme.colors.primary,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                  )
-                                : Text(
-                                    'Resend',
-                                    style: TextStyle(
-                                      color: theme.colors.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
                           )
                         else
                           Text(

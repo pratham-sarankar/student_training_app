@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -193,7 +192,10 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             children: [
               // App Bar with App Name and User Avatar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -224,7 +226,8 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                                     height: 12,
                                     child: Shimmer.fromColors(
                                       baseColor: theme.colors.muted,
-                                      highlightColor: theme.colors.muted.withOpacity(0.6),
+                                      highlightColor: theme.colors.muted
+                                          .withValues(alpha: 0.6),
                                       child: Container(
                                         width: 12,
                                         height: 12,
@@ -313,29 +316,28 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const EditProfileScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const EditProfileScreen()),
         );
       },
-      child: _currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty
-          ? CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(_currentUser!.photoUrl!),
-              backgroundColor: theme.colors.muted,
-            )
-          : CircleAvatar(
-              radius: 20,
-              backgroundColor: theme.colors.primary,
-              child: Text(
-                _currentUser?.initials ?? 'U',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+      child:
+          _currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty
+              ? CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(_currentUser!.photoUrl!),
+                backgroundColor: theme.colors.muted,
+              )
+              : CircleAvatar(
+                radius: 20,
+                backgroundColor: theme.colors.primary,
+                child: Text(
+                  _currentUser?.initials ?? 'U',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
     );
   }
 
@@ -465,128 +467,6 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
     }
   }
 
-  Widget _buildJobsList() {
-    if (_searchQuery.isEmpty) {
-      return StreamBuilder<List<Job>>(
-        stream: _jobService.getJobs(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildShimmerLoading(context.theme);
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error loading jobs: ${snapshot.error}',
-                style: TextStyle(
-                  color: context.theme.colors.destructive,
-                  fontSize: 16,
-                ),
-              ),
-            );
-          }
-
-          final jobs = snapshot.data ?? [];
-
-          if (jobs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.work_outline,
-                    size: 64,
-                    color: context.theme.colors.mutedForeground,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No jobs available',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: context.theme.colors.foreground,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: jobs.length,
-            itemBuilder: (context, index) {
-              final job = jobs[index];
-              return Container(child: _buildJobCard(job));
-            },
-          );
-        },
-      );
-    } else {
-      return StreamBuilder<List<Job>>(
-        stream: _jobService.searchJobs(_searchQuery),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildShimmerLoading(context.theme);
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error searching jobs: ${snapshot.error}',
-                style: TextStyle(
-                  color: context.theme.colors.destructive,
-                  fontSize: 16,
-                ),
-              ),
-            );
-          }
-
-          final jobs = snapshot.data ?? [];
-
-          if (jobs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.search_off,
-                    size: 64,
-                    color: context.theme.colors.mutedForeground,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No jobs found for "$_searchQuery"',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: context.theme.colors.foreground,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Try different keywords or check spelling',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.theme.colors.mutedForeground,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: jobs.length,
-            itemBuilder: (context, index) {
-              final job = jobs[index];
-              return Container(child: _buildJobCard(job));
-            },
-          );
-        },
-      );
-    }
-  }
-
   Widget _buildJobCard(Job job) {
     final theme = context.theme;
 
@@ -608,7 +488,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           border: Border.all(color: theme.colors.border, width: 1),
           boxShadow: [
             BoxShadow(
-              color: theme.colors.foreground.withOpacity(0.05),
+              color: theme.colors.foreground.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -624,56 +504,63 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: theme.colors.primary.withOpacity(0.1),
+                    color: theme.colors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: job.logo.isNotEmpty && job.logo.startsWith('http')
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            job.logo,
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    theme.colors.primary,
+                  child:
+                      job.logo.isNotEmpty && job.logo.startsWith('http')
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              job.logo,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (
+                                context,
+                                child,
+                                loadingProgress,
+                              ) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      theme.colors.primary,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Text(
-                                  job.company.isNotEmpty 
-                                      ? job.company.substring(0, 1).toUpperCase()
-                                      : 'C',
-                                  style: TextStyle(
-                                    color: theme.colors.primary,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Text(
+                                    job.company.isNotEmpty
+                                        ? job.company
+                                            .substring(0, 1)
+                                            .toUpperCase()
+                                        : 'C',
+                                    style: TextStyle(
+                                      color: theme.colors.primary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : Center(
-                          child: Text(
-                            job.company.isNotEmpty 
-                                ? job.company.substring(0, 1).toUpperCase()
-                                : 'C',
-                            style: TextStyle(
-                              color: theme.colors.primary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                                );
+                              },
+                            ),
+                          )
+                          : Center(
+                            child: Text(
+                              job.company.isNotEmpty
+                                  ? job.company.substring(0, 1).toUpperCase()
+                                  : 'C',
+                              style: TextStyle(
+                                color: theme.colors.primary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
                 ),
                 const SizedBox(width: 12),
 
@@ -720,7 +607,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: theme.colors.primary.withOpacity(0.1),
+                color: theme.colors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -785,16 +672,16 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
 class _CarouselWidget extends StatefulWidget {
   final FThemeData theme;
-  
+
   const _CarouselWidget({required this.theme});
-  
+
   @override
   State<_CarouselWidget> createState() => _CarouselWidgetState();
 }
 
 class _CarouselWidgetState extends State<_CarouselWidget> {
   int _currentCarouselIndex = 0;
-  
+
   // Random image URLs for the carousel
   final List<String> randomImages = [
     'https://tse3.mm.bing.net/th/id/OIP.E-8vX505ECdMwROR-dUXvAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3',
@@ -809,7 +696,10 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
         CarouselSlider(
           options: CarouselOptions(
             clipBehavior: Clip.none,
-            height: MediaQuery.of(context).size.width * 0.85 * (9 / 16), // 16:9 aspect ratio
+            height:
+                MediaQuery.of(context).size.width *
+                0.85 *
+                (9 / 16), // 16:9 aspect ratio
             viewportFraction: 0.85, // Same as original job card spacing
             enableInfiniteScroll: true,
             autoPlay: true,
@@ -825,92 +715,117 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
               });
             },
           ),
-          items: randomImages.map((imageUrl) {
-            return Builder(
-              builder: (BuildContext context) {
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.fill,
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
+          items:
+              randomImages.map((imageUrl) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.fill,
                           width: double.infinity,
-                          height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
-                          decoration: BoxDecoration(
-                            color: widget.theme.colors.muted,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                              valueColor: AlwaysStoppedAnimation<Color>(widget.theme.colors.primary),
-                            ),
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
-                          decoration: BoxDecoration(
-                            color: widget.theme.colors.muted,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  size: 48,
-                                  color: widget.theme.colors.mutedForeground,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Failed to load image',
-                                  style: widget.theme.typography.sm.copyWith(
-                                    color: widget.theme.colors.mutedForeground,
+                          height:
+                              MediaQuery.of(context).size.width *
+                              0.85 *
+                              (9 / 16),
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: double.infinity,
+                              height:
+                                  MediaQuery.of(context).size.width *
+                                  0.85 *
+                                  (9 / 16),
+                              decoration: BoxDecoration(
+                                color: widget.theme.colors.muted,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  value:
+                                      loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress
+                                                  .expectedTotalBytes!
+                                          : null,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    widget.theme.colors.primary,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: double.infinity,
+                              height:
+                                  MediaQuery.of(context).size.width *
+                                  0.85 *
+                                  (9 / 16),
+                              decoration: BoxDecoration(
+                                color: widget.theme.colors.muted,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.error_outline,
+                                      size: 48,
+                                      color:
+                                          widget.theme.colors.mutedForeground,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Failed to load image',
+                                      style: widget.theme.typography.sm
+                                          .copyWith(
+                                            color:
+                                                widget
+                                                    .theme
+                                                    .colors
+                                                    .mutedForeground,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
                 );
-              },
-            );
-          }).toList(),
+              }).toList(),
         ),
         const SizedBox(height: 12),
         // Dotted indicators
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: randomImages.asMap().entries.map((entry) {
-            return Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _currentCarouselIndex == entry.key
-                    ? widget.theme.colors.primary
-                    : widget.theme.colors.mutedForeground.withOpacity(0.3),
-              ),
-            );
-          }).toList(),
+          children:
+              randomImages.asMap().entries.map((entry) {
+                return Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color:
+                        _currentCarouselIndex == entry.key
+                            ? widget.theme.colors.primary
+                            : widget.theme.colors.mutedForeground.withValues(
+                              alpha: 0.3,
+                            ),
+                  ),
+                );
+              }).toList(),
         ),
       ],
     );

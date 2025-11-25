@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:provider/provider.dart';
 import '../../models/traning.dart';
-import '../../services/course_service.dart';
 
 class AddEditTrainingScreen extends StatefulWidget {
   final Training? training; // null for add, non-null for edit
@@ -25,7 +21,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
 
   List<TrainingSchedule> _schedules = [];
   bool _isLoading = false;
-      
+
   @override
   void initState() {
     super.initState();
@@ -217,7 +213,9 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          theme.colors.primaryForeground,
+                        ),
                       ),
                     )
                     : Row(
@@ -232,7 +230,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                         Text(
                           isEditMode ? 'Update Training' : 'Create Training',
                           style: TextStyle(
-                              fontSize: 13,
+                            fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: theme.colors.primaryForeground,
                           ),
@@ -292,7 +290,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
     final theme = context.theme;
     return Container(
       width: double.infinity,
-          padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colors.muted,
         borderRadius: BorderRadius.circular(8),
@@ -300,7 +298,11 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
       ),
       child: Column(
         children: [
-          Icon(Icons.schedule_outlined, size: 32, color: theme.colors.mutedForeground),
+          Icon(
+            Icons.schedule_outlined,
+            size: 32,
+            color: theme.colors.mutedForeground,
+          ),
           SizedBox(height: 8),
           Text(
             'No schedules added yet',
@@ -313,7 +315,9 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
           Text(
             'Add at least one schedule for students to enroll',
             textAlign: TextAlign.center,
-            style: theme.typography.xs.copyWith(color: theme.colors.mutedForeground),
+            style: theme.typography.xs.copyWith(
+              color: theme.colors.mutedForeground,
+            ),
           ),
         ],
       ),
@@ -331,7 +335,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
         border: Border.all(color: theme.colors.border),
         boxShadow: [
           BoxShadow(
-            color: theme.colors.foreground.withOpacity(0.05),
+            color: theme.colors.foreground.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -353,17 +357,17 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
               FButton(
                 onPress: () => _editSchedule(index),
                 style: FButtonStyle.outline,
-                child: Icon(
-                  Icons.edit,
-                  size: 14,
-                  color: theme.colors.primary,
-                ),
+                child: Icon(Icons.edit, size: 14, color: theme.colors.primary),
               ),
               SizedBox(width: 6),
               FButton(
                 onPress: () => _showDeleteScheduleDialog(index),
                 style: FButtonStyle.outline,
-                child: Icon(Icons.delete, size: 14, color: theme.colors.destructive),
+                child: Icon(
+                  Icons.delete,
+                  size: 14,
+                  color: theme.colors.destructive,
+                ),
               ),
             ],
           ),
@@ -417,7 +421,9 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
         Expanded(
           child: Text(
             text,
-            style: theme.typography.xs.copyWith(color: theme.colors.mutedForeground),
+            style: theme.typography.xs.copyWith(
+              color: theme.colors.mutedForeground,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -446,107 +452,119 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
     _showScheduleDialog(schedule: schedule, index: index);
   }
 
-
   void _showDeleteScheduleDialog(int index) {
     final schedule = _schedules[index];
-    
+
     showDialog(
       context: context,
-      builder: (dialogContext) => FDialog(
-        title: const Text('Delete Schedule'),
-        body: Text(
-          'Are you sure you want to delete this schedule?\n\n'
-          'This will permanently delete:\n'
-          '• Schedule: ${_formatDate(schedule.startDate)} - ${_formatDate(schedule.endDate)}\n'
-          '• Time: ${_formatTime(schedule.time)}\n'
-          '• Capacity: ${schedule.capacity}\n'
-          '• All student enrollments (${schedule.enrolledStudents.length} students)\n'
-          '• All schedule materials and notes\n\n'
-          'This action cannot be undone.',
-        ),
-        actions: [
-          FButton(
-            style: FButtonStyle.outline,
-            onPress: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FButton(
-            style: FButtonStyle.primary,
-            onPress: () async {
-              try {
-                // Show loading state
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Deleting schedule...'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-                
-                // Close the modal
-                Navigator.of(dialogContext).pop();
-                
-                // If we're editing an existing training, delete from Firestore
-                if (widget.training != null && 
-                    widget.training!.id.isNotEmpty && 
-                    widget.training!.id != 'null' && 
-                    widget.training!.id.length > 5) { // Ensure ID is reasonable length
-                  
-                  final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-                  
+      builder:
+          (dialogContext) => FDialog(
+            title: const Text('Delete Schedule'),
+            body: Text(
+              'Are you sure you want to delete this schedule?\n\n'
+              'This will permanently delete:\n'
+              '• Schedule: ${_formatDate(schedule.startDate)} - ${_formatDate(schedule.endDate)}\n'
+              '• Time: ${_formatTime(schedule.time)}\n'
+              '• Capacity: ${schedule.capacity}\n'
+              '• All student enrollments (${schedule.enrolledStudents.length} students)\n'
+              '• All schedule materials and notes\n\n'
+              'This action cannot be undone.',
+            ),
+            actions: [
+              FButton(
+                style: FButtonStyle.outline,
+                onPress: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Cancel'),
+              ),
+              FButton(
+                style: FButtonStyle.primary,
+                onPress: () async {
                   try {
-                    // Verify the training exists in the admin provider before deletion
-                    final existingTrainingIndex = adminProvider.trainings.indexWhere(
-                      (t) => t.id == widget.training!.id,
+                    // Show loading state
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Deleting schedule...'),
+                        duration: Duration(seconds: 1),
+                      ),
                     );
-                    
-                    if (existingTrainingIndex != -1) {
-                      // Delete the schedule from the training in Firestore
-                      await adminProvider.deleteScheduleFromTraining(widget.training!.id, schedule.id);
-                      
-                      // Also update the local training object to keep it in sync
-                      widget.training!.schedules.removeWhere((s) => s.id == schedule.id);
-                    } else {
-                      // Still remove from local state
-                      widget.training!.schedules.removeWhere((s) => s.id == schedule.id);
+
+                    // Close the modal
+                    Navigator.of(dialogContext).pop();
+
+                    // If we're editing an existing training, delete from Firestore
+                    if (widget.training != null &&
+                        widget.training!.id.isNotEmpty &&
+                        widget.training!.id != 'null' &&
+                        widget.training!.id.length > 5) {
+                      // Ensure ID is reasonable length
+
+                      final adminProvider = Provider.of<AdminProvider>(
+                        context,
+                        listen: false,
+                      );
+
+                      try {
+                        // Verify the training exists in the admin provider before deletion
+                        final existingTrainingIndex = adminProvider.trainings
+                            .indexWhere((t) => t.id == widget.training!.id);
+
+                        if (existingTrainingIndex != -1) {
+                          // Delete the schedule from the training in Firestore
+                          await adminProvider.deleteScheduleFromTraining(
+                            widget.training!.id,
+                            schedule.id,
+                          );
+
+                          // Also update the local training object to keep it in sync
+                          widget.training!.schedules.removeWhere(
+                            (s) => s.id == schedule.id,
+                          );
+                        } else {
+                          // Still remove from local state
+                          widget.training!.schedules.removeWhere(
+                            (s) => s.id == schedule.id,
+                          );
+                        }
+                      } catch (e) {
+                        // Even if Firestore deletion fails, we should still remove from local state
+                        // and show a warning to the user
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Schedule removed locally but failed to sync with server: $e',
+                            ),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      }
                     }
+
+                    // Remove the schedule from local state
+                    setState(() {
+                      _schedules.removeAt(index);
+                    });
+
+                    // Show success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Schedule deleted successfully'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
                   } catch (e) {
-                    // Even if Firestore deletion fails, we should still remove from local state
-                    // and show a warning to the user
+                    // Show error message
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Schedule removed locally but failed to sync with server: $e'),
-                        backgroundColor: Colors.orange,
+                        content: Text('Failed to delete schedule: $e'),
+                        backgroundColor: Colors.red,
                       ),
                     );
                   }
-                }
-                
-                // Remove the schedule from local state
-                setState(() {
-                  _schedules.removeAt(index);
-                });
-                
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Schedule deleted successfully'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              } catch (e) {
-                // Show error message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Failed to delete schedule: $e'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-            child: const Text('Delete'),
+                },
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -556,76 +574,84 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (bottomSheetContext) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
-        ),
-        child: DraggableScrollableSheet(
-          initialChildSize: 0.8,
-          minChildSize: 0.6,
-          maxChildSize: 0.95,
-          builder: (sheetContext, scrollController) => Container(
-            decoration: BoxDecoration(
-              color: theme.colors.background,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.colors.foreground.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, -4),
-                ),
-              ],
+      builder:
+          (bottomSheetContext) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
             ),
-            child: Column(
-              children: [
-                // Handle bar
-                Container(
-                  margin: const EdgeInsets.only(top: 8, bottom: 4),
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: theme.colors.mutedForeground,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                // Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: ScheduleDialog(
-                      schedule: schedule,
-                      onSave: (newSchedule) {
-                        setState(() {
-                          if (index != null) {
-                            _schedules[index] = newSchedule;
-                            // Show success message for editing
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Schedule updated successfully'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          } else {
-                            _schedules.add(newSchedule);
-                            // Show success message for adding
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Schedule added successfully'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          }
-                        });
-                        Navigator.of(bottomSheetContext).pop();
-                      },
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.8,
+              minChildSize: 0.6,
+              maxChildSize: 0.95,
+              builder:
+                  (sheetContext, scrollController) => Container(
+                    decoration: BoxDecoration(
+                      color: theme.colors.background,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colors.foreground.withValues(alpha: 0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Handle bar
+                        Container(
+                          margin: const EdgeInsets.only(top: 8, bottom: 4),
+                          width: 36,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: theme.colors.mutedForeground,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        // Content
+                        Expanded(
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: ScheduleDialog(
+                              schedule: schedule,
+                              onSave: (newSchedule) {
+                                setState(() {
+                                  if (index != null) {
+                                    _schedules[index] = newSchedule;
+                                    // Show success message for editing
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Schedule updated successfully',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  } else {
+                                    _schedules.add(newSchedule);
+                                    // Show success message for adding
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Schedule added successfully',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                });
+                                Navigator.of(bottomSheetContext).pop();
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
             ),
           ),
-        ),
-      ),
     );
   }
 
@@ -770,7 +796,9 @@ class _ScheduleDialogState extends State<ScheduleDialog>
               children: [
                 Text(
                   isEditMode ? 'Edit Schedule' : 'Add New Schedule',
-                  style: theme.typography.xl.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.typography.xl.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
@@ -845,7 +873,9 @@ class _ScheduleDialogState extends State<ScheduleDialog>
                 ),
               ],
             ),
-            SizedBox(height: 32), // Increased bottom padding for keyboard safety
+            SizedBox(
+              height: 32,
+            ), // Increased bottom padding for keyboard safety
           ],
         ),
       ),
@@ -904,7 +934,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
             border: Border.all(color: theme.colors.border),
           ),
           child: SizedBox(
-              height: 44, // Fixed height to prevent infinite constraints
+            height: 44, // Fixed height to prevent infinite constraints
             child: FTimePicker(
               controller: FTimePickerController(),
               onChange: (time) {
@@ -920,7 +950,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
                     );
                   }
                 });
-                            },
+              },
               hour24: false,
               hourInterval: 1,
               minuteInterval: 15,

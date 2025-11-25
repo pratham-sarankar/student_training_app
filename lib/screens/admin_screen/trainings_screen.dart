@@ -14,7 +14,6 @@ class TrainingsScreen extends StatefulWidget {
 }
 
 class _TrainingsScreenState extends State<TrainingsScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -26,7 +25,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   void _refreshData() {
     final adminProvider = context.read<AdminProvider>();
-    
+
     // Only refresh if we're not already loading
     if (!adminProvider.isLoading) {
       adminProvider.loadTrainings();
@@ -36,7 +35,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         // Simple approach: Refresh data every time the screen is built
@@ -45,7 +44,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _refreshData();
         });
-        
+
         return Scaffold(
           backgroundColor: theme.colors.background,
           body: SafeArea(
@@ -57,65 +56,73 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                     // Header - Made more compact
                     LayoutBuilder(
                       builder: (context, constraints) {
-                          return Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.school,
-                                      color: theme.colors.primary,
-                                      size: 18,
+                        return Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.school,
+                                    color: theme.colors.primary,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Training Courses',
+                                          style: theme.typography.lg.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: theme.colors.foreground,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Manage training courses and schedules',
+                                          style: theme.typography.sm.copyWith(
+                                            color: theme.colors.mutedForeground,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: FButton(
+                                      onPress:
+                                          () => _navigateToAddEditTraining(
+                                            context,
+                                            adminProvider,
+                                          ),
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text(
-                                            'Training Courses',
-                                            style: theme.typography.lg.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: theme.colors.foreground,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            'Manage training courses and schedules',
-                                            style: theme.typography.sm.copyWith(
-                                              color: theme.colors.mutedForeground,
-                                              fontSize: 11,
-                                            ),
+                                          const Icon(Icons.add, size: 14),
+                                          const SizedBox(width: 4),
+                                          const Text(
+                                            'Add Training',
+                                            style: TextStyle(fontSize: 12),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: FButton(
-                                        onPress: () => _navigateToAddEditTraining(context, adminProvider),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(Icons.add, size: 14),
-                                            const SizedBox(width: 4),
-                                            const Text('Add Training', style: TextStyle(fontSize: 12)),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                     const SizedBox(height: 8),
@@ -138,9 +145,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     );
   }
 
-  Widget _buildTrainingsList(BuildContext context, AdminProvider adminProvider) {
+  Widget _buildTrainingsList(
+    BuildContext context,
+    AdminProvider adminProvider,
+  ) {
     final theme = context.theme;
-    
+
     if (adminProvider.isLoading) {
       return Center(
         child: Column(
@@ -212,7 +222,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colors.mutedForeground.withOpacity(0.1),
+                color: theme.colors.mutedForeground.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Icon(
@@ -268,7 +278,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: theme.colors.foreground.withOpacity(0.06),
+                color: theme.colors.foreground.withValues(alpha: 0.06),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
                 spreadRadius: 0,
@@ -279,7 +289,12 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              onTap: () => _navigateToCourseDetails(context, training, adminProvider),
+              onTap:
+                  () => _navigateToCourseDetails(
+                    context,
+                    training,
+                    adminProvider,
+                  ),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -317,7 +332,10 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: theme.colors.primary,
                                 borderRadius: BorderRadius.circular(12),
@@ -333,9 +351,14 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                             ),
                             const SizedBox(height: 4),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withOpacity(0.1),
+                                color: theme.colors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -386,28 +409,34 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  void _navigateToAddEditTraining(BuildContext context, AdminProvider adminProvider, {Training? training}) {
+  void _navigateToAddEditTraining(
+    BuildContext context,
+    AdminProvider adminProvider, {
+    Training? training,
+  }) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ChangeNotifierProvider.value(
-          value: adminProvider,
-          child: AddEditTrainingScreen(training: training),
-        ),
+        builder:
+            (context) => ChangeNotifierProvider.value(
+              value: adminProvider,
+              child: AddEditTrainingScreen(training: training),
+            ),
       ),
     );
   }
 
-  void _navigateToCourseDetails(BuildContext context, Training training, AdminProvider adminProvider) {
+  void _navigateToCourseDetails(
+    BuildContext context,
+    Training training,
+    AdminProvider adminProvider,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ChangeNotifierProvider.value(
-          value: adminProvider,
-          child: CourseDetailsScreen(training: training),
-        ),
+        builder:
+            (context) => ChangeNotifierProvider.value(
+              value: adminProvider,
+              child: CourseDetailsScreen(training: training),
+            ),
       ),
     );
   }

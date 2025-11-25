@@ -49,10 +49,14 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.15),
                       width: 1,
                     ),
                   ),
@@ -67,7 +71,9 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                       SizedBox(height: 12),
                       Text(
                         'Stay Updated with Job Opportunities',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).textTheme.titleMedium?.color,
                         ),
@@ -83,7 +89,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-      
+
                 // Subscription Status
                 Text(
                   'Subscription Status',
@@ -93,29 +99,42 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   ),
                 ),
                 SizedBox(height: 12),
-      
+
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: _isSubscribed 
-                        ? Theme.of(context).colorScheme.primary.withOpacity(0.05)
-                        : Theme.of(context).colorScheme.surface.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(8),
+                    color:
+                        _isSubscribed
+                            ? Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.05)
+                            : Theme.of(
+                              context,
+                            ).colorScheme.surface.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: _isSubscribed 
-                          ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
-                          : Theme.of(context).colorScheme.outline.withOpacity(0.15),
+                      color:
+                          _isSubscribed
+                              ? Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.15)
+                              : Theme.of(
+                                context,
+                              ).colorScheme.outline.withValues(alpha: 0.15),
                       width: 1,
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                        _isSubscribed ? Icons.check_circle : Icons.cancel_outlined,
-                        color: _isSubscribed 
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.outline,
+                        _isSubscribed
+                            ? Icons.check_circle
+                            : Icons.cancel_outlined,
+                        color:
+                            _isSubscribed
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outline,
                         size: 24,
                       ),
                       SizedBox(width: 12),
@@ -125,18 +144,28 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                           children: [
                             Text(
                               _isSubscribed ? 'Subscribed' : 'Not Subscribed',
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
                               ),
                             ),
                             SizedBox(height: 2),
                             Text(
-                              _isSubscribed 
+                              _isSubscribed
                                   ? 'You\'re receiving job updates and notifications'
                                   : 'Subscribe to start receiving job opportunities',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).textTheme.bodySmall?.color,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.color,
                                 fontSize: 11,
                               ),
                             ),
@@ -147,7 +176,7 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-      
+
                 // Benefits Section
                 Text(
                   'What You\'ll Get',
@@ -157,28 +186,30 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   ),
                 ),
                 SizedBox(height: 12),
-      
+
                 _buildBenefitCard(
                   icon: Icons.email_outlined,
                   title: 'Direct Email Updates',
                   description: 'Job postings sent directly to your inbox',
                 ),
                 SizedBox(height: 8),
-      
+
                 _buildBenefitCard(
                   icon: Icons.admin_panel_settings_outlined,
                   title: 'Admin Posts',
-                  description: 'Automatic notifications when admins post new opportunities',
+                  description:
+                      'Automatic notifications when admins post new opportunities',
                 ),
                 SizedBox(height: 8),
-      
+
                 _buildBenefitCard(
                   icon: Icons.schedule_outlined,
                   title: 'Timely Notifications',
-                  description: 'Stay ahead with early access to new opportunities',
+                  description:
+                      'Stay ahead with early access to new opportunities',
                 ),
                 SizedBox(height: 20),
-      
+
                 // Action Buttons
                 if (_isSubscribed) ...[
                   SizedBox(
@@ -191,14 +222,19 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Successfully unsubscribed from job updates'),
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            content: Text(
+                              'Successfully unsubscribed from job updates',
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                           ),
                         );
                       },
                       child: Text(
                         'Unsubscribe',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
@@ -216,14 +252,19 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Successfully subscribed to job updates'),
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            content: Text(
+                              'Successfully subscribed to job updates',
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                           ),
                         );
                       },
                       child: Text(
                         'Subscribe Now',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
@@ -251,13 +292,10 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-          width: 1,
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).shadowColor.withOpacity(0.02),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.02),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -268,7 +306,9 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
           Container(
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(

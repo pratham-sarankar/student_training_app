@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import '../../models/chat_message.dart';
 
-
 class InstructorChatScreen extends StatefulWidget {
   final String courseId;
   final String courseTitle;
@@ -50,49 +49,53 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
     try {
       // Load messages from the global course_chats collection
       final globalChatId = '${widget.courseId}_${widget.studentId}';
-      
+
       _messagesSubscription = FirebaseFirestore.instance
           .collection('course_chats')
           .doc(globalChatId)
           .collection('messages')
           .orderBy('timestamp', descending: true)
           .snapshots()
-          .listen((snapshot) {
-        if (mounted) {
-          final newMessages = snapshot.docs
-              .map((doc) => ChatMessage.fromFirestore(doc))
-              .toList();
-          
-          // Only update state if messages have actually changed
-          if (!_areMessagesEqual(_messages, newMessages)) {
-            // Cancel any existing debounce timer
-            _debounceTimer?.cancel();
-            
-            // Debounce the update to prevent rapid rebuilds
-            _debounceTimer = Timer(const Duration(milliseconds: 100), () {
+          .listen(
+            (snapshot) {
+              if (mounted) {
+                final newMessages =
+                    snapshot.docs
+                        .map((doc) => ChatMessage.fromFirestore(doc))
+                        .toList();
+
+                // Only update state if messages have actually changed
+                if (!_areMessagesEqual(_messages, newMessages)) {
+                  // Cancel any existing debounce timer
+                  _debounceTimer?.cancel();
+
+                  // Debounce the update to prevent rapid rebuilds
+                  _debounceTimer = Timer(const Duration(milliseconds: 100), () {
+                    if (mounted) {
+                      setState(() {
+                        _messages = newMessages;
+                      });
+                      _scrollToBottom();
+                    }
+                  });
+                }
+              }
+            },
+            onError: (error) {
+              print('Error loading messages: $error');
               if (mounted) {
                 setState(() {
-                  _messages = newMessages;
+                  _isLoading = false;
                 });
-                _scrollToBottom();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error loading messages: $error'),
+                    backgroundColor: context.theme.colors.destructive,
+                  ),
+                );
               }
-            });
-          }
-        }
-      }, onError: (error) {
-        print('Error loading messages: $error');
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error loading messages: $error'),
-              backgroundColor: context.theme.colors.destructive,
-            ),
+            },
           );
-        }
-      });
     } catch (e) {
       print('Error setting up messages listener: $e');
       if (mounted) {
@@ -128,21 +131,21 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
 
       // Send message to both collections for consistency
       final globalChatId = '${widget.courseId}_${widget.studentId}';
-      
+
       // Add message to global course_chats collection
       await FirebaseFirestore.instance
           .collection('course_chats')
           .doc(globalChatId)
           .collection('messages')
           .add({
-        'senderId': currentUser.uid,
-        'senderName': currentUser.displayName ?? 'Course Instructor',
-        'senderType': 'instructor',
-        'message': messageText,
-        'timestamp': timestamp,
-        'type': 'text',
-        'isRead': false,
-      });
+            'senderId': currentUser.uid,
+            'senderName': currentUser.displayName ?? 'Course Instructor',
+            'senderType': 'instructor',
+            'message': messageText,
+            'timestamp': timestamp,
+            'type': 'text',
+            'isRead': false,
+          });
 
       // Also add message to user's course chat subcollection
       await FirebaseFirestore.instance
@@ -152,14 +155,14 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
           .doc(widget.courseId)
           .collection('messages')
           .add({
-        'senderId': currentUser.uid,
-        'senderName': currentUser.displayName ?? 'Course Instructor',
-        'senderType': 'instructor',
-        'message': messageText,
-        'timestamp': timestamp,
-        'type': 'text',
-        'isRead': false,
-      });
+            'senderId': currentUser.uid,
+            'senderName': currentUser.displayName ?? 'Course Instructor',
+            'senderType': 'instructor',
+            'message': messageText,
+            'timestamp': timestamp,
+            'type': 'text',
+            'isRead': false,
+          });
 
       // Update chat metadata in both collections
       final updateData = {
@@ -184,7 +187,6 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
           .collection('course_chats')
           .doc(widget.courseId)
           .update(updateData);
-
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -205,7 +207,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
 
   bool _areMessagesEqual(List<ChatMessage> list1, List<ChatMessage> list2) {
     if (list1.length != list2.length) return false;
-    
+
     for (int i = 0; i < list1.length; i++) {
       if (list1[i].id != list2[i].id ||
           list1[i].message != list2[i].message ||
@@ -243,7 +245,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
@@ -258,7 +260,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                   color: theme.colors.background,
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colors.foreground.withOpacity(0.05),
+                      color: theme.colors.foreground.withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -270,7 +272,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                       onPress: () => Navigator.of(context).pop(),
                       style: FButtonStyle.outline,
                       child: Icon(
-                        Icons.arrow_back,   
+                        Icons.arrow_back,
                         size: 16,
                         color: theme.colors.foreground,
                       ),
@@ -302,7 +304,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: theme.colors.primary.withOpacity(0.1),
+                        color: theme.colors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -320,140 +322,165 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
 
               // Chat Messages
               Expanded(
-                child: _isLoading
-                    ? Center(child: CircularProgressIndicator(color: theme.colors.primary))
-                    : _messages.isEmpty
+                child:
+                    _isLoading
                         ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.chat_bubble_outline,
-                                  size: 64,
-                                  color: theme.colors.muted,
+                          child: CircularProgressIndicator(
+                            color: theme.colors.primary,
+                          ),
+                        )
+                        : _messages.isEmpty
+                        ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.chat_bubble_outline,
+                                size: 64,
+                                color: theme.colors.muted,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'No messages yet',
+                                style: theme.typography.lg.copyWith(
+                                  color: theme.colors.mutedForeground,
                                 ),
-                                SizedBox(height: 16),
-                                Text(
-                                  'No messages yet',
-                                  style: theme.typography.lg.copyWith(
-                                    color: theme.colors.mutedForeground,
-                                  ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Start the conversation with your student!',
+                                style: theme.typography.sm.copyWith(
+                                  color: theme.colors.mutedForeground,
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Start the conversation with your student!',
-                                  style: theme.typography.sm.copyWith(
-                                    color: theme.colors.mutedForeground,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
+                              ),
+                            ],
+                          ),
+                        )
                         : ListView.builder(
-                            controller: _scrollController,
-                            key: const ValueKey('instructor_chat_messages'),
-                            reverse: true,
-                            padding: EdgeInsets.all(16),
-                            itemCount: _messages.length,
-                            itemBuilder: (context, index) {
-                              final message = _messages[index];
-                              final isInstructor = message.senderType == 'instructor';
+                          controller: _scrollController,
+                          key: const ValueKey('instructor_chat_messages'),
+                          reverse: true,
+                          padding: EdgeInsets.all(16),
+                          itemCount: _messages.length,
+                          itemBuilder: (context, index) {
+                            final message = _messages[index];
+                            final isInstructor =
+                                message.senderType == 'instructor';
 
-                              return Container(
-                                key: ValueKey(message.id),
-                                margin: EdgeInsets.only(bottom: 8),
-                                child: Row(
-                                  mainAxisAlignment: isInstructor
-                                      ? MainAxisAlignment.end
-                                      : MainAxisAlignment.start,
-                                  children: [
-                                    if (!isInstructor) ...[
-                                      CircleAvatar(
-                                        radius: 16,
-                                        backgroundColor: theme.colors.secondary,
-                                        child: Text(
-                                          widget.studentName[0].toUpperCase(),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            color: theme.colors.background,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                    ],
-                                    Flexible(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: isInstructor 
-                                              ? theme.colors.primary 
-                                              : theme.colors.background,
-                                          borderRadius: BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: theme.colors.foreground.withOpacity(0.1),
-                                              blurRadius: 4,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: isInstructor
-                                              ? CrossAxisAlignment.end
-                                              : CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              message.message,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: isInstructor ? theme.colors.primaryForeground : theme.colors.foreground,
-                                              ),
-                                            ),
-                                            SizedBox(height: 4),
-                                            Text(
-                                              _formatMessageTime(message.timestamp),
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: isInstructor
-                                                    ? theme.colors.primaryForeground.withOpacity(0.8)
-                                                    : theme.colors.mutedForeground,
-                                              ),
-                                            ),
-                                          ],
+                            return Container(
+                              key: ValueKey(message.id),
+                              margin: EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    isInstructor
+                                        ? MainAxisAlignment.end
+                                        : MainAxisAlignment.start,
+                                children: [
+                                  if (!isInstructor) ...[
+                                    CircleAvatar(
+                                      radius: 16,
+                                      backgroundColor: theme.colors.secondary,
+                                      child: Text(
+                                        widget.studentName[0].toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.colors.background,
                                         ),
                                       ),
                                     ),
-                                    if (isInstructor) ...[
-                                      SizedBox(width: 8),
-                                      CircleAvatar(
-                                        radius: 16,
-                                        backgroundColor: theme.colors.primary,
-                                        child: Icon(
-                                          Icons.school,
-                                          size: 16,
-                                          color: theme.colors.primaryForeground,
-                                        ),
-                                      ),
-                                    ],
+                                    SizedBox(width: 8),
                                   ],
-                                ),
-                              );
-                            },
-                          ),
+                                  Flexible(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            isInstructor
+                                                ? theme.colors.primary
+                                                : theme.colors.background,
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: theme.colors.foreground
+                                                .withValues(alpha: 0.1),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            isInstructor
+                                                ? CrossAxisAlignment.end
+                                                : CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            message.message,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color:
+                                                  isInstructor
+                                                      ? theme
+                                                          .colors
+                                                          .primaryForeground
+                                                      : theme.colors.foreground,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            _formatMessageTime(
+                                              message.timestamp,
+                                            ),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color:
+                                                  isInstructor
+                                                      ? theme
+                                                          .colors
+                                                          .primaryForeground
+                                                          .withValues(
+                                                            alpha: 0.8,
+                                                          )
+                                                      : theme
+                                                          .colors
+                                                          .mutedForeground,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if (isInstructor) ...[
+                                    SizedBox(width: 8),
+                                    CircleAvatar(
+                                      radius: 16,
+                                      backgroundColor: theme.colors.primary,
+                                      child: Icon(
+                                        Icons.school,
+                                        size: 16,
+                                        color: theme.colors.primaryForeground,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            );
+                          },
+                        ),
               ),
 
               // Message Input
               Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
                   color: theme.colors.background,
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colors.foreground.withOpacity(0.05),
+                      color: theme.colors.foreground.withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, -2),
                     ),
@@ -490,16 +517,23 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: IconButton(
-                        icon: _isSendingMessage
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primaryForeground),
+                        icon:
+                            _isSendingMessage
+                                ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      theme.colors.primaryForeground,
+                                    ),
+                                  ),
+                                )
+                                : Icon(
+                                  Icons.send,
+                                  size: 20,
+                                  color: theme.colors.primaryForeground,
                                 ),
-                              )
-                                : Icon(Icons.send, size: 20, color: theme.colors.primaryForeground),
                         onPressed: _isSendingMessage ? null : _sendMessage,
                       ),
                     ),

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart' as firebase_ui;
 import 'dart:async';
 import 'package:learn_work/services/user_service.dart';
 import 'package:learn_work/models/user.dart';

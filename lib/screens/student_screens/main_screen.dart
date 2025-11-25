@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
-import '../../providers/admin_provider.dart';
 import 'profile_screen.dart';
-import 'my_courses_screen.dart';
 import 'all_jobs_screen.dart';
 import 'training_courses_screen.dart';
-import 'notification_screen.dart';
-import 'job_subscription_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -47,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
@@ -55,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
           color: theme.colors.background,
           boxShadow: [
             BoxShadow(
-              color: theme.colors.foreground.withOpacity(0.1),
+              color: theme.colors.foreground.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),

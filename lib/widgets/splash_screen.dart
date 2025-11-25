@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:learn_work/widgets/auth_wrapper.dart';
 
 class SplashScreen extends StatefulWidget {

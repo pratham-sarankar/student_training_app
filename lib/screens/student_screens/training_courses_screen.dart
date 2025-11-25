@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../models/course.dart';
 import '../../services/course_service.dart';
 import '../../widgets/shimmer_loading.dart';
@@ -49,8 +47,11 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
     try {
       // Load categories
       final categories = await _courseService.getCourseCategories().first;
-      final allCategories = ['All', ...categories.where((category) => category != 'All')];
-      
+      final allCategories = [
+        'All',
+        ...categories.where((category) => category != 'All'),
+      ];
+
       // Load counts for each category
       final counts = <String, int>{};
       for (String category in allCategories) {
@@ -58,11 +59,12 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
           final allCourses = await _courseService.getCourses().first;
           counts[category] = allCourses.length;
         } else {
-          final categoryCourses = await _courseService.getCoursesByCategory(category).first;
+          final categoryCourses =
+              await _courseService.getCoursesByCategory(category).first;
           counts[category] = categoryCourses.length;
         }
       }
-      
+
       setState(() {
         _categories = allCategories;
         _categoryCounts = counts;
@@ -79,7 +81,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
-    
+
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -104,55 +106,75 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   ),
                 ),
               ),
-      
+
               // Category Filter using Forui FButtons
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                child: _categoriesLoaded
-                    ? SingleChildScrollView(
-                        clipBehavior: Clip.none,
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _categories.map((category) {
-                            bool isSelected = _selectedCategory == category;
-                            final courseCount = _categoryCounts[category] ?? 0;
-                            return Container(
-                              margin: const EdgeInsets.only(right: 12),
-                              decoration: isSelected ? BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: theme.colors.primary.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ) : null,
-                              child: FButton(
-                                onPress: () {
-                                  setState(() {
-                                    _selectedCategory = category;
-                                  });
-                                },
-                                style: isSelected ? FButtonStyle.primary : FButtonStyle.outline,
-                                child: Text(
-                                  '$category ($courseCount)',
-                                  style: theme.typography.sm.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: isSelected 
-                                        ? theme.colors.primaryForeground
-                                        : theme.colors.mutedForeground,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    : ShimmerLoading.categoryButtonShimmer(theme),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                child:
+                    _categoriesLoaded
+                        ? SingleChildScrollView(
+                          clipBehavior: Clip.none,
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children:
+                                _categories.map((category) {
+                                  bool isSelected =
+                                      _selectedCategory == category;
+                                  final courseCount =
+                                      _categoryCounts[category] ?? 0;
+                                  return Container(
+                                    margin: const EdgeInsets.only(right: 12),
+                                    decoration:
+                                        isSelected
+                                            ? BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: theme.colors.primary
+                                                      .withValues(alpha: 0.3),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            )
+                                            : null,
+                                    child: FButton(
+                                      onPress: () {
+                                        setState(() {
+                                          _selectedCategory = category;
+                                        });
+                                      },
+                                      style:
+                                          isSelected
+                                              ? FButtonStyle.primary
+                                              : FButtonStyle.outline,
+                                      child: Text(
+                                        '$category ($courseCount)',
+                                        style: theme.typography.sm.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color:
+                                              isSelected
+                                                  ? theme
+                                                      .colors
+                                                      .primaryForeground
+                                                  : theme
+                                                      .colors
+                                                      .mutedForeground,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+                        )
+                        : ShimmerLoading.categoryButtonShimmer(theme),
               ),
               const SizedBox(height: 16),
-      
+
               // Results Header
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -177,72 +199,78 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-      
+
               // Courses List
               Expanded(
-                child: _isInitialized
-                    ? StreamBuilder<List<Course>>(
-                        stream: _selectedCategory == 'All' 
-                            ? _courseService.getCourses()
-                            : _courseService.getCoursesByCategory(_selectedCategory),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                'Error loading courses: ${snapshot.error}',
-                                style: TextStyle(
-                                  color: theme.colors.destructive,
-                                  fontSize: 16,
+                child:
+                    _isInitialized
+                        ? StreamBuilder<List<Course>>(
+                          stream:
+                              _selectedCategory == 'All'
+                                  ? _courseService.getCourses()
+                                  : _courseService.getCoursesByCategory(
+                                    _selectedCategory,
+                                  ),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  'Error loading courses: ${snapshot.error}',
+                                  style: TextStyle(
+                                    color: theme.colors.destructive,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-                          
-                          final courses = snapshot.data ?? [];
-                          
-                          if (courses.isEmpty) {
-                            return Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.search_off,
-                                    size: 48,
-                                    color: theme.colors.mutedForeground,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'No courses found for "$_selectedCategory"',
-                                    style: theme.typography.lg.copyWith(
-                                      color: theme.colors.foreground,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Try selecting a different category',
-                                    style: theme.typography.sm.copyWith(
+                              );
+                            }
+
+                            final courses = snapshot.data ?? [];
+
+                            if (courses.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search_off,
+                                      size: 48,
                                       color: theme.colors.mutedForeground,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                          
-                          return ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            itemCount: courses.length,
-                            itemBuilder: (context, index) {
-                              final course = courses[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                child: _buildCourseCard(context, course),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No courses found for "$_selectedCategory"',
+                                      style: theme.typography.lg.copyWith(
+                                        color: theme.colors.foreground,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Try selecting a different category',
+                                      style: theme.typography.sm.copyWith(
+                                        color: theme.colors.mutedForeground,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
-                            },
-                          );
-                        },
-                      )
-                    : _buildCoursesShimmerLoading(theme),
+                            }
+
+                            return ListView.builder(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              itemCount: courses.length,
+                              itemBuilder: (context, index) {
+                                final course = courses[index];
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: _buildCourseCard(context, course),
+                                );
+                              },
+                            );
+                          },
+                        )
+                        : _buildCoursesShimmerLoading(theme),
               ),
             ],
           ),
@@ -253,7 +281,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
 
   Widget _buildCourseCard(BuildContext context, Course course) {
     final theme = context.theme;
-    
+
     return GestureDetector(
       onTap: () => _navigateToCourseDetails(course),
       child: MouseRegion(
@@ -265,13 +293,10 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
           decoration: BoxDecoration(
             color: theme.colors.background,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: theme.colors.border,
-              width: 1,
-            ),
+            border: Border.all(color: theme.colors.border, width: 1),
             boxShadow: [
               BoxShadow(
-                color: theme.colors.foreground.withOpacity(0.02),
+                color: theme.colors.foreground.withValues(alpha: 0.02),
                 blurRadius: 4,
                 offset: const Offset(0, 1),
               ),
@@ -297,7 +322,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
+
                   // Course Info
                   Expanded(
                     child: Column(
@@ -318,9 +343,14 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                           runSpacing: 4,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withOpacity(0.1),
+                                color: theme.colors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -332,9 +362,12 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
+                                color: Colors.orange.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -352,9 +385,9 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Course Description (shortened)
               Text(
                 course.description,
@@ -364,7 +397,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              
+
               const SizedBox(height: 8),
               // View Details hint
               Row(
@@ -373,7 +406,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   Text(
                     'Tap to view details',
                     style: theme.typography.sm.copyWith(
-                      color: theme.colors.primary.withOpacity(0.7),
+                      color: theme.colors.primary.withValues(alpha: 0.7),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -381,7 +414,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   Icon(
                     Icons.arrow_forward_ios,
                     size: 12,
-                    color: theme.colors.primary.withOpacity(0.7),
+                    color: theme.colors.primary.withValues(alpha: 0.7),
                   ),
                 ],
               ),
@@ -395,7 +428,8 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
   void _navigateToCourseDetails(Course course) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => TraningCourseDetailsScreen(course: course.toMap()),
+        builder:
+            (context) => TraningCourseDetailsScreen(course: course.toMap()),
       ),
     );
   }
