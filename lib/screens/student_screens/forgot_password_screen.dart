@@ -301,6 +301,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
+                                            const SizedBox(
+                                              width: double.infinity,
+                                            ),
                                             Text(
                                               'What\'s next?',
                                               style: theme.typography.sm
