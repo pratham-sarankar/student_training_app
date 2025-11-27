@@ -41,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                     width: size.width * 0.5,
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 25),
 
                   // Features with enhanced cards
                   Row(
@@ -85,63 +85,48 @@ class WelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 25),
 
                   // Primary Action Button with enhanced styling
-                  Container(
-                    width: double.infinity,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colors.primary.withValues(alpha: 0.4),
-                          blurRadius: 16,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: FButton(
-                      onPress: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Get Started',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.arrow_forward_rounded,
-                            size: 20,
-                            color: theme.colors.primaryForeground,
-                          ),
-                        ],
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(
+                        const Color(0xFFFFB020),
                       ),
+                      foregroundColor: WidgetStateProperty.all(Colors.black),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Get Started',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_rounded, size: 20),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 14),
 
                   // Secondary Action Button with better styling
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: FButton(
-                      style: FButtonStyle.outline,
-                      onPress: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
-                          ),
-                        );
-                      },
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterScreen(),
+                        ),
+                      );
+                    },
+                    child: Center(
                       child: Text(
                         'Create New Account',
                         style: TextStyle(
