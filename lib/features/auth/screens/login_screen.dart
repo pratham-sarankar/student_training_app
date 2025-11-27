@@ -178,11 +178,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to continue your learning journey',
+                        'A journey of a thousand miles begins with a single step',
                         style: theme.typography.sm.copyWith(
                           color: theme.colors.mutedForeground,
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                       ),
                       const SizedBox(height: 32),
 
