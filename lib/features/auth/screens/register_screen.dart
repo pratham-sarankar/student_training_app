@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/google_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/password_form_field.dart';
-import '../services/auth_service.dart';
+import '../providers/auth_provider.dart';
 import '../../../screens/student_screens/main_screen.dart';
-import '../../../utils/service_locator.dart';
 import 'dart:io' show Platform;
 
 class RegisterScreen extends StatefulWidget {
@@ -20,8 +20,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = getIt<AuthService>();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -31,6 +29,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _signUpWithEmail() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     // Validate email
     if (_emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -75,38 +75,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    final success = await authProvider.createUserWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
 
-    try {
-      await _authService.signInWithEmailAndPassword(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
-
-      if (mounted) {
+    if (mounted) {
+      if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Successfully signed in!'),
+            content: Text('Successfully created account!'),
             backgroundColor: Colors.green,
           ),
         );
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const MainScreen()),
         );
-      }
-    } catch (e) {
-      if (mounted) {
+      } else if (authProvider.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(authProvider.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
@@ -225,29 +216,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 20),
 
                       // Sign Up Button
-                      FButton(
-                        onPress: _isLoading ? null : _signUpWithEmail,
-                        style: FButtonStyle.primary,
-                        child:
-                            _isLoading
-                                ? SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      theme.colors.primaryForeground,
+                      Consumer<AuthProvider>(
+                        builder: (context, authProvider, _) {
+                          return FButton(
+                            onPress:
+                                authProvider.isLoading
+                                    ? null
+                                    : _signUpWithEmail,
+                            style: FButtonStyle.primary,
+                            child:
+                                authProvider.isLoading
+                                    ? SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              theme.colors.primaryForeground,
+                                            ),
+                                      ),
+                                    )
+                                    : Text(
+                                      'Sign Up',
+                                      style: theme.typography.sm.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.2,
+                                        color: theme.colors.primaryForeground,
+                                      ),
                                     ),
-                                  ),
-                                )
-                                : Text(
-                                  'Sign Up',
-                                  style: theme.typography.sm.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.2,
-                                    color: theme.colors.primaryForeground,
-                                  ),
-                                ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 24),
 
