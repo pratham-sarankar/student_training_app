@@ -11,118 +11,226 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     final theme = context.theme;
     final typography = context.theme.typography;
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-      
-              // Professional Logo Section
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: theme.colors.primaryForeground,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: theme.colors.border, width: 1),
-                ),
-                child: Icon(
-                  Icons.school_outlined,
-                  size: 56,
-                  color: theme.colors.primary,
-                ),
-              ),
-              const SizedBox(height: 40),
-      
-              // Main Title
-              Text(
-                'Gradspark',
-                style: typography.xl3.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-      
-              // Subtitle
-              Text(
-                'Your gateway to professional learning. Join thousands of professionals advancing their careers',
-                style: typography.lg,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.visible,
-              ),
-              const Spacer(),
-              // Primary Action Button
-              FButton(
-                onPress: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
-                },
-                child: Text('Sign In'),
-              ),
-              const SizedBox(height: 20),
-              // Secondary Action Button
-              FButton(
-                style: FButtonStyle.outline,
-                onPress: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const RegisterScreen(),
-                    ),
-                  );
-                },
-                child: Text('Create Account'),
-              ),
-              const SizedBox(height: 20),
-      
-              // Admin Login Button
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: FButton(
-                  style: FButtonStyle.ghost,
-                  onPress: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ChangeNotifierProvider(
-                              create: (context) => AdminProvider(),
-                              child: const AdminLoginScreen(),
-                            ),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: theme.colors.background,
+      body: Stack(
+        children: [
+          // Background image at bottom
+          Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: Image.asset(
+              'assets/images/students.png',
+              fit: BoxFit.cover,
+              height: MediaQuery.of(context).size.height * 0.4,
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                children: [
+                  // Logo with shadow
+                  Image.asset(
+                    'assets/images/splash_icon.png',
+                    width: size.width * 0.5,
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Features with enhanced cards
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Icon(
-                        Icons.admin_panel_settings,
-                        size: 20,
-                        color: const Color(0xFF666666),
+                      _FeatureItem(
+                        icon: Icons.explore_outlined,
+                        label: 'Explore\ncareers',
+                        theme: theme,
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colors.primary.withValues(alpha: 0.15),
+                            theme.colors.primary.withValues(alpha: 0.05),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Login as Admin',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF666666),
+                      _FeatureItem(
+                        icon: Icons.assessment_outlined,
+                        label: 'Assess\nyourself',
+                        theme: theme,
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colors.primary.withValues(alpha: 0.15),
+                            theme.colors.primary.withValues(alpha: 0.05),
+                          ],
+                        ),
+                      ),
+                      _FeatureItem(
+                        icon: Icons.trending_up,
+                        label: 'Upskill\ntoday',
+                        theme: theme,
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colors.primary.withValues(alpha: 0.15),
+                            theme.colors.primary.withValues(alpha: 0.05),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 25),
+
+                  // Primary Action Button with enhanced styling
+                  Container(
+                    width: double.infinity,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colors.primary.withValues(alpha: 0.4),
+                          blurRadius: 16,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: FButton(
+                      onPress: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Get Started',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 20,
+                            color: theme.colors.primaryForeground,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Secondary Action Button with better styling
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: FButton(
+                      style: FButtonStyle.outline,
+                      onPress: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Create New Account',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Admin Login Button
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (context) => ChangeNotifierProvider(
+                                create: (context) => AdminProvider(),
+                                child: const AdminLoginScreen(),
+                              ),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.admin_panel_settings,
+                      size: 18,
+                      color: theme.colors.mutedForeground,
+                    ),
+                    label: Text(
+                      'Login as Admin',
+                      style: typography.sm.copyWith(
+                        color: theme.colors.mutedForeground,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 40),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+}
+
+class _FeatureItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final FThemeData theme;
+  final Gradient gradient;
+
+  const _FeatureItem({
+    required this.icon,
+    required this.label,
+    required this.theme,
+    required this.gradient,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: theme.colors.primary.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+          ),
+          child: Icon(icon, size: 30, color: theme.colors.primary),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          label,
+          style: theme.typography.xs.copyWith(
+            color: theme.colors.foreground,
+            fontWeight: FontWeight.w600,
+            height: 1.3,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
