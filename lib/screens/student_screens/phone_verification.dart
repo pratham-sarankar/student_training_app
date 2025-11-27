@@ -4,7 +4,8 @@ import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/services/auth_service.dart';
+import 'package:learn_work/features/auth/services/auth_service.dart';
+import 'package:learn_work/utils/service_locator.dart';
 import 'dart:async';
 
 class PhoneVerificationScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class PhoneVerificationScreen extends StatefulWidget {
 
 class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   final _otpController = TextEditingController();
-  final _authService = AuthService();
+  final _authService = getIt<AuthService>();
   final _otpFocusNode = FocusNode();
   bool _isLoading = false;
   bool _isResending = false;

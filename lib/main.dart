@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'widgets/splash_screen.dart';
 import 'utils/custom_theme.dart';
+import 'utils/service_locator.dart';
+import 'features/auth/providers/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +20,10 @@ void main() async {
     print('Firebase initialization failed: $e');
   }
 
+  // Setup service locator (Dependency Injection)
+  await setupServiceLocator();
+  print('Service locator initialized successfully');
+
   runApp(const MyApp());
 }
 
@@ -26,13 +33,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = CustomThemes.navy.light;
-    return FTheme(
-      data: theme,
-      child: MaterialApp(
-        theme: theme.toApproximateMaterialTheme(),
-        title: 'Gradspark',
-        debugShowCheckedModeBanner: false,
-        home: const SplashScreen(),
+    return ChangeNotifierProvider(
+      create: (_) => getIt<AuthProvider>(),
+      child: FTheme(
+        data: theme,
+        child: MaterialApp(
+          theme: theme.toApproximateMaterialTheme(),
+          title: 'Gradspark',
+          debugShowCheckedModeBanner: false,
+          home: const SplashScreen(),
+        ),
       ),
     );
   }

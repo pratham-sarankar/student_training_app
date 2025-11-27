@@ -1,30 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/services/auth_service.dart';
+import 'package:learn_work/features/auth/providers/auth_provider.dart';
 
-class AppleAuthButton extends StatefulWidget {
+class AppleAuthButton extends StatelessWidget {
   const AppleAuthButton({super.key, this.type});
   final AuthType? type;
-  @override
-  State<AppleAuthButton> createState() => _AppleAuthButtonState();
-}
 
-class _AppleAuthButtonState extends State<AppleAuthButton> {
-  bool _isLoading = false;
+  Future<void> _signInWithApple(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-  Future<void> _signInWithApple() async {
-    setState(() {
-      _isLoading = true;
-    });
+    final success = await authProvider.signInWithApple();
 
-    try {
-      // TODO: Add getit locator for AuthService.
-      final _authService = AuthService();
-      await _authService.signInWithApple();
-
-      if (mounted) {
+    if (context.mounted) {
+      if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Successfully signed in with Apple!'),
@@ -34,43 +25,55 @@ class _AppleAuthButtonState extends State<AppleAuthButton> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const MainScreen()),
         );
-      }
-    } catch (e) {
-      if (mounted) {
+      } else if (authProvider.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(authProvider.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: _isLoading ? null : _signInWithApple,
-      style: OutlinedButton.styleFrom(
-        minimumSize: Size(double.infinity, 0),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      icon: Icon(Icons.apple, size: 24),
-      label: Text(
-        widget.type == AuthType.signIn
-            ? 'Sign in with Apple'
-            : 'Sign up with Apple',
-        style: context.theme.typography.sm.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        return OutlinedButton.icon(
+          onPressed:
+              authProvider.isLoading ? null : () => _signInWithApple(context),
+          style: OutlinedButton.styleFrom(
+            minimumSize: Size(double.infinity, 0),
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          icon:
+              authProvider.isLoading
+                  ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                  : Icon(Icons.apple, size: 24),
+          label: Text(
+            type == AuthType.signIn
+                ? 'Sign in with Apple'
+                : 'Sign up with Apple',
+            style: context.theme.typography.sm.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      },
     );
   }
 }

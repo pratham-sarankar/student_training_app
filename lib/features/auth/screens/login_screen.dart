@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/google_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/password_form_field.dart';
-import '../../../services/auth_service.dart';
+import '../providers/auth_provider.dart';
 import '../../../screens/student_screens/main_screen.dart';
 import 'register_screen.dart';
 import '../../../screens/student_screens/forgot_password_screen.dart';
@@ -22,8 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -33,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _signInWithEmail() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     // Validate email
     if (_emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -77,17 +78,13 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    final success = await authProvider.signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
 
-    try {
-      await _authService.signInWithEmailAndPassword(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
-
-      if (mounted) {
+    if (mounted) {
+      if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Successfully signed in!'),
@@ -97,18 +94,13 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const MainScreen()),
         );
-      }
-    } catch (e) {
-      if (mounted) {
+      } else if (authProvider.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(authProvider.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
@@ -177,11 +169,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to continue your learning journey',
+                        'A journey of a thousand miles begins with a single step',
                         style: theme.typography.sm.copyWith(
                           color: theme.colors.mutedForeground,
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                       ),
                       const SizedBox(height: 32),
 
@@ -251,29 +243,37 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 20),
 
                       // Sign In Button
-                      FButton(
-                        onPress: _isLoading ? null : _signInWithEmail,
-                        style: FButtonStyle.primary,
-                        child:
-                            _isLoading
-                                ? SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      theme.colors.primaryForeground,
+                      Consumer<AuthProvider>(
+                        builder: (context, authProvider, _) {
+                          return FButton(
+                            onPress:
+                                authProvider.isLoading
+                                    ? null
+                                    : _signInWithEmail,
+                            style: FButtonStyle.primary,
+                            child:
+                                authProvider.isLoading
+                                    ? SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              theme.colors.primaryForeground,
+                                            ),
+                                      ),
+                                    )
+                                    : Text(
+                                      'Sign In',
+                                      style: theme.typography.sm.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.2,
+                                        color: theme.colors.primaryForeground,
+                                      ),
                                     ),
-                                  ),
-                                )
-                                : Text(
-                                  'Sign In',
-                                  style: theme.typography.sm.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.2,
-                                    color: theme.colors.primaryForeground,
-                                  ),
-                                ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 24),
 

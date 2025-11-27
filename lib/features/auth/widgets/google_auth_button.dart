@@ -1,31 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/services/auth_service.dart';
+import 'package:learn_work/features/auth/providers/auth_provider.dart';
 
-class GoogleAuthButton extends StatefulWidget {
+class GoogleAuthButton extends StatelessWidget {
   const GoogleAuthButton({super.key, this.type});
   final AuthType? type;
-  @override
-  State<GoogleAuthButton> createState() => _GoogleAuthButtonState();
-}
 
-class _GoogleAuthButtonState extends State<GoogleAuthButton> {
-  bool _isLoading = false;
+  Future<void> _signInWithGoogle(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-  Future<void> _signInWithGoogle() async {
-    setState(() {
-      _isLoading = true;
-    });
+    final success = await authProvider.signInWithGoogle();
 
-    try {
-      // TODO: Add getit locator for AuthService.
-      final _authService = AuthService();
-      await _authService.signInWithGoogle();
-
-      if (mounted) {
+    if (context.mounted) {
+      if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Successfully signed in with Google!'),
@@ -35,43 +26,52 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const MainScreen()),
         );
-      }
-    } catch (e) {
-      if (mounted) {
+      } else if (authProvider.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(authProvider.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: _isLoading ? null : _signInWithGoogle,
-      style: OutlinedButton.styleFrom(
-        minimumSize: Size(double.infinity, 0),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        backgroundColor: Colors.white,
-        side: BorderSide(color: Colors.grey.shade600),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      icon: Brand(Brands.google, size: 20),
-      label: Text(
-        widget.type == AuthType.signIn
-            ? 'Sign in with Google'
-            : 'Sign up with Google',
-        style: context.theme.typography.sm.copyWith(
-          color: context.theme.colors.foreground,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        return OutlinedButton.icon(
+          onPressed:
+              authProvider.isLoading ? null : () => _signInWithGoogle(context),
+          style: OutlinedButton.styleFrom(
+            minimumSize: Size(double.infinity, 0),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            backgroundColor: Colors.white,
+            side: BorderSide(color: Colors.grey.shade600),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          icon:
+              authProvider.isLoading
+                  ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : Brand(Brands.google, size: 20),
+          label: Text(
+            type == AuthType.signIn
+                ? 'Sign in with Google'
+                : 'Sign up with Google',
+            style: context.theme.typography.sm.copyWith(
+              color: context.theme.colors.foreground,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      },
     );
   }
 }

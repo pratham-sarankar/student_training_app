@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:icons_plus/icons_plus.dart';
-import '../../services/auth_service.dart';
+import '../../features/auth/services/auth_service.dart';
 import '../../screens/student_screens/main_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../screens/student_screens/forgot_password_screen.dart';
+import '../../utils/service_locator.dart';
 import 'dart:io' show Platform;
 
 class LoginScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
+  final _authService = getIt<AuthService>();
   bool _isLoading = false;
 
   @override
