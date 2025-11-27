@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import '../../services/auth_service.dart';
+import '../../features/auth/services/auth_service.dart';
 import '../../features/auth/screens/login_screen.dart';
+import '../../utils/service_locator.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,7 +15,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _authService = AuthService();
+  final _authService = getIt<AuthService>();
   bool _isLoading = false;
   bool _emailSent = false;
 

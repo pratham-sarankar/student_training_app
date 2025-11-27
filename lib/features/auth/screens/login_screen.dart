@@ -5,10 +5,11 @@ import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/google_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/password_form_field.dart';
-import '../../../services/auth_service.dart';
+import '../services/auth_service.dart';
 import '../../../screens/student_screens/main_screen.dart';
 import 'register_screen.dart';
 import '../../../screens/student_screens/forgot_password_screen.dart';
+import '../../../utils/service_locator.dart';
 import 'dart:io' show Platform;
 
 class LoginScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
+  final _authService = getIt<AuthService>();
   bool _isLoading = false;
 
   @override

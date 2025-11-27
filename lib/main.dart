@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'widgets/splash_screen.dart';
 import 'utils/custom_theme.dart';
+import 'utils/service_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +17,10 @@ void main() async {
   } catch (e) {
     print('Firebase initialization failed: $e');
   }
+
+  // Setup service locator (Dependency Injection)
+  await setupServiceLocator();
+  print('Service locator initialized successfully');
 
   runApp(const MyApp());
 }

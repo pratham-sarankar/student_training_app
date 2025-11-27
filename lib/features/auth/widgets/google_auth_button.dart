@@ -3,7 +3,8 @@ import 'package:forui/forui.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/services/auth_service.dart';
+import 'package:learn_work/features/auth/services/auth_service.dart';
+import 'package:learn_work/utils/service_locator.dart';
 
 class GoogleAuthButton extends StatefulWidget {
   const GoogleAuthButton({super.key, this.type});
@@ -21,8 +22,7 @@ class _GoogleAuthButtonState extends State<GoogleAuthButton> {
     });
 
     try {
-      // TODO: Add getit locator for AuthService.
-      final _authService = AuthService();
+      final _authService = getIt<AuthService>();
       await _authService.signInWithGoogle();
 
       if (mounted) {

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_work/services/auth_service.dart';
+import 'package:learn_work/features/auth/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learn_work/widgets/auth_wrapper.dart';
 import 'package:learn_work/screens/student_screens/edit_profile_screen.dart';
 import 'package:learn_work/screens/student_screens/notification_screen.dart';
 import 'package:learn_work/screens/student_screens/education_details_screen.dart';
+import 'package:learn_work/utils/service_locator.dart';
 import 'my_courses_screen.dart';
 import 'job_subscription_screen.dart';
 
@@ -19,7 +20,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _authService = AuthService();
+  final _authService = getIt<AuthService>();
   int _courseCount = 0;
   bool _isLoadingCourseCount = true;
 
@@ -387,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: FButtonStyle.outline,
                       onPress: () async {
                         try {
-                          await AuthService().signOut();
+                          await getIt<AuthService>().signOut();
                           // Navigation will be handled by AuthWrapper
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
