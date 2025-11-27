@@ -54,16 +54,37 @@ class AuthService {
   // Sign in with Google
   Future<UserCredential> signInWithGoogle() async {
     try {
+      print('🔵 Starting Google Sign-In process...');
+
+      // Sign out from any previous Google account to allow account selection
+      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
+      // Sign out first to ensure clean state
+      await googleSignIn.signOut();
+      print('🔵 Cleared previous Google Sign-In state');
+
       // Trigger the Google Sign In flow
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      print('🔵 Triggering Google Sign-In UI...');
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
+        print('⚠️ Google sign-in was cancelled by user');
         throw 'Google sign in was cancelled';
       }
 
+      print('✅ Google account selected: ${googleUser.email}');
+
       // Obtain the auth details from the request
+      print('🔵 Getting Google authentication credentials...');
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        print('❌ Failed to get Google auth tokens');
+        throw 'Failed to get Google authentication tokens';
+      }
+
+      print('✅ Google auth tokens obtained');
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -71,18 +92,36 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
+      print('🔵 Signing in to Firebase with Google credential...');
       // Sign in to Firebase with the Google credential
       final result = await _auth.signInWithCredential(credential);
 
-      // Update user verification status in Firestore
+      print('✅ Firebase authentication successful');
+
+      // Create or update user document in Firestore
       if (result.user != null) {
-        await _userService.updateVerificationStatus(
+        print('🔵 Creating/updating user in Firestore...');
+        final userModel = UserModel(
+          uid: result.user!.uid,
+          firstName: result.user!.displayName?.split(' ').first ?? '',
+          lastName:
+              result.user!.displayName?.split(' ').skip(1).join(' ') ?? '',
+          email: result.user!.email ?? '',
+          photoUrl: result.user!.photoURL,
           isEmailVerified: result.user!.emailVerified,
+          createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
+          updatedAt: DateTime.now(),
         );
+
+        await _userService.createOrUpdateUser(userModel);
+        print('✅ User document created/updated in Firestore');
       }
 
+      print('✅ Google Sign-In completed successfully');
       return result;
     } catch (e) {
+      print('❌ Google Sign-In Error: $e');
+      print('❌ Error type: ${e.runtimeType}');
       throw _handleAuthError(e);
     }
   }
@@ -112,15 +151,38 @@ class AuthService {
       // Sign in to Firebase with the Apple credential
       final result = await _auth.signInWithCredential(oauthCredential);
 
-      // Update user verification status in Firestore
+      // Create or update user document in Firestore
       if (result.user != null) {
-        await _userService.updateVerificationStatus(
+        // For Apple Sign-In, use the name from appleCredential if available
+        String firstName = result.user!.displayName?.split(' ').first ?? '';
+        String lastName =
+            result.user!.displayName?.split(' ').skip(1).join(' ') ?? '';
+
+        // Apple provides name only on first sign-in
+        if (appleCredential.givenName != null) {
+          firstName = appleCredential.givenName!;
+        }
+        if (appleCredential.familyName != null) {
+          lastName = appleCredential.familyName!;
+        }
+
+        final userModel = UserModel(
+          uid: result.user!.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: result.user!.email ?? '',
+          photoUrl: result.user!.photoURL,
           isEmailVerified: result.user!.emailVerified,
+          createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
+          updatedAt: DateTime.now(),
         );
+
+        await _userService.createOrUpdateUser(userModel);
       }
 
       return result;
     } catch (e) {
+      print('❌ Apple Sign-In Error: $e');
       throw _handleAuthError(e);
     }
   }

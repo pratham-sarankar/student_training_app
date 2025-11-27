@@ -112,11 +112,14 @@ class AuthProvider extends ChangeNotifier {
       _setLoading(true);
       clearError();
 
+      print('🔵 AuthProvider: Starting Google Sign-In...');
       await _authService.signInWithGoogle();
+      print('✅ AuthProvider: Google Sign-In successful');
 
       _setLoading(false);
       return true;
     } catch (e) {
+      print('❌ AuthProvider: Google Sign-In failed - $e');
       _setError(e.toString());
       return false;
     }
@@ -128,11 +131,14 @@ class AuthProvider extends ChangeNotifier {
       _setLoading(true);
       clearError();
 
+      print('🔵 AuthProvider: Starting Apple Sign-In...');
       await _authService.signInWithApple();
+      print('✅ AuthProvider: Apple Sign-In successful');
 
       _setLoading(false);
       return true;
     } catch (e) {
+      print('❌ AuthProvider: Apple Sign-In failed - $e');
       _setError(e.toString());
       return false;
     }
