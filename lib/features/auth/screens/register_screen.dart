@@ -6,7 +6,6 @@ import 'package:learn_work/features/auth/widgets/google_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/password_form_field.dart';
 import '../../../services/auth_service.dart';
 import '../../../screens/student_screens/main_screen.dart';
-import '../../../screens/student_screens/forgot_password_screen.dart';
 import 'dart:io' show Platform;
 
 class RegisterScreen extends StatefulWidget {

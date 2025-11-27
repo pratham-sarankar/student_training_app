@@ -25,7 +25,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Future<void> _resetPassword() async {
-    if (!_formKey.currentState!.validate()) return;
+    // Validate email
+    if (_emailController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(_emailController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -63,225 +84,267 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion(
-      value: SystemUiOverlayStyle.dark,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          surfaceTintColor: Colors.white,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: Container(
-            margin: EdgeInsets.only(left: 4),
-            child: FButton(
-              style: FButtonStyle.ghost,
-              onPress: () => Navigator.of(context).pop(),
-              child: Icon(
-                Icons.arrow_back_ios,
-                size: 20,
-                color: const Color(0xFF1A1A1A),
+    final theme = context.theme;
+    final size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: AnnotatedRegion(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              top: size.height * 0.4,
+              child: Stack(
+                children: [
+                  Image.asset(
+                    "assets/images/signin_bg.jpeg",
+                    fit: BoxFit.cover,
+                    width: size.width,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colors.background,
+                          theme.colors.background.withValues(alpha: 0.4),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ),
-        body: AnnotatedRegion(
-          value: SystemUiOverlayStyle.dark,
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    SizedBox(height: 40),
-
-                    // Icon
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.lock_reset_outlined,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    SizedBox(height: 32),
-
-                    // Title
-                    Text(
-                      'Reset Password',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1A1A1A),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16),
-
-                    if (!_emailSent) ...[
-                      Text(
-                        'Enter your email address and we\'ll send you a link to reset your password.',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: const Color(0xFF888888),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 40),
-
-                      // Email Field
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Email',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF1A1A1A),
-                            ),
+            SafeArea(
+              child: Column(
+                children: [
+                  // Back Button
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, top: 8),
+                    child: Row(
+                      children: [
+                        FButton(
+                          style: FButtonStyle.ghost,
+                          onPress: () => Navigator.of(context).pop(),
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            size: 20,
+                            color: theme.colors.foreground,
                           ),
-                          SizedBox(height: 8),
-                          FTextField(
-                            controller: _emailController,
-                            hint: 'Enter your email address',
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.done,
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
                       ),
-                      SizedBox(height: 32),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
 
-                      // Reset Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: FButton(
-                          onPress: _isLoading ? null : _resetPassword,
-                          style: FButtonStyle.primary,
-                          child:
-                              _isLoading
-                                  ? SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: const CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
-                                  )
-                                  : Text(
-                                    'Send Reset Link',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.labelLarge?.copyWith(
+                            if (!_emailSent) ...[
+                              // Title
+                              Text(
+                                'Reset Password',
+                                style: theme.typography.xl2.copyWith(
+                                  color: theme.colors.foreground,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Enter your email address and we\'ll send you a link to reset your password.',
+                                style: theme.typography.sm.copyWith(
+                                  color: theme.colors.mutedForeground,
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+
+                              // Email Field
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Email',
+                                    style: theme.typography.sm.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.2,
-                                      color: Colors.white,
+                                      color: theme.colors.foreground,
                                     ),
                                   ),
-                        ),
-                      ),
-                    ] else ...[
-                      // Success message
-                      Container(
-                        padding: EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.green.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.check_circle_outline,
-                              color: Colors.green,
-                              size: 48,
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Check Your Email',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.green,
+                                  const SizedBox(height: 6),
+                                  FTextField(
+                                    controller: _emailController,
+                                    hint: 'Enter your email address',
+                                    keyboardType: TextInputType.emailAddress,
+                                    textInputAction: TextInputAction.done,
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'We\'ve sent a password reset link to:',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              _emailController.text.trim(),
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.primary,
+                              const SizedBox(height: 32),
+
+                              // Reset Button
+                              FButton(
+                                onPress: _isLoading ? null : _resetPassword,
+                                style: FButtonStyle.primary,
+                                child:
+                                    _isLoading
+                                        ? SizedBox(
+                                          height: 18,
+                                          width: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<
+                                              Color
+                                            >(theme.colors.primaryForeground),
+                                          ),
+                                        )
+                                        : Text(
+                                          'Send Reset Link',
+                                          style: theme.typography.sm.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.2,
+                                            color:
+                                                theme.colors.primaryForeground,
+                                          ),
+                                        ),
                               ),
-                              textAlign: TextAlign.center,
-                            ),
+                            ] else ...[
+                              // Success state
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Check Your Email',
+                                    style: theme.typography.xl2.copyWith(
+                                      color: theme.colors.foreground,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'We\'ve sent a password reset link to:',
+                                    style: theme.typography.sm.copyWith(
+                                      color: theme.colors.mutedForeground,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    _emailController.text.trim(),
+                                    style: theme.typography.sm.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: theme.colors.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 32),
+
+                                  // Success Icon
+                                  Center(
+                                    child: Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(50),
+                                        border: Border.all(
+                                          color: Colors.green.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.check_circle_outline,
+                                        color: Colors.green,
+                                        size: 48,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 32),
+
+                                  // Instructions
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: theme.colors.mutedForeground
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: theme.colors.border,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'What\'s next?',
+                                          style: theme.typography.sm.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: theme.colors.foreground,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          '1. Check your email inbox\n2. Click the reset link\n3. Create a new password\n4. Sign in with your new password',
+                                          style: theme.typography.sm.copyWith(
+                                            color: theme.colors.mutedForeground,
+                                            height: 1.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 32),
+
+                                  // Back to Login Button
+                                  FButton(
+                                    onPress: () {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => const LoginScreen(),
+                                        ),
+                                      );
+                                    },
+                                    style: FButtonStyle.primary,
+                                    child: Text(
+                                      'Back to Login',
+                                      style: theme.typography.sm.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.2,
+                                        color: theme.colors.primaryForeground,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            const SizedBox(height: 24),
                           ],
                         ),
                       ),
-                      SizedBox(height: 32),
-
-                      // Back to Login Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: FButton(
-                          onPress: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
-                          },
-                          style: FButtonStyle.primary,
-                          child: Text(
-                            'Back to Login',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.2,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-
-                    SizedBox(height: 24),
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
