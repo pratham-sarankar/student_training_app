@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:icons_plus/icons_plus.dart';
-import '../../services/auth_service.dart';
-import '../../screens/student_screens/main_screen.dart';
-import '../../features/auth/screens/register_screen.dart';
-import '../../screens/student_screens/forgot_password_screen.dart';
+import 'package:learn_work/features/auth/widgets/password_form_field.dart';
+import '../../../services/auth_service.dart';
+import '../../../screens/student_screens/main_screen.dart';
+import 'register_screen.dart';
+import '../../../screens/student_screens/forgot_password_screen.dart';
 import 'dart:io' show Platform;
 
 class LoginScreen extends StatefulWidget {
@@ -285,12 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          FTextField(
-                            controller: _passwordController,
-                            hint: 'Enter your password',
-                            obscureText: true,
-                            textInputAction: TextInputAction.done,
-                          ),
+                          PasswordFormField(controller: _passwordController),
                         ],
                       ),
                       const SizedBox(height: 8),

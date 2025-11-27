@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/screens/student_screens/welcome_screen.dart';
+import 'package:learn_work/features/onboarding/welcome_screen.dart';
 import 'package:learn_work/screens/student_screens/email_verification_screen.dart';
 import 'package:learn_work/screens/admin_screen/dashboard_screen.dart';
 import 'package:learn_work/providers/admin_provider.dart';
@@ -36,9 +36,7 @@ class AuthWrapper extends StatelessWidget {
       builder: (context, authSnapshot) {
         if (authSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -46,33 +44,35 @@ class AuthWrapper extends StatelessWidget {
           // User is signed in, check their role
           final user = authSnapshot.data!;
           print('🔐 AuthWrapper: User signed in with UID: ${user.uid}');
-          
+
           return FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .get(),
+            future:
+                FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .get(),
             builder: (context, userDocSnapshot) {
               if (userDocSnapshot.connectionState == ConnectionState.waiting) {
                 print('🔐 AuthWrapper: Loading user data...');
                 return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  body: Center(child: CircularProgressIndicator()),
                 );
               }
 
               if (userDocSnapshot.hasError) {
-                print('🔐 AuthWrapper: Error loading user data: ${userDocSnapshot.error}');
+                print(
+                  '🔐 AuthWrapper: Error loading user data: ${userDocSnapshot.error}',
+                );
                 // If there's an error loading user data, sign out and show welcome
                 FirebaseAuth.instance.signOut();
                 return const WelcomeScreen();
               }
 
               if (userDocSnapshot.hasData && userDocSnapshot.data!.exists) {
-                final userData = userDocSnapshot.data!.data() as Map<String, dynamic>;
+                final userData =
+                    userDocSnapshot.data!.data() as Map<String, dynamic>;
                 final userRole = userData['role'] as String?;
-                
+
                 print('🔐 AuthWrapper: User role: $userRole');
 
                 if (userRole == 'Admin') {
@@ -82,7 +82,8 @@ class AuthWrapper extends StatelessWidget {
                     providers: [
                       ChangeNotifierProvider<AdminProvider>(
                         create: (context) => AdminProvider(),
-                        lazy: false, // Create immediately to avoid disposal issues
+                        lazy:
+                            false, // Create immediately to avoid disposal issues
                       ),
                     ],
                     child: const DashboardScreen(),
@@ -102,7 +103,9 @@ class AuthWrapper extends StatelessWidget {
                   return const WelcomeScreen();
                 }
               } else {
-                print('🔐 AuthWrapper: User document doesn\'t exist, signing out');
+                print(
+                  '🔐 AuthWrapper: User document doesn\'t exist, signing out',
+                );
                 // User document doesn't exist, sign out and show welcome
                 FirebaseAuth.instance.signOut();
                 return const WelcomeScreen();

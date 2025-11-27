@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
-import 'login_screen.dart';
-import 'register_screen.dart';
-import '../admin_screen/admin_login_screen.dart';
+import '../auth/screens/login_screen.dart';
+import '../auth/screens/register_screen.dart';
+import '../../screens/admin_screen/admin_login_screen.dart';
 import '../../providers/admin_provider.dart';
 
 class WelcomeScreen extends StatelessWidget {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:learn_work/screens/student_screens/email_verification_screen.dart';
-import 'package:learn_work/screens/student_screens/login_screen.dart';
-import '../../services/auth_service.dart';
+import 'package:learn_work/features/auth/screens/login_screen.dart';
+import '../../../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
