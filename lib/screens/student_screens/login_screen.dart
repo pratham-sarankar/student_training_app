@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:icons_plus/icons_plus.dart';
 import '../../services/auth_service.dart';
 import '../../screens/student_screens/main_screen.dart';
