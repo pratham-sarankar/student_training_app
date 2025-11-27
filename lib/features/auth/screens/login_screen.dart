@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:icons_plus/icons_plus.dart';
+import 'package:learn_work/features/auth/utils/auth_type.dart';
+import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
+import 'package:learn_work/features/auth/widgets/google_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/password_form_field.dart';
 import '../../../services/auth_service.dart';
 import '../../../screens/student_screens/main_screen.dart';
@@ -90,74 +91,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Successfully signed in!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _signInWithGoogle() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      await _authService.signInWithGoogle();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully signed in with Google!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _signInWithApple() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      await _authService.signInWithApple();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully signed in with Apple!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -376,52 +309,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       Column(
                         children: [
                           // Google Sign In
-                          OutlinedButton.icon(
-                            onPressed: _isLoading ? null : _signInWithGoogle,
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 0),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              backgroundColor: Colors.white,
-                              side: BorderSide(color: Colors.grey.shade600),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            icon: Brand(Brands.google, size: 20),
-                            label: Text(
-                              'Sign in with Google',
-                              style: theme.typography.sm.copyWith(
-                                color: theme.colors.foreground,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
+                          GoogleAuthButton(type: AuthType.signIn),
 
                           // Only show Apple Sign In on iOS
                           if (Platform.isIOS) ...[
                             const SizedBox(height: 12),
-                            OutlinedButton.icon(
-                              onPressed: _isLoading ? null : _signInWithApple,
-                              style: OutlinedButton.styleFrom(
-                                minimumSize: Size(double.infinity, 0),
-                                backgroundColor: Colors.black,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              icon: Icon(Icons.apple, size: 24),
-                              label: Text(
-                                'Sign in with Apple',
-                                style: theme.typography.sm.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
+                            AppleAuthButton(type: AuthType.signIn),
                           ],
                         ],
                       ),
