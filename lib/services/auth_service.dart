@@ -2,11 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:learn_work/services/user_service.dart';
 import 'package:learn_work/models/user.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'dart:io' show Platform;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final UserService _userService = UserService();
-  
+
   // Phone authentication state
   String? _verificationId;
   int? _resendToken;
@@ -34,14 +37,88 @@ class AuthService {
         email: email,
         password: password,
       );
-      
+
       // Update user verification status in Firestore
       if (result.user != null) {
         await _userService.updateVerificationStatus(
           isEmailVerified: result.user!.emailVerified,
         );
       }
-      
+
+      return result;
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  // Sign in with Google
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      // Trigger the Google Sign In flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        throw 'Google sign in was cancelled';
+      }
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase with the Google credential
+      final result = await _auth.signInWithCredential(credential);
+
+      // Update user verification status in Firestore
+      if (result.user != null) {
+        await _userService.updateVerificationStatus(
+          isEmailVerified: result.user!.emailVerified,
+        );
+      }
+
+      return result;
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  // Sign in with Apple
+  Future<UserCredential> signInWithApple() async {
+    try {
+      // Check if Apple Sign In is available
+      if (!Platform.isIOS && !Platform.isMacOS) {
+        throw 'Apple Sign In is only available on iOS and macOS devices';
+      }
+
+      // Request credential for the currently signed in Apple account
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // Create an OAuthCredential from the credential returned by Apple
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      // Sign in to Firebase with the Apple credential
+      final result = await _auth.signInWithCredential(oauthCredential);
+
+      // Update user verification status in Firestore
+      if (result.user != null) {
+        await _userService.updateVerificationStatus(
+          isEmailVerified: result.user!.emailVerified,
+        );
+      }
+
       return result;
     } catch (e) {
       throw _handleAuthError(e);
@@ -63,10 +140,10 @@ class AuthService {
       print('🔐 Attempting to sign in with phone number: $phoneNumber');
       print('🔐 Firebase Auth instance: ${_auth.toString()}');
       print('🔐 Force resending token: $forceResendingToken');
-      
+
       // Set phone auth state
       _isPhoneAuthInProgress = true;
-      
+
       // Start phone auth verification using Flutter Firebase Auth
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
@@ -75,7 +152,7 @@ class AuthService {
           print('✅ Phone verification completed automatically');
           _isPhoneAuthInProgress = false;
           _phoneAuthTimeoutTimer?.cancel();
-          
+
           // Sign in with the credential
           signInWithPhoneAuthCredential(credential);
         },
@@ -85,7 +162,7 @@ class AuthService {
           print('❌ Error message: ${e.message}');
           _isPhoneAuthInProgress = false;
           _phoneAuthTimeoutTimer?.cancel();
-          
+
           if (e.code == 'invalid-phone-number') {
             print('❌ Invalid phone number format');
           } else if (e.code == 'too-many-requests') {
@@ -97,29 +174,35 @@ class AuthService {
           } else if (e.code == 'network-error') {
             print('❌ Network error occurred');
           } else if (e.message?.contains('BILLING_NOT_ENABLED') == true) {
-            print('❌ Firebase billing not enabled - Phone Auth requires Blaze plan');
+            print(
+              '❌ Firebase billing not enabled - Phone Auth requires Blaze plan',
+            );
           }
-          
+
           // You can handle specific error cases here
           throw _handleAuthError(e);
         },
         codeSent: (String verificationId, int? resendToken) {
-          print('✅ SMS verification code sent. Verification ID: $verificationId');
+          print(
+            '✅ SMS verification code sent. Verification ID: $verificationId',
+          );
           print('✅ Resend token: $resendToken');
-          
+
           // Save verification ID and resending token
           _verificationId = verificationId;
           // Note: Flutter Firebase Auth doesn't provide ForceResendingToken
           // We'll handle resending differently
-          
+
           // Phone auth is still in progress, waiting for user to enter code
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          print('⏰ SMS auto-retrieval timeout for verification ID: $verificationId');
+          print(
+            '⏰ SMS auto-retrieval timeout for verification ID: $verificationId',
+          );
           // User needs to manually enter the code
         },
       );
-      
+
       // Set timeout timer
       _phoneAuthTimeoutTimer = Timer(timeout, () {
         if (_isPhoneAuthInProgress) {
@@ -136,11 +219,11 @@ class AuthService {
         print('❌ Firebase Auth Error Code: ${e.code}');
         print('❌ Firebase Auth Error Message: ${e.message}');
       }
-      
+
       // Reset phone auth state on error
       _isPhoneAuthInProgress = false;
       _phoneAuthTimeoutTimer?.cancel();
-      
+
       throw _handleAuthError(e);
     }
   }
@@ -153,19 +236,19 @@ class AuthService {
       }
 
       print('🔐 Attempting to verify SMS code: $smsCode');
-      
+
       // Create credential with verification ID and SMS code
       final credential = PhoneAuthProvider.credential(
         verificationId: _verificationId!,
         smsCode: smsCode,
       );
-      
+
       // Sign in with the credential
       final result = await signInWithPhoneAuthCredential(credential);
-      
+
       // Clear phone auth state on successful verification
       _clearPhoneAuthState();
-      
+
       print('✅ Phone number verified successfully');
       return result;
     } catch (e) {
@@ -180,7 +263,9 @@ class AuthService {
   }
 
   // Sign in with phone auth credential
-  Future<UserCredential> signInWithPhoneAuthCredential(PhoneAuthCredential credential) async {
+  Future<UserCredential> signInWithPhoneAuthCredential(
+    PhoneAuthCredential credential,
+  ) async {
     try {
       final result = await _auth.signInWithCredential(credential);
       print('✅ Successfully signed in with phone credential');
@@ -196,7 +281,7 @@ class AuthService {
     try {
       // Clear the current verification state to allow resending
       _clearPhoneAuthState();
-      
+
       // Start a new verification process
       await signInWithPhoneNumber(phoneNumber, forceResendingToken: true);
       print('✅ Verification code resent successfully');
@@ -230,23 +315,24 @@ class AuthService {
         email: email,
         password: password,
       );
-      
-              // Create user document in Firestore
-        if (result.user != null) {
-          final userModel = UserModel(
-            uid: result.user!.uid,
-            firstName: result.user!.displayName?.split(' ').first ?? '',
-            lastName: result.user!.displayName?.split(' ').skip(1).join(' ') ?? '',
-            email: result.user!.email ?? '',
-            photoUrl: result.user!.photoURL,
-            isEmailVerified: result.user!.emailVerified,
-            createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
-            updatedAt: DateTime.now(),
-          );
-          
-          await _userService.createOrUpdateUser(userModel);
-        }
-      
+
+      // Create user document in Firestore
+      if (result.user != null) {
+        final userModel = UserModel(
+          uid: result.user!.uid,
+          firstName: result.user!.displayName?.split(' ').first ?? '',
+          lastName:
+              result.user!.displayName?.split(' ').skip(1).join(' ') ?? '',
+          email: result.user!.email ?? '',
+          photoUrl: result.user!.photoURL,
+          isEmailVerified: result.user!.emailVerified,
+          createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        await _userService.createOrUpdateUser(userModel);
+      }
+
       return result;
     } catch (e) {
       throw _handleAuthError(e);
@@ -257,11 +343,9 @@ class AuthService {
   Future<void> sendEmailVerification() async {
     try {
       await _auth.currentUser?.sendEmailVerification();
-      
+
       // Update verification status in Firestore
-      await _userService.updateVerificationStatus(
-        isEmailVerified: true,
-      );
+      await _userService.updateVerificationStatus(isEmailVerified: true);
     } catch (e) {
       throw _handleAuthError(e);
     }
@@ -297,13 +381,14 @@ class AuthService {
       if (photoURL != null) {
         await _auth.currentUser?.updatePhotoURL(photoURL);
       }
-      
+
       // Update user document in Firestore
       if (displayName != null) {
         final nameParts = displayName.split(' ');
         final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
-        final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-        
+        final lastName =
+            nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
         await _userService.updateUserProfile(
           firstName: firstName,
           lastName: lastName,
@@ -338,7 +423,7 @@ class AuthService {
           await _auth.currentUser?.updateDisplayName(newDisplayName);
         }
       }
-      
+
       // Update user document in Firestore
       await _userService.updateUserProfile(
         firstName: firstName,

@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:icons_plus/icons_plus.dart';
-import '../../services/auth_service.dart';
-import '../../screens/student_screens/main_screen.dart';
-import '../../features/auth/screens/register_screen.dart';
-import '../../screens/student_screens/forgot_password_screen.dart';
+import 'package:learn_work/features/auth/widgets/password_form_field.dart';
+import '../../../services/auth_service.dart';
+import '../../../screens/student_screens/main_screen.dart';
+import 'register_screen.dart';
+import '../../../screens/student_screens/forgot_password_screen.dart';
 import 'dart:io' show Platform;
 
 class LoginScreen extends StatefulWidget {
@@ -285,12 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          FTextField(
-                            controller: _passwordController,
-                            hint: 'Enter your password',
-                            obscureText: true,
-                            textInputAction: TextInputAction.done,
-                          ),
+                          PasswordFormField(controller: _passwordController),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -377,59 +373,52 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 24),
 
                       // Social Sign In Buttons
-                      Row(
+                      Column(
                         children: [
                           // Google Sign In
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: _isLoading ? null : _signInWithGoogle,
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                backgroundColor: Colors.white,
-                                side: BorderSide(color: Colors.grey.shade600),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                          OutlinedButton.icon(
+                            onPressed: _isLoading ? null : _signInWithGoogle,
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: Size(double.infinity, 0),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              backgroundColor: Colors.white,
+                              side: BorderSide(color: Colors.grey.shade600),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              icon: Brand(Brands.google, size: 20),
-                              label: Text(
-                                'Sign in with Google',
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.foreground,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            ),
+                            icon: Brand(Brands.google, size: 20),
+                            label: Text(
+                              'Sign in with Google',
+                              style: theme.typography.sm.copyWith(
+                                color: theme.colors.foreground,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
 
                           // Only show Apple Sign In on iOS
                           if (Platform.isIOS) ...[
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: _isLoading ? null : _signInWithApple,
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  side: BorderSide(color: theme.colors.border),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: _isLoading ? null : _signInWithApple,
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: Size(double.infinity, 0),
+                                backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
                                 ),
-                                icon: Icon(
-                                  Icons.apple,
-                                  size: 24,
-                                  color: theme.colors.foreground,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                label: Text(
-                                  'Apple',
-                                  style: theme.typography.sm.copyWith(
-                                    color: theme.colors.foreground,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                              ),
+                              icon: Icon(Icons.apple, size: 24),
+                              label: Text(
+                                'Sign in with Apple',
+                                style: theme.typography.sm.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
