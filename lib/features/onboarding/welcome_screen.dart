@@ -37,7 +37,7 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   // Logo with shadow
                   Image.asset(
-                    'assets/images/splash_icon.png',
+                    'assets/images/logo_and_title.jpeg',
                     width: size.width * 0.5,
                   ),
 
