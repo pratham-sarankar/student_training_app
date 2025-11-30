@@ -109,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final size = MediaQuery.of(context).size;
+    final isLoading = Provider.of<AuthProvider>(context).isLoading;
     return Scaffold(
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle(
@@ -251,27 +252,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ? null
                                     : _signInWithEmail,
                             style: FButtonStyle.primary,
-                            child:
-                                authProvider.isLoading
-                                    ? SizedBox(
-                                      height: 18,
-                                      width: 18,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              theme.colors.primaryForeground,
-                                            ),
-                                      ),
-                                    )
-                                    : Text(
-                                      'Sign In',
-                                      style: theme.typography.sm.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.2,
-                                        color: theme.colors.primaryForeground,
-                                      ),
-                                    ),
+                            child: Text(
+                              'Sign In',
+                              style: theme.typography.sm.copyWith(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.2,
+                                color: theme.colors.primaryForeground,
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -354,6 +342,45 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
+            if (isLoading)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      constraints: BoxConstraints(maxWidth: size.width * 0.5),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 10),
+                          SizedBox.square(
+                            dimension: 25,
+                            child: CircularProgressIndicator(
+                              strokeCap: StrokeCap.round,
+                              strokeWidth: 3,
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            'Please wait, signing in...',
+                            textAlign: TextAlign.center,
+                            style: theme.typography.sm.copyWith(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

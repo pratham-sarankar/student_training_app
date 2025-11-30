@@ -53,14 +53,7 @@ class GoogleAuthButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          icon:
-              authProvider.isLoading
-                  ? SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                  : Brand(Brands.google, size: 20),
+          icon: Brand(Brands.google, size: 20),
           label: Text(
             type == AuthType.signIn
                 ? 'Sign in with Google'

@@ -52,17 +52,7 @@ class AppleAuthButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          icon:
-              authProvider.isLoading
-                  ? SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                  : Icon(Icons.apple, size: 24),
+          icon: Icon(Icons.apple, size: 24),
           label: Text(
             type == AuthType.signIn
                 ? 'Sign in with Apple'
