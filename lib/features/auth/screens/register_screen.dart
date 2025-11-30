@@ -20,11 +20,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -69,6 +71,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Password must be at least 6 characters'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate confirm password
+    if (_confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please confirm your password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
           backgroundColor: Colors.red,
         ),
       );
@@ -158,19 +181,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       // Welcome Text
                       Text(
                         'Get Started',
-                        style: theme.typography.xl2.copyWith(
+                        style: theme.typography.xl3.copyWith(
                           color: theme.colors.foreground,
                           fontWeight: FontWeight.bold,
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                       ),
-                      const SizedBox(height: 8),
                       Text(
-                        'Create an account to start your learning journey.',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
+                        'Create an account to start your fresher journey...',
+                        style: theme.typography.lg.copyWith(
+                          color: Colors.grey.shade900,
                         ),
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.start,
                       ),
                       const SizedBox(height: 32),
 
@@ -209,6 +231,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 6),
                           PasswordFormField(controller: _passwordController),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Confirm Password Field
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Confirm Password',
+                            style: theme.typography.sm.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: theme.colors.foreground,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          PasswordFormField(
+                            controller: _confirmPasswordController,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
