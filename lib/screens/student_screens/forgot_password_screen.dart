@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
@@ -73,7 +72,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -81,7 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarColor: theme.colorScheme.surface,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         child: Stack(
@@ -100,8 +99,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          theme.colors.background,
-                          theme.colors.background.withValues(alpha: 0.4),
+                          theme.colorScheme.surface,
+                          theme.colorScheme.surface.withValues(alpha: 0.4),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -119,13 +118,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     padding: const EdgeInsets.only(left: 8, top: 8),
                     child: Row(
                       children: [
-                        FButton(
-                          style: FButtonStyle.ghost,
-                          onPress: () => Navigator.of(context).pop(),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
                           child: Icon(
                             Icons.arrow_back_ios,
                             size: 20,
-                            color: theme.colors.foreground,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -150,16 +148,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   // Title
                                   Text(
                                     'Reset Password',
-                                    style: theme.typography.xl2.copyWith(
-                                      color: theme.colors.foreground,
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      color: theme.colorScheme.onSurface,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     'Enter your email address and we\'ll send you a link to reset your password.',
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   const SizedBox(height: 32),
@@ -171,15 +169,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     children: [
                                       Text(
                                         'Email',
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.foreground,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  theme.colorScheme.onSurface,
+                                            ),
                                       ),
                                       const SizedBox(height: 6),
-                                      FTextField(
+                                      TextField(
                                         controller: _emailController,
-                                        hint: 'Enter your email address',
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter your email address',
+                                        ),
                                         keyboardType:
                                             TextInputType.emailAddress,
                                         textInputAction: TextInputAction.done,
@@ -189,12 +191,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   const SizedBox(height: 32),
 
                                   // Reset Button
-                                  FButton(
-                                    onPress:
+                                  FilledButton(
+                                    onPressed:
                                         authProvider.isLoading
                                             ? null
                                             : _resetPassword,
-                                    style: FButtonStyle.primary,
                                     child:
                                         authProvider.isLoading
                                             ? SizedBox(
@@ -207,21 +208,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                                       Color
                                                     >(
                                                       theme
-                                                          .colors
-                                                          .primaryForeground,
+                                                          .colorScheme
+                                                          .primaryContainer,
                                                     ),
                                               ),
                                             )
                                             : Text(
                                               'Send Reset Link',
-                                              style: theme.typography.sm
-                                                  .copyWith(
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
                                                     fontWeight: FontWeight.w600,
                                                     letterSpacing: 0.2,
                                                     color:
                                                         theme
-                                                            .colors
-                                                            .primaryForeground,
+                                                            .colorScheme
+                                                            .primaryContainer,
                                                   ),
                                             ),
                                   ),
@@ -233,25 +234,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     children: [
                                       Text(
                                         'Check Your Email',
-                                        style: theme.typography.xl2.copyWith(
-                                          color: theme.colors.foreground,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: theme.textTheme.titleLarge
+                                            ?.copyWith(
+                                              color:
+                                                  theme.colorScheme.onSurface,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
                                         'We\'ve sent a password reset link to:',
-                                        style: theme.typography.sm.copyWith(
-                                          color: theme.colors.mutedForeground,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color:
+                                                  theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                            ),
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
                                         _emailController.text.trim(),
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.primary,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: theme.colorScheme.primary,
+                                            ),
                                       ),
                                       const SizedBox(height: 32),
 
@@ -287,13 +295,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                       Container(
                                         padding: const EdgeInsets.all(16),
                                         decoration: BoxDecoration(
-                                          color: theme.colors.mutedForeground
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant
                                               .withValues(alpha: 0.1),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
                                           border: Border.all(
-                                            color: theme.colors.border,
+                                            color: theme.colorScheme.outline,
                                             width: 1,
                                           ),
                                         ),
@@ -306,22 +316,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                             ),
                                             Text(
                                               'What\'s next?',
-                                              style: theme.typography.sm
-                                                  .copyWith(
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
                                                     fontWeight: FontWeight.w600,
                                                     color:
-                                                        theme.colors.foreground,
+                                                        theme
+                                                            .colorScheme
+                                                            .onSurface,
                                                   ),
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
                                               '1. Check your email inbox\n2. Click the reset link\n3. Create a new password\n4. Sign in with your new password',
-                                              style: theme.typography.sm
-                                                  .copyWith(
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
                                                     color:
                                                         theme
-                                                            .colors
-                                                            .mutedForeground,
+                                                            .colorScheme
+                                                            .onSurfaceVariant,
                                                     height: 1.5,
                                                   ),
                                             ),
@@ -331,8 +343,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                       const SizedBox(height: 32),
 
                                       // Back to Login Button
-                                      FButton(
-                                        onPress: () {
+                                      FilledButton(
+                                        onPressed: () {
                                           Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
                                               builder:
@@ -341,15 +353,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                             ),
                                           );
                                         },
-                                        style: FButtonStyle.primary,
                                         child: Text(
                                           'Back to Login',
-                                          style: theme.typography.sm.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            letterSpacing: 0.2,
-                                            color:
-                                                theme.colors.primaryForeground,
-                                          ),
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: 0.2,
+                                                color:
+                                                    theme.colorScheme.onPrimary,
+                                              ),
                                         ),
                                       ),
                                     ],

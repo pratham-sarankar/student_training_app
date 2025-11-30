@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learn_work/screens/admin_screen/instructor_chat_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:forui/forui.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:learn_work/models/traning.dart';
 import 'package:learn_work/screens/admin_screen/add_edit_training_screen.dart';
@@ -27,7 +26,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
@@ -46,16 +45,16 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
         final training = _currentTraining ?? widget.training;
 
         return Scaffold(
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colorScheme.surface,
           appBar: AppBar(
             title: Text(
               training.title,
-              style: theme.typography.lg.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colorScheme.surface,
             elevation: 0,
             scrolledUnderElevation: 0,
             surfaceTintColor: Colors.transparent,
@@ -63,13 +62,13 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               icon: Icon(
                 Icons.arrow_back_ios,
                 size: 20,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
               onPressed: () => Navigator.of(context).pop(),
               tooltip: 'Back',
               style: IconButton.styleFrom(
-                backgroundColor: theme.colors.muted,
-                foregroundColor: theme.colors.foreground,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                foregroundColor: theme.colorScheme.onSurface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -81,12 +80,14 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 icon: Icon(
                   Icons.edit_outlined,
                   size: 20,
-                  color: theme.colors.primary,
+                  color: theme.colorScheme.primary,
                 ),
                 tooltip: 'Edit Course',
                 style: IconButton.styleFrom(
-                  backgroundColor: theme.colors.primary.withValues(alpha: 0.1),
-                  foregroundColor: theme.colors.primary,
+                  backgroundColor: theme.colorScheme.primary.withValues(
+                    alpha: 0.1,
+                  ),
+                  foregroundColor: theme.colorScheme.primary,
                 ),
               ),
               IconButton(
@@ -94,14 +95,14 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 icon: Icon(
                   Icons.delete_outline,
                   size: 20,
-                  color: theme.colors.destructive,
+                  color: theme.colorScheme.error,
                 ),
                 tooltip: 'Delete Course',
                 style: IconButton.styleFrom(
-                  backgroundColor: theme.colors.destructive.withValues(
+                  backgroundColor: theme.colorScheme.error.withValues(
                     alpha: 0.1,
                   ),
-                  foregroundColor: theme.colors.destructive,
+                  foregroundColor: theme.colorScheme.error,
                 ),
               ),
               const SizedBox(width: 8),
@@ -114,7 +115,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 // Course Header Section
                 Container(
                   width: double.infinity,
-                  color: theme.colors.background,
+                  color: theme.colorScheme.surface,
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,14 +125,14 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: theme.colors.primary.withValues(
+                              color: theme.colorScheme.primary.withValues(
                                 alpha: 0.1,
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               Icons.school,
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                               size: 20,
                             ),
                           ),
@@ -142,16 +143,16 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               children: [
                                 Text(
                                   training.title,
-                                  style: theme.typography.lg.copyWith(
+                                  style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: theme.colors.foreground,
+                                    color: theme.colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   training.description,
-                                  style: theme.typography.sm.copyWith(
-                                    color: theme.colors.mutedForeground,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
                                     height: 1.3,
                                   ),
                                 ),
@@ -168,7 +169,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               icon: Icons.attach_money,
                               title: 'Price',
                               value: '₹${training.price.toStringAsFixed(2)}',
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -177,7 +178,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               icon: Icons.schedule,
                               title: 'Schedules',
                               value: '${training.schedules.length}',
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -187,7 +188,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               title: 'Total Students',
                               value:
                                   '${training.schedules.fold(0, (sum, schedule) => sum + schedule.enrolledStudents.length)}',
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                         ],
@@ -199,7 +200,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 // Quick Actions Section
                 Container(
                   width: double.infinity,
-                  color: theme.colors.muted,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,15 +209,15 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         children: [
                           Icon(
                             Icons.flash_on,
-                            color: theme.colors.primary,
+                            color: theme.colorScheme.primary,
                             size: 16,
                           ),
                           const SizedBox(width: 6),
                           Text(
                             'Quick Actions',
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -231,7 +232,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               title: 'Add Schedule',
                               subtitle: 'New schedule',
                               onTap: () => _showScheduleFormDialog(context),
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -246,7 +247,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                                     context,
                                     training.id,
                                   ),
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -257,7 +258,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               title: 'Course Chat',
                               subtitle: 'View messages',
                               onTap: () => _showInstructorChat(context),
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                         ],
@@ -272,7 +273,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 )) ...[
                   Container(
                     width: double.infinity,
-                    color: theme.colors.background,
+                    color: theme.colorScheme.surface,
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,15 +282,15 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                           children: [
                             Icon(
                               Icons.folder_open,
-                              color: theme.colors.secondary,
+                              color: theme.colorScheme.secondary,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
                             Text(
                               'Course Content',
-                              style: theme.typography.lg.copyWith(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: theme.colors.foreground,
+                                color: theme.colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -298,25 +299,27 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: theme.colors.muted,
+                            color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: theme.colors.border),
+                            border: Border.all(
+                              color: theme.colorScheme.outline,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Total Notes: ${training.schedules.fold(0, (sum, schedule) => sum + schedule.notes.length)}',
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.foreground,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Notes are available across ${training.schedules.where((schedule) => schedule.notes.isNotEmpty).length} schedules',
-                                style: theme.typography.xs.copyWith(
-                                  color: theme.colors.mutedForeground,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -336,7 +339,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                     children: [
                       Icon(
                         Icons.schedule,
-                        color: theme.colors.primary,
+                        color: theme.colorScheme.primary,
                         size: 18,
                       ),
                       const SizedBox(width: 8),
@@ -347,16 +350,16 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                           children: [
                             Text(
                               'Course Schedules',
-                              style: theme.typography.lg.copyWith(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: theme.colors.foreground,
+                                color: theme.colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Manage course schedules and student enrollments',
-                              style: theme.typography.xs.copyWith(
-                                color: theme.colors.mutedForeground,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -391,7 +394,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Material(
       color: Colors.transparent,
@@ -412,7 +415,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               const SizedBox(height: 6),
               Text(
                 title,
-                style: theme.typography.xs.copyWith(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: color,
                   fontWeight: FontWeight.w600,
                 ),
@@ -420,7 +423,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               const SizedBox(height: 1),
               Text(
                 subtitle,
-                style: theme.typography.xs.copyWith(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: color.withValues(alpha: 0.7),
                   fontSize: 10,
                 ),
@@ -472,7 +475,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   }
 
   Widget _buildEmptySchedulesState() {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Builder(
       builder:
@@ -480,10 +483,10 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 12),
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: theme.colors.background,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: theme.colors.border,
+                color: theme.colorScheme.outline,
                 style: BorderStyle.solid,
               ),
             ),
@@ -493,29 +496,29 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colors.muted,
+                      color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.schedule_outlined,
                       size: 40,
-                      color: theme.colors.mutedForeground,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'No Schedules Yet',
-                    style: theme.typography.lg.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Create your first schedule to start\nenrolling students',
                     textAlign: TextAlign.center,
-                    style: theme.typography.sm.copyWith(
-                      color: theme.colors.mutedForeground,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -526,7 +529,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   }
 
   Widget _buildEmptyEnrolledStudentsState() {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Builder(
       builder:
@@ -534,10 +537,10 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 12),
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: theme.colors.background,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: theme.colors.border,
+                color: theme.colorScheme.outline,
                 style: BorderStyle.solid,
               ),
             ),
@@ -547,29 +550,29 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colors.muted,
+                      color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.people_outline,
                       size: 40,
-                      color: theme.colors.mutedForeground,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'No Students Enrolled Yet',
-                    style: theme.typography.lg.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Once students enroll, they will appear here.',
                     textAlign: TextAlign.center,
-                    style: theme.typography.sm.copyWith(
-                      color: theme.colors.mutedForeground,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -580,18 +583,18 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   }
 
   Widget _buildScheduleCard(BuildContext context, TrainingSchedule schedule) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     final isFull = schedule.enrolledStudents.length >= schedule.capacity;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: theme.colors.background,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: theme.colors.foreground.withValues(alpha: 0.04),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -605,13 +608,16 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               decoration: BoxDecoration(
                 color:
                     isFull
-                        ? theme.colors.destructive.withValues(alpha: 0.1)
-                        : theme.colors.primary.withValues(alpha: 0.1),
+                        ? theme.colorScheme.error.withValues(alpha: 0.1)
+                        : theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Icon(
                 isFull ? Icons.event_busy : Icons.calendar_today,
-                color: isFull ? theme.colors.destructive : theme.colors.primary,
+                color:
+                    isFull
+                        ? theme.colorScheme.error
+                        : theme.colorScheme.primary,
                 size: 16,
               ),
             ),
@@ -622,9 +628,9 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 children: [
                   Text(
                     '${_formatDate(schedule.startDate)} - ${_formatDate(schedule.endDate)}',
-                    style: theme.typography.sm.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   Row(
@@ -632,26 +638,26 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                       Icon(
                         Icons.access_time,
                         size: 11,
-                        color: theme.colors.mutedForeground,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 2),
                       Text(
                         schedule.time.format(context),
-                        style: theme.typography.xs.copyWith(
-                          color: theme.colors.mutedForeground,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Icon(
                         Icons.people,
                         size: 11,
-                        color: theme.colors.mutedForeground,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 2),
                       Text(
                         '${schedule.enrolledStudents.length}/${schedule.capacity} enrolled',
-                        style: theme.typography.xs.copyWith(
-                          color: theme.colors.mutedForeground,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -665,21 +671,23 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               decoration: BoxDecoration(
                 color:
                     isFull
-                        ? theme.colors.destructive.withValues(alpha: 0.1)
-                        : theme.colors.primary.withValues(alpha: 0.1),
+                        ? theme.colorScheme.error.withValues(alpha: 0.1)
+                        : theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color:
                       isFull
-                          ? theme.colors.destructive.withValues(alpha: 0.3)
-                          : theme.colors.primary.withValues(alpha: 0.3),
+                          ? theme.colorScheme.error.withValues(alpha: 0.3)
+                          : theme.colorScheme.primary.withValues(alpha: 0.3),
                 ),
               ),
               child: Text(
                 isFull ? 'Full' : 'Available',
                 style: TextStyle(
                   color:
-                      isFull ? theme.colors.destructive : theme.colors.primary,
+                      isFull
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.primary,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
@@ -688,11 +696,11 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
           ],
         ),
         trailing: PopupMenuButton<String>(
-          color: theme.colors.background,
+          color: theme.colorScheme.surface,
           elevation: 8,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: theme.colors.border),
+            side: BorderSide(color: theme.colorScheme.outline),
           ),
           onSelected: (value) {
             switch (value) {
@@ -727,7 +735,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                   ),
                 ),
               ],
-          child: Icon(Icons.more_vert, color: theme.colors.foreground),
+          child: Icon(Icons.more_vert, color: theme.colorScheme.onSurface),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         collapsedShape: RoundedRectangleBorder(
@@ -747,13 +755,17 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.school, size: 12, color: theme.colors.primary),
+                    Icon(
+                      Icons.school,
+                      size: 12,
+                      color: theme.colorScheme.primary,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Enrolled Students (${schedule.enrolledStudents.length})',
-                      style: theme.typography.sm.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -773,12 +785,12 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.colors.primary.withValues(
+                              color: theme.colorScheme.primary.withValues(
                                 alpha: 0.1,
                               ),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: theme.colors.primary.withValues(
+                                color: theme.colorScheme.primary.withValues(
                                   alpha: 0.3,
                                 ),
                               ),
@@ -789,13 +801,13 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                                 Icon(
                                   Icons.person,
                                   size: 10,
-                                  color: theme.colors.primary,
+                                  color: theme.colorScheme.primary,
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
                                   student.name,
-                                  style: theme.typography.xs.copyWith(
-                                    color: theme.colors.primary,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.primary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -866,15 +878,15 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               builder:
                   (context, scrollController) => Container(
                     decoration: BoxDecoration(
-                      color: context.theme.colors.background,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(20),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: context.theme.colors.foreground.withValues(
-                            alpha: 0.1,
-                          ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, -4),
                         ),
@@ -888,7 +900,8 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                           width: 36,
                           height: 4,
                           decoration: BoxDecoration(
-                            color: context.theme.colors.mutedForeground,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -976,9 +989,9 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
       showDialog(
         context: context,
         builder:
-            (dialogContext) => FDialog(
+            (dialogContext) => AlertDialog(
               title: const Text('Delete Schedule'),
-              body: Text(
+              content: Text(
                 'Are you sure you want to delete this schedule?\n\n'
                 'This will permanently delete:\n'
                 '• Schedule: ${_formatDate(schedule.startDate)} - ${_formatDate(schedule.endDate)}\n'
@@ -987,14 +1000,12 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 'This action cannot be undone.',
               ),
               actions: [
-                FButton(
-                  style: FButtonStyle.outline,
-                  onPress: () => Navigator.of(dialogContext).pop(),
+                OutlinedButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
                   child: const Text('Cancel'),
                 ),
-                FButton(
-                  style: FButtonStyle.primary,
-                  onPress: () async {
+                FilledButton(
+                  onPressed: () async {
                     try {
                       // Show loading state
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -1068,9 +1079,9 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
     showDialog(
       context: context,
       builder:
-          (dialogContext) => FDialog(
+          (dialogContext) => AlertDialog(
             title: const Text('Delete Training'),
-            body: Text(
+            content: Text(
               'Are you sure you want to delete "${_currentTraining?.title ?? widget.training.title}"?\n\n'
               'This will permanently delete:\n'
               '• All course schedules (${_currentTraining?.schedules.length ?? widget.training.schedules.length})\n'
@@ -1079,14 +1090,12 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
               'This action cannot be undone.',
             ),
             actions: [
-              FButton(
-                style: FButtonStyle.outline,
-                onPress: () => Navigator.of(dialogContext).pop(),
+              OutlinedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
                 child: const Text('Cancel'),
               ),
-              FButton(
-                style: FButtonStyle.primary,
-                onPress: () async {
+              FilledButton(
+                onPressed: () async {
                   try {
                     // Show loading state
                     ScaffoldMessenger.of(context).showSnackBar(

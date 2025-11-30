@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
 import '../../providers/admin_provider.dart';
 import '../student_screens/forgot_password_screen.dart';
@@ -27,86 +26,94 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   Future<void> _handleAdminLogin() async {
     // Basic validation
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Please fill in all fields'),
-            backgroundColor: context.theme.colors.mutedForeground,
-          ),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please fill in all fields'),
+          backgroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      );
       return;
     }
-    
-          if (!_emailController.text.contains('@')) {
+
+    if (!_emailController.text.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please enter a valid email address'),
+          backgroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      );
+      return;
+    }
+
+    try {
+      print(
+        '🔐 Attempting admin login with email: ${_emailController.text.trim()}',
+      );
+
+      // Use the admin provider to sign in
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      final success = await adminProvider.signInAdmin(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      print('🔐 Admin login result: $success');
+
+      if (success && mounted) {
+        // Success! The AuthWrapper will automatically handle navigation
+        // based on the user's role. Just pop back to welcome screen.
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        // Get the error message from the provider if available
+        final adminProvider = Provider.of<AdminProvider>(
+          context,
+          listen: false,
+        );
+        String errorMessage = adminProvider.errorMessage ?? 'Login failed';
+
+        // If no provider error, show the caught exception
+        if (errorMessage == 'Login failed') {
+          if (e.toString().contains('wrong-password') ||
+              e.toString().contains('incorrect')) {
+            errorMessage = 'Incorrect password. Please try again.';
+          } else if (e.toString().contains('user-not-found')) {
+            errorMessage = 'No admin account found with this email address.';
+          } else if (e.toString().contains('invalid-email')) {
+            errorMessage = 'Please enter a valid email address.';
+          } else if (e.toString().contains('too-many-requests')) {
+            errorMessage = 'Too many failed attempts. Please try again later.';
+          } else if (e.toString().contains('network')) {
+            errorMessage =
+                'Network error. Please check your internet connection.';
+          } else if (e.toString().contains('Access denied')) {
+            errorMessage =
+                'Access denied. This account is not authorized for admin access.';
+          } else {
+            errorMessage = 'Login failed: ${e.toString()}';
+          }
+        }
+
+        print('🔐 Admin login error: $errorMessage');
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Please enter a valid email address'),
-            backgroundColor: context.theme.colors.mutedForeground,
+            content: Text(errorMessage),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 4),
           ),
         );
-        return;
       }
-
-         try {
-       print('🔐 Attempting admin login with email: ${_emailController.text.trim()}');
-       
-       // Use the admin provider to sign in
-       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-       final success = await adminProvider.signInAdmin(
-         _emailController.text.trim(),
-         _passwordController.text,
-       );
-       
-       print('🔐 Admin login result: $success');
-       
-       if (success && mounted) {
-         // Success! The AuthWrapper will automatically handle navigation
-         // based on the user's role. Just pop back to welcome screen.
-         Navigator.of(context).pop();
-       }
-     } catch (e) {
-       if (mounted) {
-         // Get the error message from the provider if available
-         final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-         String errorMessage = adminProvider.errorMessage ?? 'Login failed';
-         
-         // If no provider error, show the caught exception
-         if (errorMessage == 'Login failed') {
-           if (e.toString().contains('wrong-password') || e.toString().contains('incorrect')) {
-             errorMessage = 'Incorrect password. Please try again.';
-           } else if (e.toString().contains('user-not-found')) {
-             errorMessage = 'No admin account found with this email address.';
-           } else if (e.toString().contains('invalid-email')) {
-             errorMessage = 'Please enter a valid email address.';
-           } else if (e.toString().contains('too-many-requests')) {
-             errorMessage = 'Too many failed attempts. Please try again later.';
-           } else if (e.toString().contains('network')) {
-             errorMessage = 'Network error. Please check your internet connection.';
-           } else if (e.toString().contains('Access denied')) {
-             errorMessage = 'Access denied. This account is not authorized for admin access.';
-           } else {
-             errorMessage = 'Login failed: ${e.toString()}';
-           }
-         }
-         
-         print('🔐 Admin login error: $errorMessage');
-         
-         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(
-             content: Text(errorMessage),
-             backgroundColor: context.theme.colors.destructive,
-             duration: const Duration(seconds: 4),
-           ),
-         );
-       }
-     }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
-    
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colorScheme.surface,
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.dark,
         child: SafeArea(
@@ -115,87 +122,91 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 80),
-                
+
                 // Admin Icon
                 Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: theme.colors.primaryForeground,
+                    color: theme.colorScheme.onPrimary,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: theme.colors.border,
+                      color: theme.colorScheme.outline,
                       width: 1,
                     ),
                   ),
                   child: Icon(
                     Icons.admin_panel_settings,
                     size: 36,
-                    color: theme.colors.primary,
+                    color: theme.colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Title
                 Text(
                   'Admin Login',
-                  style: theme.typography.lg.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: theme.colors.foreground,
+                    color: theme.colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
-                
+
                 // Subtitle
                 Text(
                   'Access administrative controls',
-                  style: theme.typography.sm.copyWith(
-                    color: theme.colors.mutedForeground,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Email Field
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Admin Email',
-                      style: theme.typography.sm.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 6),
-                    FTextField(
+                    TextField(
                       controller: _emailController,
-                      hint: 'Enter admin email',
+                      decoration: InputDecoration(
+                        hintText: 'Enter admin email',
+                      ),
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Password Field
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Password',
-                      style: theme.typography.sm.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Stack(
                       children: [
-                        FTextField(
+                        TextField(
                           controller: _passwordController,
-                          hint: 'Enter password',
+                          decoration: InputDecoration(
+                            hintText: 'Enter password',
+                          ),
                           obscureText: _obscurePassword,
                           textInputAction: TextInputAction.done,
                         ),
@@ -212,11 +223,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 });
                               },
                               child: Container(
-                                    padding: const EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 child: Icon(
-                                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                   size: 20,
-                                  color: theme.colors.mutedForeground,
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -229,20 +242,20 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        FButton(
-                          style: FButtonStyle.ghost,
-                          onPress: () {
+                        TextButton(
+                          onPressed: () {
                             // Navigate to forgot password screen
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const ForgotPasswordScreen(),
+                                builder:
+                                    (context) => const ForgotPasswordScreen(),
                               ),
                             );
                           },
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
                             ),
@@ -253,35 +266,37 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Login Button
                 Consumer<AdminProvider>(
                   builder: (context, adminProvider, child) {
-                    return FButton(
-                      onPress: adminProvider.isLoading ? null : _handleAdminLogin,
-                      child: adminProvider.isLoading
-                          ? SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  theme.colors.primaryForeground,
+                    return FilledButton(
+                      onPressed:
+                          adminProvider.isLoading ? null : _handleAdminLogin,
+                      child:
+                          adminProvider.isLoading
+                              ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                              )
+                              : Text(
+                                'Login as Admin',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.2,
+                                  color: theme.colorScheme.onPrimary,
                                 ),
                               ),
-                            )
-                          : Text(
-                              'Login as Admin',
-                              style: theme.typography.sm.copyWith(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.2,
-                                color: theme.colors.primaryForeground,
-                              ),
-                            ),
                     );
                   },
                 ),
-                
+
                 // Error Message Display
                 Consumer<AdminProvider>(
                   builder: (context, adminProvider, child) {
@@ -290,15 +305,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         margin: const EdgeInsets.only(top: 16),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.colors.destructiveForeground,
+                          color: theme.colorScheme.onError,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: theme.colors.destructive),
+                          border: Border.all(color: theme.colorScheme.error),
                         ),
                         child: Row(
                           children: [
                             Icon(
                               Icons.error_outline,
-                              color: theme.colors.destructive,
+                              color: theme.colorScheme.error,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
@@ -306,7 +321,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               child: Text(
                                 adminProvider.errorMessage!,
                                 style: TextStyle(
-                                  color: theme.colors.destructive,
+                                  color: theme.colorScheme.error,
                                   fontSize: 14,
                                 ),
                               ),
@@ -315,8 +330,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               onPressed: adminProvider.clearError,
                               icon: Icon(
                                 Icons.close,
-                                color: theme.colors.destructive,
-                                    size: 18,
+                                color: theme.colorScheme.error,
+                                size: 18,
                               ),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),

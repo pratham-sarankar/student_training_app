@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import '../../services/chat_service.dart';
@@ -58,7 +57,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error initializing chat: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -287,7 +286,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error initializing notes: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -316,12 +315,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.colorScheme.surface,
         body: SafeArea(
           child: Column(
             children: [
@@ -330,13 +329,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
-                    FButton(
-                      onPress: () => Navigator.of(context).pop(),
-                      style: FButtonStyle.outline,
+                    OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
                       child: Icon(
                         Icons.arrow_back,
                         size: 16,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     SizedBox(width: 12),
@@ -346,17 +344,17 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                         children: [
                           Text(
                             widget.course['title'],
-                            style: theme.typography.lg.copyWith(
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             '${widget.course['category']} • ${widget.course['level']}',
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.mutedForeground,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                               fontSize: 12,
                             ),
                           ),
@@ -373,84 +371,117 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: FButton(
-                        onPress: () {
-                          setState(() {
-                            _selectedTabIndex = 0;
-                          });
-                        },
-                        style:
-                            _selectedTabIndex == 0
-                                ? FButtonStyle.primary
-                                : FButtonStyle.outline,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.note_outlined,
-                              size: 16,
-                              color:
-                                  _selectedTabIndex == 0
-                                      ? theme.colors.primaryForeground
-                                      : theme.colors.primary,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Notes',
-                              style: TextStyle(
-                                color:
-                                    _selectedTabIndex == 0
-                                        ? theme.colors.primaryForeground
-                                        : theme.colors.primary,
-                                fontWeight: FontWeight.w600,
+                      child:
+                          _selectedTabIndex == 0
+                              ? FilledButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedTabIndex = 0;
+                                  });
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.note_outlined,
+                                      size: 16,
+                                      color: theme.colorScheme.onPrimary,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Notes',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.onPrimary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                              : OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedTabIndex = 0;
+                                  });
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.note_outlined,
+                                      size: 16,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Notes',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                     SizedBox(width: 12),
                     Expanded(
-                      child: FButton(
-                        onPress: () {
-                          setState(() {
-                            _selectedTabIndex = 1;
-                          });
-                        },
-                        style:
-                            _selectedTabIndex == 1
-                                ? FButtonStyle.primary
-                                : FButtonStyle.outline,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.chat_outlined,
-                              size: 16,
-                              color:
-                                  _selectedTabIndex == 1
-                                      ? theme.colors.primaryForeground
-                                      : theme.colors.primary,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Chat',
-                              style: TextStyle(
-                                color:
-                                    _selectedTabIndex == 1
-                                        ? theme.colors.primaryForeground
-                                        : theme.colors.primary,
-                                fontWeight: FontWeight.w600,
+                      child:
+                          _selectedTabIndex == 1
+                              ? FilledButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedTabIndex = 1;
+                                  });
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.chat_outlined,
+                                      size: 16,
+                                      color: theme.colorScheme.onPrimary,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Chat',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.onPrimary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                              : OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedTabIndex = 1;
+                                  });
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.chat_outlined,
+                                      size: 16,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Chat',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
               ),
-
               SizedBox(height: 16),
 
               // Tab Content
@@ -468,7 +499,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
   }
 
   Widget _buildNotesTab() {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -478,13 +509,17 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
           // Notes Header
           Row(
             children: [
-              Icon(Icons.note_outlined, size: 20, color: theme.colors.primary),
+              Icon(
+                Icons.note_outlined,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
               SizedBox(width: 8),
               Text(
                 'Course Notes',
-                style: theme.typography.lg.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -498,7 +533,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                 _isNotesLoading
                     ? Center(
                       child: CircularProgressIndicator(
-                        color: theme.colors.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     )
                     : _courseNotes.isEmpty
@@ -509,27 +544,27 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                           Icon(
                             Icons.note_outlined,
                             size: 64,
-                            color: theme.colors.muted,
+                            color: theme.colorScheme.surfaceContainerHighest,
                           ),
                           SizedBox(height: 16),
                           Text(
                             'No notes yet',
-                            style: theme.typography.lg.copyWith(
-                              color: theme.colors.mutedForeground,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                           SizedBox(height: 8),
                           Text(
                             'Create your first note to get started!',
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.mutedForeground,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                           SizedBox(height: 16),
                           Text(
                             'Notes will appear here when they are added by instructors.',
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.mutedForeground,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -543,15 +578,17 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                           margin: EdgeInsets.only(bottom: 12),
                           padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: theme.colors.background,
+                            color: theme.colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: theme.colors.border.withValues(alpha: 0.1),
+                              color: theme.colorScheme.outline.withValues(
+                                alpha: 0.1,
+                              ),
                               width: 1,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: theme.colors.foreground.withValues(
+                                color: theme.colorScheme.onSurface.withValues(
                                   alpha: 0.05,
                                 ),
                                 blurRadius: 8,
@@ -567,16 +604,17 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                   Icon(
                                     Icons.note_outlined,
                                     size: 16,
-                                    color: theme.colors.primary,
+                                    color: theme.colorScheme.primary,
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       note.title,
-                                      style: theme.typography.sm.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: theme.colors.foreground,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: theme.colorScheme.onSurface,
+                                          ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -586,8 +624,8 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                               SizedBox(height: 8),
                               Text(
                                 note.content,
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.foreground,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface,
                                 ),
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
@@ -606,7 +644,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                                 vertical: 4,
                                               ),
                                               decoration: BoxDecoration(
-                                                color: theme.colors.primary
+                                                color: theme.colorScheme.primary
                                                     .withValues(alpha: 0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(12),
@@ -615,7 +653,8 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                                 tag,
                                                 style: TextStyle(
                                                   fontSize: 10,
-                                                  color: theme.colors.primary,
+                                                  color:
+                                                      theme.colorScheme.primary,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),
@@ -629,16 +668,16 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                 children: [
                                   Text(
                                     _formatNoteTime(note.updatedAt),
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                       fontSize: 10,
                                     ),
                                   ),
                                   const Spacer(),
                                   Text(
                                     'by ${note.createdByName}',
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                       fontSize: 10,
                                     ),
                                   ),
@@ -656,7 +695,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
   }
 
   Widget _buildChatTab() {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     final currentUser = _chatService.currentUser;
 
     return Padding(
@@ -667,26 +706,30 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
           // Enhanced Chat Header
           Row(
             children: [
-              Icon(Icons.chat_outlined, size: 20, color: theme.colors.primary),
+              Icon(
+                Icons.chat_outlined,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
               SizedBox(width: 8),
               Text(
                 'Course Chat',
-                style: theme.typography.lg.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const Spacer(),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: theme.colors.primary.withValues(alpha: 0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'Online',
-                  style: theme.typography.sm.copyWith(
-                    color: theme.colors.primary,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w500,
                     fontSize: 10,
                   ),
@@ -703,7 +746,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                 _isLoading
                     ? Center(
                       child: CircularProgressIndicator(
-                        color: theme.colors.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     )
                     : _messages.isEmpty
@@ -714,20 +757,20 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                           Icon(
                             Icons.chat_bubble_outline,
                             size: 64,
-                            color: theme.colors.muted,
+                            color: theme.colorScheme.surfaceContainerHighest,
                           ),
                           SizedBox(height: 16),
                           Text(
                             'No messages yet',
-                            style: theme.typography.lg.copyWith(
-                              color: theme.colors.mutedForeground,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                           SizedBox(height: 8),
                           Text(
                             'Start the conversation!',
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.mutedForeground,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -756,13 +799,13 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                               if (!isMe) ...[
                                 CircleAvatar(
                                   radius: 16,
-                                  backgroundColor: theme.colors.secondary,
+                                  backgroundColor: theme.colorScheme.secondary,
                                   child: Text(
                                     message.senderName[0].toUpperCase(),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: theme.colors.background,
+                                      color: theme.colorScheme.surface,
                                     ),
                                   ),
                                 ),
@@ -777,12 +820,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                   decoration: BoxDecoration(
                                     color:
                                         isMe
-                                            ? theme.colors.primary
-                                            : theme.colors.background,
+                                            ? theme.colorScheme.primary
+                                            : theme.colorScheme.surface,
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: theme.colors.foreground
+                                        color: theme.colorScheme.onSurface
                                             .withValues(alpha: 0.1),
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
@@ -802,9 +845,9 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                           color:
                                               isMe
                                                   ? theme
-                                                      .colors
-                                                      .primaryForeground
-                                                  : theme.colors.foreground,
+                                                      .colorScheme
+                                                      .primaryContainer
+                                                  : theme.colorScheme.onSurface,
                                         ),
                                       ),
                                       SizedBox(height: 4),
@@ -815,12 +858,12 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                           color:
                                               isMe
                                                   ? theme
-                                                      .colors
-                                                      .primaryForeground
+                                                      .colorScheme
+                                                      .primaryContainer
                                                       .withValues(alpha: 0.8)
                                                   : theme
-                                                      .colors
-                                                      .mutedForeground,
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
                                         ),
                                       ),
                                     ],
@@ -831,14 +874,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                                 SizedBox(width: 8),
                                 CircleAvatar(
                                   radius: 16,
-                                  backgroundColor: theme.colors.primary,
+                                  backgroundColor: theme.colorScheme.primary,
                                   child: Text(
                                     (currentUser?.displayName?[0] ?? 'U')
                                         .toUpperCase(),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: theme.colors.primaryForeground,
+                                      color: theme.colorScheme.onPrimary,
                                     ),
                                   ),
                                 ),
@@ -853,13 +896,13 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
           // Message Input
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-            decoration: BoxDecoration(color: theme.colors.background),
+            decoration: BoxDecoration(color: theme.colorScheme.surface),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: theme.colors.muted,
+                      color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: TextField(
@@ -881,7 +924,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                 SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: theme.colors.primary,
+                    color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: IconButton(
@@ -893,14 +936,14 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  theme.colors.primaryForeground,
+                                  theme.colorScheme.onPrimary,
                                 ),
                               ),
                             )
                             : Icon(
                               Icons.send,
                               size: 20,
-                              color: theme.colors.primaryForeground,
+                              color: theme.colorScheme.onPrimary,
                             ),
                     onPressed: _isSendingMessage ? null : _sendMessage,
                   ),
@@ -1007,7 +1050,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error sending message: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
@@ -58,10 +57,9 @@ class GoogleAuthButton extends StatelessWidget {
             type == AuthType.signIn
                 ? 'Sign in with Google'
                 : 'Sign up with Google',
-            style: context.theme.typography.sm.copyWith(
-              color: context.theme.colors.foreground,
-              fontWeight: FontWeight.w500,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
           ),
         );
       },

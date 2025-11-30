@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../models/course.dart';
 import '../../services/course_service.dart';
@@ -80,13 +79,13 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
@@ -99,9 +98,9 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   padding: const EdgeInsets.only(top: 16),
                   child: Text(
                     'Training Courses',
-                    style: theme.typography.lg.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -134,7 +133,9 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                                   BorderRadius.circular(8),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: theme.colors.primary
+                                                  color: theme
+                                                      .colorScheme
+                                                      .primary
                                                       .withValues(alpha: 0.3),
                                                   blurRadius: 8,
                                                   offset: const Offset(0, 2),
@@ -142,31 +143,46 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                               ],
                                             )
                                             : null,
-                                    child: FButton(
-                                      onPress: () {
-                                        setState(() {
-                                          _selectedCategory = category;
-                                        });
-                                      },
-                                      style:
-                                          isSelected
-                                              ? FButtonStyle.primary
-                                              : FButtonStyle.outline,
-                                      child: Text(
-                                        '$category ($courseCount)',
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color:
-                                              isSelected
-                                                  ? theme
-                                                      .colors
-                                                      .primaryForeground
-                                                  : theme
-                                                      .colors
-                                                      .mutedForeground,
-                                        ),
-                                      ),
-                                    ),
+                                    child:
+                                        isSelected
+                                            ? FilledButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _selectedCategory = category;
+                                                });
+                                              },
+                                              child: Text(
+                                                '$category ($courseCount)',
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color:
+                                                          theme
+                                                              .colorScheme
+                                                              .onPrimary,
+                                                    ),
+                                              ),
+                                            )
+                                            : OutlinedButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _selectedCategory = category;
+                                                });
+                                              },
+                                              child: Text(
+                                                '$category ($courseCount)',
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color:
+                                                          theme
+                                                              .colorScheme
+                                                              .onSurfaceVariant,
+                                                    ),
+                                              ),
+                                            ),
                                   );
                                 }).toList(),
                           ),
@@ -183,15 +199,15 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   children: [
                     Text(
                       'Showing ${_categoryCounts[_selectedCategory] ?? 0} courses',
-                      style: theme.typography.sm.copyWith(
-                        color: theme.colors.mutedForeground,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     if (_selectedCategory != 'All')
                       Text(
                         'Filtered by: $_selectedCategory',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.primary,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -217,7 +233,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                 child: Text(
                                   'Error loading courses: ${snapshot.error}',
                                   style: TextStyle(
-                                    color: theme.colors.destructive,
+                                    color: theme.colorScheme.error,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -234,21 +250,26 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                     Icon(
                                       Icons.search_off,
                                       size: 48,
-                                      color: theme.colors.mutedForeground,
+                                      color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
                                       'No courses found for "$_selectedCategory"',
-                                      style: theme.typography.lg.copyWith(
-                                        color: theme.colors.foreground,
-                                      ),
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            color: theme.colorScheme.onSurface,
+                                          ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       'Try selecting a different category',
-                                      style: theme.typography.sm.copyWith(
-                                        color: theme.colors.mutedForeground,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -280,7 +301,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
   }
 
   Widget _buildCourseCard(BuildContext context, Course course) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return GestureDetector(
       onTap: () => _navigateToCourseDetails(course),
@@ -291,12 +312,12 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: theme.colors.background,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: theme.colors.border, width: 1),
+            border: Border.all(color: theme.colorScheme.outline, width: 1),
             boxShadow: [
               BoxShadow(
-                color: theme.colors.foreground.withValues(alpha: 0.02),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.02),
                 blurRadius: 4,
                 offset: const Offset(0, 1),
               ),
@@ -330,9 +351,9 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                       children: [
                         Text(
                           course.title,
-                          style: theme.typography.lg.copyWith(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: theme.colors.foreground,
+                            color: theme.colorScheme.onSurface,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -348,15 +369,15 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withValues(
+                                color: theme.colorScheme.primary.withValues(
                                   alpha: 0.1,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 course.category,
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.primary,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -372,7 +393,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                               ),
                               child: Text(
                                 course.level,
-                                style: theme.typography.sm.copyWith(
+                                style: theme.textTheme.bodySmall?.copyWith(
                                   color: Colors.orange,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -391,8 +412,8 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
               // Course Description (shortened)
               Text(
                 course.description,
-                style: theme.typography.sm.copyWith(
-                  color: theme.colors.mutedForeground,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -405,8 +426,8 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                 children: [
                   Text(
                     'Tap to view details',
-                    style: theme.typography.sm.copyWith(
-                      color: theme.colors.primary.withValues(alpha: 0.7),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.7),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -414,7 +435,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                   Icon(
                     Icons.arrow_forward_ios,
                     size: 12,
-                    color: theme.colors.primary.withValues(alpha: 0.7),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.7),
                   ),
                 ],
               ),
@@ -434,7 +455,7 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
     );
   }
 
-  Widget _buildCoursesShimmerLoading(FThemeData theme) {
+  Widget _buildCoursesShimmerLoading(ThemeData theme) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       itemCount: 5,

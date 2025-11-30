@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:provider/provider.dart';
 import '../../models/traning.dart';
@@ -44,11 +43,11 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     final isEditMode = widget.training != null;
 
     return Scaffold(
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colorScheme.surface,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
@@ -58,21 +57,20 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  FButton(
-                    onPress: () => Navigator.of(context).pop(),
-                    style: FButtonStyle.outline,
+                  FilledButton(
+                    onPressed: () => Navigator.of(context).pop(),
                     child: Icon(
                       Icons.arrow_back,
                       size: 16,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(width: 12),
                   Text(
                     isEditMode ? 'Edit Training' : 'Add New Training',
-                    style: theme.typography.lg.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -157,9 +155,8 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
 
                       // Add Schedule Button
                       Center(
-                        child: FButton(
-                          onPress: _addNewSchedule,
-                          style: FButtonStyle.outline,
+                        child: FilledButton(
+                          onPressed: _addNewSchedule,
                           child: Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: 16,
@@ -171,14 +168,14 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                                 Icon(
                                   Icons.add,
                                   size: 16,
-                                  color: theme.colors.primary,
+                                  color: theme.colorScheme.primary,
                                 ),
                                 SizedBox(width: 6),
                                 Text(
                                   'Add Schedule',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: theme.colors.primary,
+                                    color: theme.colorScheme.primary,
                                   ),
                                 ),
                               ],
@@ -201,9 +198,8 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 16),
-        child: FButton(
-          onPress: _isLoading ? null : _saveTraining,
-          style: FButtonStyle.primary,
+        child: FilledButton(
+          onPressed: _isLoading ? null : _saveTraining,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child:
@@ -214,7 +210,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colors.primaryForeground,
+                          theme.colorScheme.onPrimary,
                         ),
                       ),
                     )
@@ -224,7 +220,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                         Icon(
                           isEditMode ? Icons.save : Icons.add,
                           size: 16,
-                          color: theme.colors.primaryForeground,
+                          color: theme.colorScheme.onPrimary,
                         ),
                         SizedBox(width: 6),
                         Text(
@@ -232,7 +228,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: theme.colors.primaryForeground,
+                            color: theme.colorScheme.onPrimary,
                           ),
                         ),
                       ],
@@ -244,12 +240,12 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Text(
       title,
-      style: theme.typography.lg.copyWith(
+      style: theme.textTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.w600,
-        color: theme.colors.foreground,
+        color: theme.colorScheme.onSurface,
       ),
     );
   }
@@ -262,52 +258,50 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.typography.sm.copyWith(
+          style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w500,
-            color: theme.colors.foreground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         SizedBox(height: 6),
-        FTextField(
+        TextField(
           controller: controller,
           maxLines: maxLines,
           keyboardType: keyboardType,
-          hint: hint,
-          label: null,
-          description: null,
+          decoration: InputDecoration(hintText: hint),
         ),
       ],
     );
   }
 
   Widget _buildEmptySchedulesState() {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colors.muted,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.colors.border),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Column(
         children: [
           Icon(
             Icons.schedule_outlined,
             size: 32,
-            color: theme.colors.mutedForeground,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
           SizedBox(height: 8),
           Text(
             'No schedules added yet',
-            style: theme.typography.sm.copyWith(
-              color: theme.colors.foreground,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -315,8 +309,8 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
           Text(
             'Add at least one schedule for students to enroll',
             textAlign: TextAlign.center,
-            style: theme.typography.xs.copyWith(
-              color: theme.colors.mutedForeground,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -325,17 +319,17 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   Widget _buildScheduleCard(int index, TrainingSchedule schedule) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colors.background,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.colors.border),
+        border: Border.all(color: theme.colorScheme.outline),
         boxShadow: [
           BoxShadow(
-            color: theme.colors.foreground.withValues(alpha: 0.05),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -348,25 +342,27 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
             children: [
               Text(
                 'Schedule ${index + 1}',
-                style: theme.typography.sm.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               const Spacer(),
-              FButton(
-                onPress: () => _editSchedule(index),
-                style: FButtonStyle.outline,
-                child: Icon(Icons.edit, size: 14, color: theme.colors.primary),
+              FilledButton(
+                onPressed: () => _editSchedule(index),
+                child: Icon(
+                  Icons.edit,
+                  size: 14,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               SizedBox(width: 6),
-              FButton(
-                onPress: () => _showDeleteScheduleDialog(index),
-                style: FButtonStyle.outline,
+              FilledButton(
+                onPressed: () => _showDeleteScheduleDialog(index),
                 child: Icon(
                   Icons.delete,
                   size: 14,
-                  color: theme.colors.destructive,
+                  color: theme.colorScheme.error,
                 ),
               ),
             ],
@@ -413,16 +409,16 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   Widget _buildScheduleInfo(IconData icon, String text) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 14, color: theme.colors.mutedForeground),
+        Icon(icon, size: 14, color: theme.colorScheme.onSurfaceVariant),
         SizedBox(width: 4),
         Expanded(
           child: Text(
             text,
-            style: theme.typography.xs.copyWith(
-              color: theme.colors.mutedForeground,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -458,9 +454,9 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
     showDialog(
       context: context,
       builder:
-          (dialogContext) => FDialog(
+          (dialogContext) => AlertDialog(
             title: const Text('Delete Schedule'),
-            body: Text(
+            content: Text(
               'Are you sure you want to delete this schedule?\n\n'
               'This will permanently delete:\n'
               '• Schedule: ${_formatDate(schedule.startDate)} - ${_formatDate(schedule.endDate)}\n'
@@ -471,14 +467,12 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
               'This action cannot be undone.',
             ),
             actions: [
-              FButton(
-                style: FButtonStyle.outline,
-                onPress: () => Navigator.of(dialogContext).pop(),
+              OutlinedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
                 child: const Text('Cancel'),
               ),
-              FButton(
-                style: FButtonStyle.primary,
-                onPress: () async {
+              FilledButton(
+                onPressed: () async {
                   try {
                     // Show loading state
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -569,7 +563,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
   }
 
   void _showScheduleDialog({TrainingSchedule? schedule, int? index}) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -586,13 +580,15 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
               builder:
                   (sheetContext, scrollController) => Container(
                     decoration: BoxDecoration(
-                      color: theme.colors.background,
+                      color: theme.colorScheme.surface,
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(20),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colors.foreground.withValues(alpha: 0.1),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.1,
+                          ),
                           blurRadius: 20,
                           offset: const Offset(0, -4),
                         ),
@@ -606,7 +602,7 @@ class _AddEditTrainingScreenState extends State<AddEditTrainingScreen> {
                           width: 36,
                           height: 4,
                           decoration: BoxDecoration(
-                            color: theme.colors.mutedForeground,
+                            color: theme.colorScheme.onSurfaceVariant,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -780,7 +776,7 @@ class _ScheduleDialogState extends State<ScheduleDialog>
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     final isEditMode = widget.schedule != null;
 
     return Container(
@@ -796,16 +792,16 @@ class _ScheduleDialogState extends State<ScheduleDialog>
               children: [
                 Text(
                   isEditMode ? 'Edit Schedule' : 'Add New Schedule',
-                  style: theme.typography.xl.copyWith(
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.close, color: theme.colors.foreground),
+                  icon: Icon(Icons.close, color: theme.colorScheme.onSurface),
                   style: IconButton.styleFrom(
-                    backgroundColor: theme.colors.muted,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
                     shape: const CircleBorder(),
                   ),
                 ),
@@ -857,17 +853,15 @@ class _ScheduleDialogState extends State<ScheduleDialog>
             Row(
               children: [
                 Expanded(
-                  child: FButton(
-                    onPress: () => Navigator.of(context).pop(),
-                    style: FButtonStyle.outline,
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Cancel'),
                   ),
                 ),
                 SizedBox(width: 12),
                 Expanded(
-                  child: FButton(
-                    onPress: _saveSchedule,
-                    style: FButtonStyle.primary,
+                  child: FilledButton(
+                    onPressed: _saveSchedule,
                     child: Text(isEditMode ? 'Update' : 'Add'),
                   ),
                 ),
@@ -887,75 +881,45 @@ class _ScheduleDialogState extends State<ScheduleDialog>
     required DateTime value,
     required Function(DateTime) onChanged,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.typography.sm.copyWith(fontWeight: FontWeight.w500),
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
         SizedBox(height: 6),
-        FDateField.calendar(
-          controller: FDateFieldController(vsync: this, initialDate: value),
-          start:
-              widget.schedule != null ? DateTime(2020, 1, 1) : DateTime.now(),
-          end: DateTime.now().add(const Duration(days: 365)),
-          today: DateTime.now(),
-          onChange: (date) {
-            if (date != null) {
-              onChanged(date);
-            }
-          },
-          hint: 'Select date',
-          clearable: true,
-          label: null,
-          description: null,
+        TextField(
+          controller: TextEditingController(),
+          decoration: InputDecoration(hintText: 'Select date'),
         ),
       ],
     );
   }
 
   Widget _buildTimeField() {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Time',
-          style: theme.typography.sm.copyWith(fontWeight: FontWeight.w500),
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
         SizedBox(height: 6),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: theme.colors.muted,
+            color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: theme.colors.border),
+            border: Border.all(color: theme.colorScheme.outline),
           ),
-          child: SizedBox(
-            height: 44, // Fixed height to prevent infinite constraints
-            child: FTimePicker(
-              controller: FTimePickerController(),
-              onChange: (time) {
-                // Convert FTime to TimeOfDay and schedule the state update
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) {
-                    setState(
-                      () =>
-                          _time = TimeOfDay(
-                            hour: time.hour,
-                            minute: time.minute,
-                          ),
-                    );
-                  }
-                });
-              },
-              hour24: false,
-              hourInterval: 1,
-              minuteInterval: 15,
-            ),
-          ),
+          // TODO: Implement time picker
         ),
       ],
     );
@@ -968,21 +932,21 @@ class _ScheduleDialogState extends State<ScheduleDialog>
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.typography.sm.copyWith(fontWeight: FontWeight.w500),
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
         SizedBox(height: 6),
-        FTextField(
+        TextField(
           controller: controller,
           keyboardType: keyboardType,
-          hint: hint,
-          label: null,
-          description: null,
+          decoration: InputDecoration(hintText: hint),
         ),
       ],
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learn_work/services/user_service.dart';
@@ -99,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to load profile data: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -124,32 +123,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colorScheme.surface,
           elevation: 0,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: theme.colors.foreground,
+              color: theme.colorScheme.onSurface,
               size: 20,
             ),
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
             'Edit Profile',
-            style: theme.typography.lg.copyWith(
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: theme.colors.foreground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           centerTitle: true,
@@ -157,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             IconButton(
               icon: Icon(
                 Icons.refresh,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
                 size: 20,
               ),
               onPressed: _isDataLoading ? null : _loadProfileData,
@@ -186,11 +185,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       height: 100,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: theme.colors.primary.withValues(
-                                          alpha: 0.1,
-                                        ),
+                                        color: theme.colorScheme.primary
+                                            .withValues(alpha: 0.1),
                                         border: Border.all(
-                                          color: theme.colors.primary
+                                          color: theme.colorScheme.primary
                                               .withValues(alpha: 0.2),
                                           width: 2,
                                         ),
@@ -198,7 +196,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       child: Icon(
                                         Icons.person,
                                         size: 50,
-                                        color: theme.colors.primary,
+                                        color: theme.colorScheme.primary,
                                       ),
                                     ),
                                     Positioned(
@@ -208,17 +206,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         width: 32,
                                         height: 32,
                                         decoration: BoxDecoration(
-                                          color: theme.colors.primary,
+                                          color: theme.colorScheme.primary,
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color: theme.colors.background,
+                                            color: theme.colorScheme.surface,
                                             width: 2,
                                           ),
                                         ),
                                         child: Icon(
                                           Icons.camera_alt,
                                           size: 16,
-                                          color: theme.colors.primaryForeground,
+                                          color: theme.colorScheme.onPrimary,
                                         ),
                                       ),
                                     ),
@@ -229,8 +227,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   onPressed: _changeProfilePicture,
                                   child: Text(
                                     'Change Photo',
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.primary,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.primary,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -352,8 +350,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
                                 'Date of birth is required',
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.destructive,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.error,
                                 ),
                               ),
                             ),
@@ -381,9 +379,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           SizedBox(
                             width: double.infinity,
                             height: 48,
-                            child: FButton(
-                              style: FButtonStyle.primary,
-                              onPress: _isLoading ? null : _saveProfile,
+                            child: FilledButton(
+                              onPressed: _isLoading ? null : _saveProfile,
                               child:
                                   _isLoading
                                       ? SizedBox(
@@ -393,16 +390,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           strokeWidth: 2,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                theme.colors.primaryForeground,
+                                                theme.colorScheme.onPrimary,
                                               ),
                                         ),
                                       )
                                       : Text(
                                         'Save Changes',
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.primaryForeground,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  theme.colorScheme.onPrimary,
+                                            ),
                                       ),
                             ),
                           ),
@@ -412,17 +411,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           SizedBox(
                             width: double.infinity,
                             height: 48,
-                            child: FButton(
-                              style: FButtonStyle.outline,
-                              onPress:
+                            child: OutlinedButton(
+                              onPressed:
                                   _isLoading
                                       ? null
                                       : () => Navigator.of(context).pop(),
                               child: Text(
                                 'Cancel',
-                                style: theme.typography.sm.copyWith(
+                                style: theme.textTheme.bodySmall?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: theme.colors.mutedForeground,
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -438,13 +436,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Text(
       title,
-      style: theme.typography.lg.copyWith(
+      style: theme.textTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.w600,
-        color: theme.colors.foreground,
+        color: theme.colorScheme.onSurface,
       ),
     );
   }
@@ -458,22 +456,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String? Function(String?)? validator,
     bool enabled = true,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.typography.sm.copyWith(
+          style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w600,
-            color: theme.colors.foreground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
-        FTextField(
+        TextField(
           controller: controller,
-          hint: hint,
+          decoration: InputDecoration(hintText: hint),
           keyboardType: keyboardType,
           maxLines: maxLines,
           enabled: enabled,
@@ -488,16 +486,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required List<String> items,
     required Function(String?) onChanged,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.typography.sm.copyWith(
+          style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w600,
-            color: theme.colors.foreground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
@@ -513,22 +511,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: theme.colors.border),
+              borderSide: BorderSide(color: theme.colorScheme.outline),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: theme.colors.border),
+              borderSide: BorderSide(color: theme.colorScheme.outline),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: theme.colors.primary),
+              borderSide: BorderSide(color: theme.colorScheme.primary),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 12,
             ),
           ),
-          style: theme.typography.sm.copyWith(color: theme.colors.foreground),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
         ),
       ],
     );
@@ -539,16 +539,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required DateTime? selectedDate,
     required Function(DateTime?) onDateSelected,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.typography.sm.copyWith(
+          style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w600,
-            color: theme.colors.foreground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
@@ -558,7 +558,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              border: Border.all(color: theme.colors.border, width: 1),
+              border: Border.all(color: theme.colorScheme.outline, width: 1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -568,15 +568,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     selectedDate != null
                         ? DateFormat('dd/MM/yyyy').format(selectedDate)
                         : 'Select Date',
-                    style: theme.typography.sm.copyWith(
-                      color: theme.colors.foreground,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ),
                 Icon(
                   Icons.calendar_today,
                   size: 20,
-                  color: theme.colors.mutedForeground,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ],
             ),
@@ -619,7 +619,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Please select your date of birth'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
         return;
@@ -681,7 +681,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Failed to update profile: $e'),
-              backgroundColor: context.theme.colors.destructive,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 
 class JobSubscriptionScreen extends StatefulWidget {
   const JobSubscriptionScreen({super.key});
@@ -215,8 +214,8 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   SizedBox(
                     width: double.infinity,
                     height: 48,
-                    child: FButton(
-                      onPress: () {
+                    child: FilledButton(
+                      onPressed: () {
                         setState(() {
                           _isSubscribed = false;
                         });
@@ -245,8 +244,8 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                   SizedBox(
                     width: double.infinity,
                     height: 48,
-                    child: FButton(
-                      onPress: () {
+                    child: FilledButton(
+                      onPressed: () {
                         setState(() {
                           _isSubscribed = true;
                         });

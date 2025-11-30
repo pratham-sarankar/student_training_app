@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:forui/forui.dart';
 
 class ShimmerLoading {
   static Widget profileShimmer(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withValues(alpha: 0.6),
-      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
+      baseColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.6,
+      ),
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.3,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -105,11 +108,15 @@ class ShimmerLoading {
   }
 
   static Widget educationShimmer(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withValues(alpha: 0.6),
-      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
+      baseColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.6,
+      ),
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.3,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -247,17 +254,21 @@ class ShimmerLoading {
     );
   }
 
-  static Widget jobCardShimmer(FThemeData theme) {
+  static Widget jobCardShimmer(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withValues(alpha: 0.6),
-      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
+      baseColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.6,
+      ),
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.3,
+      ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: theme.colors.border, width: 1),
+          border: Border.all(color: theme.colorScheme.outline, width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,17 +342,21 @@ class ShimmerLoading {
     );
   }
 
-  static Widget courseCardShimmer(FThemeData theme) {
+  static Widget courseCardShimmer(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withValues(alpha: 0.6),
-      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
+      baseColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.6,
+      ),
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.3,
+      ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: theme.colors.border, width: 1),
+          border: Border.all(color: theme.colorScheme.outline, width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -451,10 +466,14 @@ class ShimmerLoading {
     );
   }
 
-  static Widget categoryButtonShimmer(FThemeData theme) {
+  static Widget categoryButtonShimmer(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colors.muted.withValues(alpha: 0.6),
-      highlightColor: theme.colors.muted.withValues(alpha: 0.3),
+      baseColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.6,
+      ),
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.3,
+      ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(

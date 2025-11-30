@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
@@ -90,7 +89,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Error loading messages: $error'),
-                    backgroundColor: context.theme.colors.destructive,
+                    backgroundColor: Theme.of(context).colorScheme.error,
                   ),
                 );
               }
@@ -105,7 +104,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error setting up messages listener: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -192,7 +191,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error sending message: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -244,12 +243,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.colorScheme.surface,
         body: SafeArea(
           child: Column(
             children: [
@@ -257,10 +256,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: theme.colors.background,
+                  color: theme.colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colors.foreground.withValues(alpha: 0.05),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.05,
+                      ),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -268,13 +269,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                 ),
                 child: Row(
                   children: [
-                    FButton(
-                      onPress: () => Navigator.of(context).pop(),
-                      style: FButtonStyle.outline,
+                    FilledButton(
+                      onPressed: () => Navigator.of(context).pop(),
                       child: Icon(
                         Icons.arrow_back,
                         size: 16,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     SizedBox(width: 12),
@@ -284,17 +284,17 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                         children: [
                           Text(
                             widget.courseTitle,
-                            style: theme.typography.lg.copyWith(
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             'Chat with ${widget.studentName}',
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.mutedForeground,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                               fontSize: 12,
                             ),
                           ),
@@ -304,13 +304,13 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: theme.colors.primary.withValues(alpha: 0.1),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         'Instructor',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.primary,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w500,
                           fontSize: 10,
                         ),
@@ -326,7 +326,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     _isLoading
                         ? Center(
                           child: CircularProgressIndicator(
-                            color: theme.colors.primary,
+                            color: theme.colorScheme.primary,
                           ),
                         )
                         : _messages.isEmpty
@@ -337,20 +337,21 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                               Icon(
                                 Icons.chat_bubble_outline,
                                 size: 64,
-                                color: theme.colors.muted,
+                                color:
+                                    theme.colorScheme.surfaceContainerHighest,
                               ),
                               SizedBox(height: 16),
                               Text(
                                 'No messages yet',
-                                style: theme.typography.lg.copyWith(
-                                  color: theme.colors.mutedForeground,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               SizedBox(height: 8),
                               Text(
                                 'Start the conversation with your student!',
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.mutedForeground,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -379,13 +380,14 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                   if (!isInstructor) ...[
                                     CircleAvatar(
                                       radius: 16,
-                                      backgroundColor: theme.colors.secondary,
+                                      backgroundColor:
+                                          theme.colorScheme.secondary,
                                       child: Text(
                                         widget.studentName[0].toUpperCase(),
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
-                                          color: theme.colors.background,
+                                          color: theme.colorScheme.surface,
                                         ),
                                       ),
                                     ),
@@ -400,12 +402,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                       decoration: BoxDecoration(
                                         color:
                                             isInstructor
-                                                ? theme.colors.primary
-                                                : theme.colors.background,
+                                                ? theme.colorScheme.primary
+                                                : theme.colorScheme.surface,
                                         borderRadius: BorderRadius.circular(20),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: theme.colors.foreground
+                                            color: theme.colorScheme.onSurface
                                                 .withValues(alpha: 0.1),
                                             blurRadius: 4,
                                             offset: const Offset(0, 2),
@@ -425,9 +427,11 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                               color:
                                                   isInstructor
                                                       ? theme
-                                                          .colors
-                                                          .primaryForeground
-                                                      : theme.colors.foreground,
+                                                          .colorScheme
+                                                          .onPrimary
+                                                      : theme
+                                                          .colorScheme
+                                                          .onSurface,
                                             ),
                                           ),
                                           SizedBox(height: 4),
@@ -440,14 +444,14 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                               color:
                                                   isInstructor
                                                       ? theme
-                                                          .colors
-                                                          .primaryForeground
+                                                          .colorScheme
+                                                          .primary
                                                           .withValues(
                                                             alpha: 0.8,
                                                           )
                                                       : theme
-                                                          .colors
-                                                          .mutedForeground,
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
                                             ),
                                           ),
                                         ],
@@ -458,11 +462,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                     SizedBox(width: 8),
                                     CircleAvatar(
                                       radius: 16,
-                                      backgroundColor: theme.colors.primary,
+                                      backgroundColor:
+                                          theme.colorScheme.primary,
                                       child: Icon(
                                         Icons.school,
                                         size: 16,
-                                        color: theme.colors.primaryForeground,
+                                        color: theme.colorScheme.onPrimary,
                                       ),
                                     ),
                                   ],
@@ -477,10 +482,12 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
-                  color: theme.colors.background,
+                  color: theme.colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colors.foreground.withValues(alpha: 0.05),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.05,
+                      ),
                       blurRadius: 8,
                       offset: const Offset(0, -2),
                     ),
@@ -491,7 +498,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: theme.colors.muted,
+                          color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: TextField(
@@ -513,7 +520,7 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                     SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: theme.colors.primary,
+                        color: theme.colorScheme.primary,
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: IconButton(
@@ -525,14 +532,14 @@ class _InstructorChatScreenState extends State<InstructorChatScreen> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      theme.colors.primaryForeground,
+                                      theme.colorScheme.onPrimary,
                                     ),
                                   ),
                                 )
                                 : Icon(
                                   Icons.send,
                                   size: 20,
-                                  color: theme.colors.primaryForeground,
+                                  color: theme.colorScheme.onPrimary,
                                 ),
                         onPressed: _isSendingMessage ? null : _sendMessage,
                       ),

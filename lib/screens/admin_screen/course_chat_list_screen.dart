@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'instructor_chat_screen.dart';
@@ -151,9 +150,8 @@ class _CourseChatListScreenState extends State<CourseChatListScreen> {
                 ),
                 child: Row(
                   children: [
-                    FButton(
-                      onPress: () => Navigator.of(context).pop(),
-                      style: FButtonStyle.outline,
+                    FilledButton(
+        onPressed: () => Navigator.of(context).pop(),
                       child: Icon(
                         Icons.arrow_back,
                         size: 16,

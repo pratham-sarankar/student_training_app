@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -35,14 +34,11 @@ class MyApp extends StatelessWidget {
     final theme = CustomThemes.navy.light;
     return ChangeNotifierProvider(
       create: (_) => getIt<AuthProvider>(),
-      child: FTheme(
-        data: theme,
-        child: MaterialApp(
-          theme: theme.toApproximateMaterialTheme(),
-          title: 'Gradspark',
-          debugShowCheckedModeBanner: false,
-          home: const SplashScreen(),
-        ),
+      child: MaterialApp(
+        theme: theme,
+        title: 'Gradspark',
+        debugShowCheckedModeBanner: false,
+        home: const SplashScreen(),
       ),
     );
   }

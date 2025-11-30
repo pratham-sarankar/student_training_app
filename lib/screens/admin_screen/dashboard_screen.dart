@@ -5,21 +5,20 @@ import 'package:provider/provider.dart';
 import 'jobs_screen.dart';
 import 'trainings_screen.dart';
 import 'students_screen.dart';
-import 'package:forui/forui.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         return AnnotatedRegion(
           value: SystemUiOverlayStyle.dark,
           child: Scaffold(
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colorScheme.surface,
             body: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -34,12 +33,12 @@ class DashboardScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: theme.colors.primary,
+                                    color: theme.colorScheme.primary,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
                                     Icons.admin_panel_settings,
-                                    color: theme.colors.primaryForeground,
+                                    color: theme.colorScheme.onPrimary,
                                     size: 24,
                                   ),
                                 ),
@@ -47,8 +46,8 @@ class DashboardScreen extends StatelessWidget {
                                 Expanded(
                                   child: Text(
                                     'Admin Panel',
-                                    style: theme.typography.lg.copyWith(
-                                      color: theme.colors.foreground,
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      color: theme.colorScheme.onSurface,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -59,18 +58,16 @@ class DashboardScreen extends StatelessWidget {
                                     // Show logout confirmation dialog using ForUI
                                     final shouldLogout = await showDialog<bool>(
                                       context: context,
-                                      builder: (context) => FDialog(
+                                      builder: (context) => AlertDialog(
                                         title: const Text('Confirm Logout'),
-                                        body: const Text('Are you sure you want to logout?'),
+                                        content: const Text('Are you sure you want to logout?'),
                                         actions: [
-                                          FButton(
-                                            style: FButtonStyle.outline,
-                                            onPress: () => Navigator.of(context).pop(false),
+                                          OutlinedButton(
+                                            onPressed: () => Navigator.of(context).pop(false),
                                             child: const Text('Cancel'),
                                           ),
-                                          FButton(
-                                            style: FButtonStyle.primary,
-                                            onPress: () => Navigator.of(context).pop(true),
+                                          FilledButton(
+                                            onPressed: () => Navigator.of(context).pop(true),
                                             child: const Text('Logout'),
                                           ),
                                         ],
@@ -86,7 +83,7 @@ class DashboardScreen extends StatelessWidget {
                                   },
                                   icon: Icon(
                                     Icons.logout,
-                                    color: theme.colors.foreground,
+                                    color: theme.colorScheme.onSurface,
                                     size: 20,
                                   ),
                                   tooltip: 'Sign Out',
@@ -131,7 +128,7 @@ class DashboardScreen extends StatelessWidget {
                           Container(
                             height: constraints.maxHeight - 100, // Reduced height for more compact layout
                             decoration: BoxDecoration(
-                              color: theme.colors.background,
+                              color: theme.colorScheme.surface,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: _buildScreen(adminProvider.selectedIndex),
@@ -155,7 +152,7 @@ class DashboardScreen extends StatelessWidget {
     required int index,
     required bool isSelected,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -170,12 +167,12 @@ class DashboardScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: isSelected 
-                ? theme.colors.primary
-                : theme.colors.background,
+                ? theme.colorScheme.primary
+                : theme.colorScheme.surface,
               border: Border.all(
                 color: isSelected 
-                  ? theme.colors.primary
-                  : theme.colors.border,
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline,
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(6),
@@ -188,18 +185,18 @@ class DashboardScreen extends StatelessWidget {
                   icon,
                   size: 16,
                   color: isSelected 
-                    ? theme.colors.primaryForeground
-                    : theme.colors.foreground,
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurface,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: theme.typography.sm.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: isSelected
-                      ? theme.colors.primaryForeground
-                      : theme.colors.foreground,
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurface,
                   ),
                 ),
               ],

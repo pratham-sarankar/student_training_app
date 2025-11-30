@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:learn_work/features/auth/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -88,13 +87,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
@@ -115,9 +114,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 80,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: theme.colors.primary.withValues(alpha: 0.1),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.1,
+                            ),
                             border: Border.all(
-                              color: theme.colors.primary.withValues(
+                              color: theme.colorScheme.primary.withValues(
                                 alpha: 0.2,
                               ),
                               width: 2,
@@ -126,22 +127,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Icon(
                             Icons.person,
                             size: 40,
-                            color: theme.colors.primary,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           _userName,
-                          style: theme.typography.lg.copyWith(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: theme.colors.foreground,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           _userEmail,
-                          style: theme.typography.sm.copyWith(
-                            color: theme.colors.mutedForeground,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -151,13 +152,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: theme.colors.primary.withValues(alpha: 0.1),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.1,
+                            ),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
                             'Student',
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.primary,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w600,
                               fontSize: 10,
                             ),
@@ -172,10 +175,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: theme.colors.primary.withValues(alpha: 0.05),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: theme.colors.primary.withValues(alpha: 0.1),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
                         width: 1,
                       ),
                     ),
@@ -187,13 +190,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
                                 Icons.school,
                                 size: 20,
-                                color: theme.colors.primaryForeground,
+                                color: theme.colorScheme.onPrimary,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -203,15 +206,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   Text(
                                     'My Courses',
-                                    style: theme.typography.lg.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.colors.foreground,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: theme.colorScheme.onSurface,
+                                        ),
                                   ),
                                   Text(
                                     'View all your purchased courses',
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                       fontSize: 11,
                                     ),
                                   ),
@@ -224,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withValues(
+                                color: theme.colorScheme.primary.withValues(
                                   alpha: 0.1,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
@@ -238,17 +242,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           strokeWidth: 1.5,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                theme.colors.primary,
+                                                theme.colorScheme.primary,
                                               ),
                                         ),
                                       )
                                       : Text(
                                         '$_courseCount',
-                                        style: theme.typography.sm.copyWith(
-                                          color: theme.colors.primary,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 10,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: theme.colorScheme.primary,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10,
+                                            ),
                                       ),
                             ),
                           ],
@@ -257,9 +262,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(
                           width: double.infinity,
                           height: 48,
-                          child: FButton(
-                            style: FButtonStyle.primary,
-                            onPress: () async {
+                          child: FilledButton(
+                            onPressed: () async {
                               final result = await Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => const MyCoursesScreen(),
@@ -272,9 +276,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                             child: Text(
                               'View My Courses',
-                              style: theme.typography.sm.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: theme.colors.primaryForeground,
+                                color: theme.colorScheme.onPrimary,
                               ),
                             ),
                           ),
@@ -384,9 +388,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(
                     width: double.infinity,
                     height: 48,
-                    child: FButton(
-                      style: FButtonStyle.outline,
-                      onPress: () async {
+                    child: OutlinedButton(
+                      onPressed: () async {
                         try {
                           await getIt<AuthService>().signOut();
                           // Navigation will be handled by AuthWrapper
@@ -409,7 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SnackBar(
                                 content: Text('Failed to sign out: $e'),
                                 backgroundColor:
-                                    context.theme.colors.destructive,
+                                    Theme.of(context).colorScheme.error,
                               ),
                             );
                           }
@@ -417,9 +420,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                       child: Text(
                         'Logout',
-                        style: theme.typography.sm.copyWith(
+                        style: theme.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: theme.colors.destructive,
+                          color: theme.colorScheme.error,
                         ),
                       ),
                     ),
@@ -441,26 +444,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colors.background,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: theme.colors.border, width: 1),
+          border: Border.all(color: theme.colorScheme.outline, width: 1),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colors.primary.withValues(alpha: 0.08),
+                color: theme.colorScheme.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(icon, size: 20, color: theme.colors.primary),
+              child: Icon(icon, size: 20, color: theme.colorScheme.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -469,16 +472,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     title,
-                    style: theme.typography.sm.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: theme.typography.sm.copyWith(
-                      color: theme.colors.mutedForeground,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 11,
                     ),
                   ),
@@ -487,7 +490,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Icon(
               Icons.chevron_right,
-              color: theme.colors.mutedForeground,
+              color: theme.colorScheme.onSurfaceVariant,
               size: 16,
             ),
           ],

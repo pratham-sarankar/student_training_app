@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/google_auth_button.dart';
@@ -128,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final isLoading = Provider.of<AuthProvider>(context).isLoading;
     return Scaffold(
@@ -136,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarColor: theme.colorScheme.surface,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         child: Stack(
@@ -155,8 +153,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          theme.colors.background,
-                          theme.colors.background.withValues(alpha: 0.4),
+                          theme.colorScheme.surface,
+                          theme.colorScheme.surface.withValues(alpha: 0.4),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -183,15 +181,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       // Welcome Text
                       Text(
                         'Get Started',
-                        style: theme.typography.xl3.copyWith(
-                          color: theme.colors.foreground,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.start,
                       ),
                       Text(
                         'Create an account to start your fresher journey...',
-                        style: theme.typography.lg.copyWith(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           color: Colors.grey.shade900,
                         ),
                         textAlign: TextAlign.start,
@@ -204,15 +202,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Text(
                             'Email',
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 6),
-                          FTextField(
+                          TextField(
                             controller: _emailController,
-                            hint: 'Enter your email',
+                            decoration: InputDecoration(
+                              hintText: 'Enter your email',
+                            ),
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                           ),
@@ -226,9 +226,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Text(
                             'Password',
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -243,9 +243,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Text(
                             'Confirm Password',
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -261,18 +261,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       // Sign Up Button
                       Consumer<AuthProvider>(
                         builder: (context, authProvider, _) {
-                          return FButton(
-                            onPress:
+                          return FilledButton(
+                            onPressed:
                                 authProvider.isLoading
                                     ? null
                                     : _signUpWithEmail,
-                            style: FButtonStyle.primary,
                             child: Text(
                               'Sign Up',
-                              style: theme.typography.sm.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.2,
-                                color: theme.colors.primaryForeground,
+                                color: theme.colorScheme.onPrimary,
                               ),
                             ),
                           );
@@ -293,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
                               'or continue with',
-                              style: theme.typography.sm.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 color: Colors.grey.shade900,
                               ),
                             ),
@@ -358,7 +357,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Text(
                             'Please wait, creating your account...',
                             textAlign: TextAlign.center,
-                            style: theme.typography.sm.copyWith(),
+                            style: theme.textTheme.bodySmall,
                           ),
                         ],
                       ),

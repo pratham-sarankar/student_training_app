@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:learn_work/services/education_service.dart';
 import 'package:learn_work/widgets/shimmer_loading.dart';
 
@@ -101,7 +100,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to load education details: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -147,7 +146,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to save education details: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -160,28 +159,28 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colorScheme.surface,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: theme.colors.foreground),
+            icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
             'Education Details',
-            style: theme.typography.lg.copyWith(
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: theme.colors.foreground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           centerTitle: true,
@@ -201,12 +200,12 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: theme.colors.primary.withValues(
+                              color: theme.colorScheme.primary.withValues(
                                 alpha: 0.05,
                               ),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: theme.colors.primary.withValues(
+                                color: theme.colorScheme.primary.withValues(
                                   alpha: 0.1,
                                 ),
                                 width: 1,
@@ -217,13 +216,13 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: theme.colors.primary,
+                                    color: theme.colorScheme.primary,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
                                     Icons.school,
                                     size: 20,
-                                    color: theme.colors.primaryForeground,
+                                    color: theme.colorScheme.onPrimary,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -234,17 +233,23 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                                     children: [
                                       Text(
                                         'Education Information',
-                                        style: theme.typography.lg.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.foreground,
-                                        ),
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  theme.colorScheme.onSurface,
+                                            ),
                                       ),
                                       Text(
                                         'Tell us about your educational background',
-                                        style: theme.typography.sm.copyWith(
-                                          color: theme.colors.mutedForeground,
-                                          fontSize: 11,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color:
+                                                  theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                              fontSize: 11,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -427,9 +432,8 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                           SizedBox(
                             width: double.infinity,
                             height: 48,
-                            child: FButton(
-                              style: FButtonStyle.primary,
-                              onPress: _isSaving ? null : _saveEducation,
+                            child: FilledButton(
+                              onPressed: _isSaving ? null : _saveEducation,
                               child:
                                   _isSaving
                                       ? SizedBox(
@@ -439,16 +443,18 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                                           strokeWidth: 2,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                theme.colors.primaryForeground,
+                                                theme.colorScheme.onPrimary,
                                               ),
                                         ),
                                       )
                                       : Text(
                                         'Save Education Details',
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.primaryForeground,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  theme.colorScheme.onPrimary,
+                                            ),
                                       ),
                             ),
                           ),
@@ -463,12 +469,12 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     return Text(
       title,
-      style: theme.typography.sm.copyWith(
+      style: theme.textTheme.bodySmall?.copyWith(
         fontWeight: FontWeight.w600,
-        color: theme.colors.foreground,
+        color: theme.colorScheme.onSurface,
       ),
     );
   }
@@ -477,7 +483,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Row(
       children: [
@@ -487,22 +493,28 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: value ? theme.colors.primary : theme.colors.background,
+                color:
+                    value
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: value ? theme.colors.primary : theme.colors.border,
+                  color:
+                      value
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline,
                   width: 1,
                 ),
               ),
               child: Text(
                 'Yes',
                 textAlign: TextAlign.center,
-                style: theme.typography.sm.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color:
                       value
-                          ? theme.colors.primaryForeground
-                          : theme.colors.foreground,
+                          ? theme.colorScheme.onPrimary
+                          : theme.colorScheme.onSurface,
                 ),
               ),
             ),
@@ -515,22 +527,28 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: !value ? theme.colors.primary : theme.colors.background,
+                color:
+                    !value
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: !value ? theme.colors.primary : theme.colors.border,
+                  color:
+                      !value
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline,
                   width: 1,
                 ),
               ),
               child: Text(
                 'No',
                 textAlign: TextAlign.center,
-                style: theme.typography.sm.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color:
                       !value
-                          ? theme.colors.primaryForeground
-                          : theme.colors.foreground,
+                          ? theme.colorScheme.onPrimary
+                          : theme.colorScheme.onSurface,
                 ),
               ),
             ),
@@ -547,7 +565,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     required ValueChanged<String?> onChanged,
     String? Function(String?)? validator,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return DropdownButtonFormField<String>(
       value: value,
@@ -557,8 +575,8 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
               value: item,
               child: Text(
                 item,
-                style: theme.typography.sm.copyWith(
-                  color: theme.colors.foreground,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             );
@@ -567,36 +585,36 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: theme.typography.sm.copyWith(
-          color: theme.colors.mutedForeground,
+        hintStyle: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
         ),
         filled: true,
-        fillColor: theme.colors.background,
+        fillColor: theme.colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.border),
+          borderSide: BorderSide(color: theme.colorScheme.outline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.border),
+          borderSide: BorderSide(color: theme.colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.primary),
+          borderSide: BorderSide(color: theme.colorScheme.primary),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.destructive),
+          borderSide: BorderSide(color: theme.colorScheme.error),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
         ),
       ),
-      dropdownColor: theme.colors.background,
+      dropdownColor: theme.colorScheme.surface,
       icon: Icon(
         Icons.keyboard_arrow_down,
-        color: theme.colors.mutedForeground,
+        color: theme.colorScheme.onSurfaceVariant,
       ),
     );
   }
@@ -607,14 +625,14 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     required ValueChanged<List<String>> onChanged,
     String? Function(String?)? validator,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
-            border: Border.all(color: theme.colors.border),
+            border: Border.all(color: theme.colorScheme.outline),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -639,11 +657,13 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                       decoration: BoxDecoration(
                         color:
                             isSelected
-                                ? theme.colors.primary.withValues(alpha: 0.1)
-                                : theme.colors.background,
+                                ? theme.colorScheme.primary.withValues(
+                                  alpha: 0.1,
+                                )
+                                : theme.colorScheme.surface,
                         border: Border(
                           bottom: BorderSide(
-                            color: theme.colors.border,
+                            color: theme.colorScheme.outline,
                             width:
                                 items.indexOf(item) == items.length - 1 ? 0 : 1,
                           ),
@@ -657,19 +677,19 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                                 : Icons.check_box_outline_blank,
                             color:
                                 isSelected
-                                    ? theme.colors.primary
-                                    : theme.colors.mutedForeground,
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurfaceVariant,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               item,
-                              style: theme.typography.sm.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 color:
                                     isSelected
-                                        ? theme.colors.primary
-                                        : theme.colors.foreground,
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.onSurface,
                                 fontWeight:
                                     isSelected
                                         ? FontWeight.w600
@@ -689,8 +709,8 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
             padding: const EdgeInsets.only(top: 8, left: 16),
             child: Text(
               validator(null)!,
-              style: theme.typography.sm.copyWith(
-                color: theme.colors.destructive,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
                 fontSize: 11,
               ),
             ),
@@ -705,7 +725,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     required ValueChanged<String> onChanged,
     String? Function(String?)? validator,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return TextFormField(
       initialValue: value,
@@ -713,33 +733,35 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: theme.typography.sm.copyWith(
-          color: theme.colors.mutedForeground,
+        hintStyle: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
         ),
         filled: true,
-        fillColor: theme.colors.background,
+        fillColor: theme.colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.border),
+          borderSide: BorderSide(color: theme.colorScheme.outline),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.border),
+          borderSide: BorderSide(color: theme.colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.primary),
+          borderSide: BorderSide(color: theme.colorScheme.primary),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.destructive),
+          borderSide: BorderSide(color: theme.colorScheme.error),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
         ),
       ),
-      style: theme.typography.sm.copyWith(color: theme.colors.foreground),
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: theme.colorScheme.onSurface,
+      ),
     );
   }
 
@@ -749,7 +771,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     required ValueChanged<DateTime?> onChanged,
     String? Function(DateTime?)? validator,
   }) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return GestureDetector(
       onTap: () async {
@@ -762,10 +784,10 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
             return Theme(
               data: Theme.of(context).copyWith(
                 colorScheme: ColorScheme.light(
-                  primary: theme.colors.primary,
-                  onPrimary: theme.colors.primaryForeground,
-                  surface: theme.colors.background,
-                  onSurface: theme.colors.foreground,
+                  primary: theme.colorScheme.primary,
+                  onPrimary: theme.colorScheme.onPrimary,
+                  surface: theme.colorScheme.surface,
+                  onSurface: theme.colorScheme.onSurface,
                 ),
               ),
               child: child!,
@@ -779,9 +801,9 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: theme.colors.border),
+          border: Border.all(color: theme.colorScheme.outline),
           borderRadius: BorderRadius.circular(8),
-          color: theme.colors.background,
+          color: theme.colorScheme.surface,
         ),
         child: Row(
           children: [
@@ -790,17 +812,17 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                 value != null
                     ? '${_getMonthName(value.month)} ${value.year}'
                     : hint,
-                style: theme.typography.sm.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color:
                       value != null
-                          ? theme.colors.foreground
-                          : theme.colors.mutedForeground,
+                          ? theme.colorScheme.onSurface
+                          : theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
             Icon(
               Icons.calendar_today,
-              color: theme.colors.mutedForeground,
+              color: theme.colorScheme.onSurfaceVariant,
               size: 20,
             ),
           ],

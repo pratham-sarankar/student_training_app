@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TraningCourseDetailsScreen extends StatefulWidget {
@@ -18,7 +17,7 @@ class _TraningCourseDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -29,21 +28,20 @@ class _TraningCourseDetailsScreenState
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  FButton(
-                    onPress: () => Navigator.of(context).pop(),
-                    style: FButtonStyle.outline,
+                  OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
                     child: Icon(
                       Icons.arrow_back,
                       size: 16,
-                      color: theme.colors.mutedForeground,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Text(
                     'Course Details',
-                    style: theme.typography.lg.copyWith(
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -74,9 +72,9 @@ class _TraningCourseDetailsScreenState
                     // Course Title
                     Text(
                       widget.course['title'],
-                      style: theme.typography.xl.copyWith(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -90,13 +88,15 @@ class _TraningCourseDetailsScreenState
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: theme.colors.primary.withValues(alpha: 0.1),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.1,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             widget.course['category'],
-                            style: theme.typography.sm.copyWith(
-                              color: theme.colors.primary,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w500,
                               fontSize: 11,
                             ),
@@ -114,7 +114,7 @@ class _TraningCourseDetailsScreenState
                           ),
                           child: Text(
                             widget.course['level'],
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               color: Colors.orange,
                               fontWeight: FontWeight.w500,
                               fontSize: 11,
@@ -128,16 +128,16 @@ class _TraningCourseDetailsScreenState
                     // Course Description
                     Text(
                       'Description',
-                      style: theme.typography.lg.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       widget.course['description'],
-                      style: theme.typography.sm.copyWith(
-                        color: theme.colors.mutedForeground,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                         height: 1.4,
                         fontSize: 13,
                       ),
@@ -149,6 +149,7 @@ class _TraningCourseDetailsScreenState
                       children: [
                         Expanded(
                           child: _buildSimpleDetail(
+                            context,
                             Icons.access_time,
                             'Duration',
                             widget.course['duration'],
@@ -158,6 +159,7 @@ class _TraningCourseDetailsScreenState
                         const SizedBox(width: 16),
                         Expanded(
                           child: _buildSimpleDetail(
+                            context,
                             Icons.attach_money,
                             'Cost',
                             '₹${widget.course['cost']}',
@@ -171,9 +173,9 @@ class _TraningCourseDetailsScreenState
                     // Available Schedules
                     Text(
                       'Available Schedules',
-                      style: theme.typography.lg.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -194,7 +196,7 @@ class _TraningCourseDetailsScreenState
                             decoration: BoxDecoration(
                               color:
                                   isSelected
-                                      ? theme.colors.primary.withValues(
+                                      ? theme.colorScheme.primary.withValues(
                                         alpha: 0.05,
                                       )
                                       : Colors.transparent,
@@ -202,10 +204,10 @@ class _TraningCourseDetailsScreenState
                               border: Border.all(
                                 color:
                                     isSelected
-                                        ? theme.colors.primary.withValues(
+                                        ? theme.colorScheme.primary.withValues(
                                           alpha: 0.3,
                                         )
-                                        : theme.colors.border.withValues(
+                                        : theme.colorScheme.outline.withValues(
                                           alpha: 0.2,
                                         ),
                                 width: isSelected ? 1.5 : 0.5,
@@ -220,19 +222,25 @@ class _TraningCourseDetailsScreenState
                                     children: [
                                       Text(
                                         schedule['time'],
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.foreground,
-                                          fontSize: 14,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  theme.colorScheme.onSurface,
+                                              fontSize: 14,
+                                            ),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         'Starts: ${schedule['startDate']} • ${schedule['seats']} seats',
-                                        style: theme.typography.sm.copyWith(
-                                          color: theme.colors.mutedForeground,
-                                          fontSize: 12,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color:
+                                                  theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                              fontSize: 12,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -245,7 +253,7 @@ class _TraningCourseDetailsScreenState
                                       _selectedSchedule = value;
                                     });
                                   },
-                                  activeColor: theme.colors.primary,
+                                  activeColor: theme.colorScheme.primary,
                                   materialTapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
@@ -268,14 +276,13 @@ class _TraningCourseDetailsScreenState
           _selectedSchedule != null
               ? Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                child: FButton(
-                  onPress:
+                child: TextButton(
+                  onPressed:
                       () => _showPurchaseDialog(
                         context,
                         widget.course,
                         _selectedSchedule!,
                       ),
-                  style: FButtonStyle.primary,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -287,14 +294,14 @@ class _TraningCourseDetailsScreenState
                         Icon(
                           Icons.shopping_cart,
                           size: 16,
-                          color: theme.colors.primaryForeground,
+                          color: theme.colorScheme.onPrimary,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           'Purchase Course - ₹${widget.course['cost']}',
-                          style: theme.typography.sm.copyWith(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: theme.colors.primaryForeground,
+                            color: theme.colorScheme.onPrimary,
                             fontSize: 13,
                           ),
                         ),
@@ -308,13 +315,13 @@ class _TraningCourseDetailsScreenState
   }
 
   Widget _buildSimpleDetail(
+    BuildContext context,
     IconData icon,
     String label,
     String value,
     Color color,
   ) {
-    final theme = context.theme;
-
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
@@ -331,16 +338,16 @@ class _TraningCourseDetailsScreenState
               children: [
                 Text(
                   label,
-                  style: theme.typography.sm.copyWith(
-                    color: theme.colors.mutedForeground,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontSize: 11,
                   ),
                 ),
                 Text(
                   value,
-                  style: theme.typography.sm.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: theme.colors.foreground,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 13,
                   ),
                 ),
@@ -357,11 +364,10 @@ class _TraningCourseDetailsScreenState
     Map<String, dynamic> course,
     Map<String, dynamic> schedule,
   ) {
-    final theme = context.theme;
-
+    final theme = Theme.of(context);
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -379,13 +385,13 @@ class _TraningCourseDetailsScreenState
                     children: [
                       Icon(
                         Icons.shopping_cart,
-                        color: theme.colors.primary,
+                        color: theme.colorScheme.primary,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Purchase Confirmation',
-                        style: theme.typography.lg.copyWith(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -401,29 +407,31 @@ class _TraningCourseDetailsScreenState
                     children: [
                       Text(
                         'Course: ${course['title']}',
-                        style: theme.typography.sm.copyWith(
+                        style: theme.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Schedule: ${schedule['time']}',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Start Date: ${schedule['startDate']}',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.colors.primary.withValues(alpha: 0.1),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.1,
+                          ),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
@@ -431,15 +439,15 @@ class _TraningCourseDetailsScreenState
                           children: [
                             Text(
                               'Total Cost:',
-                              style: theme.typography.sm.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
                               '₹${course['cost']}',
-                              style: theme.typography.lg.copyWith(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ],
@@ -455,18 +463,16 @@ class _TraningCourseDetailsScreenState
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      FButton(
-                        onPress: () => Navigator.of(context).pop(),
-                        style: FButtonStyle.outline,
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
                         child: Text('Cancel'),
                       ),
                       const SizedBox(width: 8),
-                      FButton(
-                        onPress: () {
+                      TextButton(
+                        onPressed: () {
                           Navigator.of(context).pop();
                           _processPurchase(course, schedule);
                         },
-                        style: FButtonStyle.primary,
                         child: Text('Confirm'),
                       ),
                     ],

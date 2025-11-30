@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -177,13 +176,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: theme.colors.background,
+        systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
@@ -206,9 +205,9 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                         children: [
                           Text(
                             'Gradspark',
-                            style: theme.typography.xl.copyWith(
+                            style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: theme.colors.primary,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -217,7 +216,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                               Icon(
                                 Icons.location_on,
                                 size: 14,
-                                color: theme.colors.mutedForeground,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 4),
                               _isLoadingLocation
@@ -225,8 +224,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                                     width: 12,
                                     height: 12,
                                     child: Shimmer.fromColors(
-                                      baseColor: theme.colors.muted,
-                                      highlightColor: theme.colors.muted
+                                      baseColor:
+                                          theme
+                                              .colorScheme
+                                              .surfaceContainerHighest,
+                                      highlightColor: theme
+                                          .colorScheme
+                                          .surfaceContainerHighest
                                           .withValues(alpha: 0.6),
                                       child: Container(
                                         width: 12,
@@ -240,8 +244,8 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                                   )
                                   : Text(
                                     _currentLocation,
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -262,9 +266,12 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: theme.colors.muted,
+                    color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.colors.border, width: 1),
+                    border: Border.all(
+                      color: theme.colorScheme.outline,
+                      width: 1,
+                    ),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -272,12 +279,12 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search jobs...',
                       hintStyle: TextStyle(
-                        color: theme.colors.mutedForeground,
+                        color: theme.colorScheme.onSurfaceVariant,
                         fontSize: 14,
                       ),
                       prefixIcon: Icon(
                         Icons.search,
-                        color: theme.colors.mutedForeground,
+                        color: theme.colorScheme.onSurfaceVariant,
                         size: 20,
                       ),
                       border: InputBorder.none,
@@ -311,7 +318,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
     );
   }
 
-  Widget _buildUserAvatar(FThemeData theme) {
+  Widget _buildUserAvatar(ThemeData theme) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -324,11 +331,11 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               ? CircleAvatar(
                 radius: 20,
                 backgroundImage: NetworkImage(_currentUser!.photoUrl!),
-                backgroundColor: theme.colors.muted,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
               )
               : CircleAvatar(
                 radius: 20,
-                backgroundColor: theme.colors.primary,
+                backgroundColor: theme.colorScheme.primary,
                 child: Text(
                   _currentUser?.initials ?? 'U',
                   style: TextStyle(
@@ -341,13 +348,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
     );
   }
 
-  Widget _buildJobsListWithCarousel(FThemeData theme) {
+  Widget _buildJobsListWithCarousel(ThemeData theme) {
     if (_searchQuery.isEmpty) {
       return StreamBuilder<List<Job>>(
         stream: _jobService.getJobs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildShimmerLoading(context.theme);
+            return _buildShimmerLoading(Theme.of(context));
           }
 
           if (snapshot.hasError) {
@@ -355,7 +362,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               child: Text(
                 'Error loading jobs: ${snapshot.error}',
                 style: TextStyle(
-                  color: context.theme.colors.destructive,
+                  color: Theme.of(context).colorScheme.error,
                   fontSize: 16,
                 ),
               ),
@@ -372,14 +379,14 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   Icon(
                     Icons.work_outline,
                     size: 64,
-                    color: context.theme.colors.mutedForeground,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No jobs available',
                     style: TextStyle(
                       fontSize: 18,
-                      color: context.theme.colors.foreground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -404,7 +411,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         stream: _jobService.searchJobs(_searchQuery),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildShimmerLoading(context.theme);
+            return _buildShimmerLoading(Theme.of(context));
           }
 
           if (snapshot.hasError) {
@@ -412,7 +419,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               child: Text(
                 'Error searching jobs: ${snapshot.error}',
                 style: TextStyle(
-                  color: context.theme.colors.destructive,
+                  color: Theme.of(context).colorScheme.error,
                   fontSize: 16,
                 ),
               ),
@@ -429,14 +436,14 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   Icon(
                     Icons.search_off,
                     size: 64,
-                    color: context.theme.colors.mutedForeground,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No jobs found for "$_searchQuery"',
                     style: TextStyle(
                       fontSize: 18,
-                      color: context.theme.colors.foreground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -444,7 +451,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     'Try different keywords or check spelling',
                     style: TextStyle(
                       fontSize: 14,
-                      color: context.theme.colors.mutedForeground,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -468,7 +475,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   }
 
   Widget _buildJobCard(Job job) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return GestureDetector(
       onTap: () {
@@ -483,12 +490,12 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colors.background,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: theme.colors.border, width: 1),
+          border: Border.all(color: theme.colorScheme.outline, width: 1),
           boxShadow: [
             BoxShadow(
-              color: theme.colors.foreground.withValues(alpha: 0.05),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -504,7 +511,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: theme.colors.primary.withValues(alpha: 0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child:
@@ -526,7 +533,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      theme.colors.primary,
+                                      theme.colorScheme.primary,
                                     ),
                                   ),
                                 );
@@ -540,7 +547,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                                             .toUpperCase()
                                         : 'C',
                                     style: TextStyle(
-                                      color: theme.colors.primary,
+                                      color: theme.colorScheme.primary,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -555,7 +562,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                                   ? job.company.substring(0, 1).toUpperCase()
                                   : 'C',
                               style: TextStyle(
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -571,16 +578,16 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     children: [
                       Text(
                         job.title,
-                        style: theme.typography.lg.copyWith(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: theme.colors.foreground,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         job.company,
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -607,13 +614,13 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: theme.colors.primary.withValues(alpha: 0.1),
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 job.salary,
                 style: TextStyle(
-                  color: theme.colors.primary,
+                  color: theme.colorScheme.primary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -626,17 +633,17 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   }
 
   Widget _buildJobDetail(IconData icon, String text) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: theme.colors.mutedForeground),
+        Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
         const SizedBox(width: 4),
         Text(
           text,
           style: TextStyle(
-            color: theme.colors.mutedForeground,
+            color: theme.colorScheme.onSurfaceVariant,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -645,11 +652,11 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
     );
   }
 
-  Widget _buildBannerCarousel(FThemeData theme) {
+  Widget _buildBannerCarousel(ThemeData theme) {
     return _CarouselWidget(theme: theme);
   }
 
-  Widget _buildShimmerLoading(FThemeData theme) {
+  Widget _buildShimmerLoading(ThemeData theme) {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
@@ -658,7 +665,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
           height: MediaQuery.of(context).size.width * 0.85 * (9 / 16),
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: theme.colors.muted,
+            color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
           ),
         ),
@@ -671,7 +678,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 }
 
 class _CarouselWidget extends StatefulWidget {
-  final FThemeData theme;
+  final ThemeData theme;
 
   const _CarouselWidget({required this.theme});
 
@@ -741,7 +748,11 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                                   0.85 *
                                   (9 / 16),
                               decoration: BoxDecoration(
-                                color: widget.theme.colors.muted,
+                                color:
+                                    widget
+                                        .theme
+                                        .colorScheme
+                                        .surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -754,7 +765,7 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                                                   .expectedTotalBytes!
                                           : null,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    widget.theme.colors.primary,
+                                    widget.theme.colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -768,7 +779,11 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                                   0.85 *
                                   (9 / 16),
                               decoration: BoxDecoration(
-                                color: widget.theme.colors.muted,
+                                color:
+                                    widget
+                                        .theme
+                                        .colorScheme
+                                        .surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -779,18 +794,21 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                                       Icons.error_outline,
                                       size: 48,
                                       color:
-                                          widget.theme.colors.mutedForeground,
+                                          widget
+                                              .theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       'Failed to load image',
-                                      style: widget.theme.typography.sm
-                                          .copyWith(
+                                      style: widget.theme.textTheme.bodySmall
+                                          ?.copyWith(
                                             color:
                                                 widget
                                                     .theme
-                                                    .colors
-                                                    .mutedForeground,
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
                                           ),
                                     ),
                                   ],
@@ -819,10 +837,9 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                     shape: BoxShape.circle,
                     color:
                         _currentCarouselIndex == entry.key
-                            ? widget.theme.colors.primary
-                            : widget.theme.colors.mutedForeground.withValues(
-                              alpha: 0.3,
-                            ),
+                            ? widget.theme.colorScheme.primary
+                            : widget.theme.colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.3),
                   ),
                 );
               }).toList(),

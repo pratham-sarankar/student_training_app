@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:learn_work/models/job.dart';
-import 'package:forui/forui.dart';
 import 'add_job_screen.dart';
 
 class JobsScreen extends StatelessWidget {
@@ -10,12 +9,12 @@ class JobsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         return Scaffold(
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colorScheme.surface,
           body: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,7 +29,7 @@ class JobsScreen extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.work,
-                            color: theme.colors.primary,
+                            color: theme.colorScheme.primary,
                             size: 18,
                           ),
                           const SizedBox(width: 8),
@@ -41,16 +40,16 @@ class JobsScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   'Job Management',
-                                  style: theme.typography.lg.copyWith(
+                                  style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    color: theme.colors.foreground,
+                                    color: theme.colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   'Manage job postings and notifications',
-                                  style: theme.typography.sm.copyWith(
-                                    color: theme.colors.mutedForeground,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -63,8 +62,8 @@ class JobsScreen extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: FButton(
-                              onPress: () => _navigateToAddJob(context),
+                            child: FilledButton(
+        onPressed: () => _navigateToAddJob(context),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -104,7 +103,7 @@ class JobsScreen extends StatelessWidget {
   }
 
   Widget _buildJobsTable(BuildContext context, AdminProvider adminProvider) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     if (adminProvider.isLoading) {
       return Center(
@@ -112,14 +111,14 @@ class JobsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
             ),
             const SizedBox(height: 10),
             Text(
               'Loading jobs...',
               style: TextStyle(
                 fontSize: 16,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -135,14 +134,14 @@ class JobsScreen extends StatelessWidget {
             Icon(
               Icons.error_outline,
               size: 48,
-              color: theme.colors.destructive,
+              color: theme.colorScheme.error,
             ),
             const SizedBox(height: 12),
             Text(
               'Error loading jobs',
               style: TextStyle(
                 fontSize: 16,
-                color: theme.colors.destructive,
+                color: theme.colorScheme.error,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -150,14 +149,14 @@ class JobsScreen extends StatelessWidget {
             Text(
               adminProvider.errorMessage!,
               style: TextStyle(
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            FButton(
-              onPress: () {
+            FilledButton(
+        onPressed: () {
                 // Store reference to AdminProvider before using it
                 final adminProvider = context.read<AdminProvider>();
                 adminProvider.loadJobs();
@@ -177,21 +176,21 @@ class JobsScreen extends StatelessWidget {
             Icon(
               Icons.work_outline,
               size: 48,
-              color: theme.colors.mutedForeground,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 12),
             Text(
               'No jobs available',
               style: TextStyle(
                 fontSize: 16,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'Add your first job to get started',
               style: TextStyle(
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
               ),
             ),
@@ -215,7 +214,7 @@ class JobsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -225,7 +224,7 @@ class JobsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -235,7 +234,7 @@ class JobsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -245,7 +244,7 @@ class JobsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -255,7 +254,7 @@ class JobsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -265,7 +264,7 @@ class JobsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -275,7 +274,7 @@ class JobsScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -338,11 +337,11 @@ class JobsScreen extends StatelessWidget {
                       child: PopupMenuButton<String>(
                         icon: const Icon(Icons.more_vert, size: 18),
                         tooltip: 'Actions',
-                        color: theme.colors.background,
+                        color: theme.colorScheme.surface,
                         elevation: 8,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: theme.colors.border),
+                          side: BorderSide(color: theme.colorScheme.outline),
                         ),
                         onSelected: (value) async {
                           if (value == 'edit') {
@@ -358,7 +357,7 @@ class JobsScreen extends StatelessWidget {
                                         strokeWidth: 2,
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                              theme.colors.primaryForeground,
+                                              theme.colorScheme.onPrimary,
                                             ),
                                       ),
                                     ),
@@ -367,7 +366,7 @@ class JobsScreen extends StatelessWidget {
                                   ],
                                 ),
                                 duration: const Duration(seconds: 1),
-                                backgroundColor: theme.colors.primary,
+                                backgroundColor: theme.colorScheme.primary,
                               ),
                             );
                             _navigateToAddJob(context, job: job);
@@ -383,7 +382,7 @@ class JobsScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.edit,
-                                      color: theme.colors.primary,
+                                      color: theme.colorScheme.primary,
                                       size: 16,
                                     ),
                                     const SizedBox(width: 8),
@@ -400,7 +399,7 @@ class JobsScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.delete,
-                                      color: theme.colors.destructive,
+                                      color: theme.colorScheme.error,
                                       size: 16,
                                     ),
                                     const SizedBox(width: 8),
@@ -443,11 +442,11 @@ class JobsScreen extends StatelessWidget {
 
       // Show success message - check if context is still mounted
       if (context.mounted) {
-        final theme = context.theme;
+        final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Job updated successfully!'),
-            backgroundColor: theme.colors.primary,
+            backgroundColor: theme.colorScheme.primary,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -456,7 +455,7 @@ class JobsScreen extends StatelessWidget {
   }
 
   void _deleteJob(BuildContext context, String jobId) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     // Find the job to get its details for the confirmation
     final adminProvider = context.read<AdminProvider>();
@@ -474,13 +473,13 @@ class JobsScreen extends StatelessWidget {
             builder:
                 (context, scrollController) => Container(
                   decoration: BoxDecoration(
-                    color: theme.colors.background,
+                    color: theme.colorScheme.surface,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(20),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: theme.colors.foreground.withValues(alpha: 0.1),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                         blurRadius: 20,
                         offset: const Offset(0, -4),
                       ),
@@ -494,7 +493,7 @@ class JobsScreen extends StatelessWidget {
                         width: 36,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: theme.colors.mutedForeground,
+                          color: theme.colorScheme.onSurfaceVariant,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -504,7 +503,7 @@ class JobsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: theme.colors.border,
+                              color: theme.colorScheme.outline,
                               width: 1,
                             ),
                           ),
@@ -514,12 +513,12 @@ class JobsScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: theme.colors.destructiveForeground,
+                                color: theme.colorScheme.onError,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
                                 Icons.delete_outline,
-                                color: theme.colors.destructive,
+                                color: theme.colorScheme.error,
                                 size: 20,
                               ),
                             ),
@@ -530,16 +529,16 @@ class JobsScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     'Delete Job',
-                                    style: theme.typography.lg.copyWith(
+                                    style: theme.textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.w700,
-                                      color: theme.colors.foreground,
+                                      color: theme.colorScheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
                                     'This action cannot be undone',
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                       height: 1.2,
                                     ),
                                   ),
@@ -550,9 +549,9 @@ class JobsScreen extends StatelessWidget {
                               onPressed: () => Navigator.of(context).pop(),
                               icon: Icon(Icons.close, size: 20),
                               style: IconButton.styleFrom(
-                                backgroundColor: theme.colors.mutedForeground
+                                backgroundColor: theme.colorScheme.onSurfaceVariant
                                     .withValues(alpha: 0.1),
-                                foregroundColor: theme.colors.mutedForeground,
+                                foregroundColor: theme.colorScheme.onSurfaceVariant,
                                 shape: const CircleBorder(),
                                 padding: const EdgeInsets.all(8),
                                 minimumSize: const Size(32, 32),
@@ -571,8 +570,8 @@ class JobsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 'Are you sure you want to delete this job?',
-                                style: theme.typography.lg.copyWith(
-                                  color: theme.colors.foreground,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.colorScheme.onSurface,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -581,11 +580,11 @@ class JobsScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: theme.colors.mutedForeground
+                                  color: theme.colorScheme.onSurfaceVariant
                                       .withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: theme.colors.border,
+                                    color: theme.colorScheme.outline,
                                   ),
                                 ),
                                 child: Column(
@@ -596,7 +595,7 @@ class JobsScreen extends StatelessWidget {
                                         Icon(
                                           Icons.work,
                                           size: 16,
-                                          color: theme.colors.primary,
+                                          color: theme.colorScheme.primary,
                                         ),
                                         const SizedBox(width: 8),
                                         Expanded(
@@ -604,7 +603,7 @@ class JobsScreen extends StatelessWidget {
                                             job.title,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              color: theme.colors.foreground,
+                                              color: theme.colorScheme.onSurface,
                                               fontSize: 14,
                                             ),
                                           ),
@@ -617,13 +616,13 @@ class JobsScreen extends StatelessWidget {
                                         Icon(
                                           Icons.business,
                                           size: 14,
-                                          color: theme.colors.mutedForeground,
+                                          color: theme.colorScheme.onSurfaceVariant,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
                                           job.company,
                                           style: TextStyle(
-                                            color: theme.colors.mutedForeground,
+                                            color: theme.colorScheme.onSurfaceVariant,
                                             fontSize: 13,
                                           ),
                                         ),
@@ -635,13 +634,13 @@ class JobsScreen extends StatelessWidget {
                                         Icon(
                                           Icons.location_on,
                                           size: 14,
-                                          color: theme.colors.mutedForeground,
+                                          color: theme.colorScheme.onSurfaceVariant,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
                                           job.location,
                                           style: TextStyle(
-                                            color: theme.colors.mutedForeground,
+                                            color: theme.colorScheme.onSurfaceVariant,
                                             fontSize: 13,
                                           ),
                                         ),
@@ -653,13 +652,13 @@ class JobsScreen extends StatelessWidget {
                                         Icon(
                                           Icons.attach_money,
                                           size: 14,
-                                          color: theme.colors.mutedForeground,
+                                          color: theme.colorScheme.onSurfaceVariant,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
                                           job.salary,
                                           style: TextStyle(
-                                            color: theme.colors.mutedForeground,
+                                            color: theme.colorScheme.onSurfaceVariant,
                                             fontSize: 13,
                                           ),
                                         ),
@@ -671,8 +670,8 @@ class JobsScreen extends StatelessWidget {
                               const SizedBox(height: 16),
                               Text(
                                 'This will permanently delete:',
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.mutedForeground,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -707,13 +706,13 @@ class JobsScreen extends StatelessWidget {
                                           ),
                                         ),
                                         side: BorderSide(
-                                          color: theme.colors.border,
+                                          color: theme.colorScheme.outline,
                                         ),
                                       ),
                                       child: Text(
                                         'Cancel',
                                         style: TextStyle(
-                                          color: theme.colors.foreground,
+                                          color: theme.colorScheme.onSurface,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -736,15 +735,15 @@ class JobsScreen extends StatelessWidget {
                                               'Job deleted successfully',
                                             ),
                                             backgroundColor:
-                                                theme.colors.primary,
+                                                theme.colorScheme.primary,
                                           ),
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            theme.colors.destructive,
+                                            theme.colorScheme.error,
                                         foregroundColor:
-                                            theme.colors.destructiveForeground,
+                                            theme.colorScheme.onError,
                                         padding: const EdgeInsets.symmetric(
                                           vertical: 16,
                                         ),
@@ -782,17 +781,17 @@ class JobsScreen extends StatelessWidget {
   }) {
     return Builder(
       builder: (context) {
-        final theme = context.theme;
+        final theme = Theme.of(context);
 
         return Row(
           children: [
-            Icon(icon, size: 16, color: theme.colors.destructive),
+            Icon(icon, size: 16, color: theme.colorScheme.error),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 text,
                 style: TextStyle(
-                  color: theme.colors.mutedForeground,
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontSize: 13,
                 ),
               ),

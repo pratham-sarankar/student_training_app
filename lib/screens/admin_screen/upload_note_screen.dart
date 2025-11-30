@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import 'package:learn_work/models/traning.dart';
 import 'package:learn_work/widgets/upload_note_dialog.dart';
 
@@ -15,16 +14,16 @@ class UploadNoteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         title: Text(
           'Upload Notes',
-          style: theme.typography.lg.copyWith(fontWeight: FontWeight.w600),
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -32,13 +31,13 @@ class UploadNoteScreen extends StatelessWidget {
           icon: Icon(
             Icons.arrow_back_ios,
             size: 20,
-            color: theme.colors.foreground,
+            color: theme.colorScheme.onSurface,
           ),
           onPressed: () => Navigator.of(context).pop(),
           tooltip: 'Back',
           style: IconButton.styleFrom(
-            backgroundColor: theme.colors.muted,
-            foregroundColor: theme.colors.mutedForeground,
+            backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            foregroundColor: theme.colorScheme.onSurfaceVariant,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -52,7 +51,7 @@ class UploadNoteScreen extends StatelessWidget {
             // Header Section
             Container(
               width: double.infinity,
-              color: theme.colors.background,
+              color: theme.colorScheme.surface,
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,12 +61,12 @@ class UploadNoteScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: theme.colors.primary.withValues(alpha: 0.1),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
                           Icons.upload_file,
-                          color: theme.colors.primary,
+                          color: theme.colorScheme.primary,
                           size: 20,
                         ),
                       ),
@@ -78,16 +77,16 @@ class UploadNoteScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Upload Notes',
-                              style: theme.typography.lg.copyWith(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Choose a schedule and add course materials for students',
-                              style: theme.typography.sm.copyWith(
-                                color: theme.colors.mutedForeground,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                                 fontSize: 12,
                               ),
                             ),
@@ -115,15 +114,15 @@ class UploadNoteScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptySchedulesState(FThemeData theme) {
+  Widget _buildEmptySchedulesState(ThemeData theme) {
     return Container(
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colors.background,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: theme.colors.border.withValues(alpha: 0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
           style: BorderStyle.solid,
         ),
       ),
@@ -133,29 +132,29 @@ class UploadNoteScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colors.muted,
+                color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 Icons.schedule_outlined,
                 size: 32,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               'No Schedules Available',
-              style: theme.typography.lg.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'Please create a schedule first before\nuploading notes',
               textAlign: TextAlign.center,
-              style: theme.typography.sm.copyWith(
-                color: theme.colors.mutedForeground,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
               ),
             ),
@@ -168,16 +167,16 @@ class UploadNoteScreen extends StatelessWidget {
   Widget _buildScheduleCard(
     BuildContext context,
     TrainingSchedule schedule,
-    FThemeData theme,
+    ThemeData theme,
   ) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: theme.colors.background,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: theme.colors.foreground.withValues(alpha: 0.04),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -197,12 +196,12 @@ class UploadNoteScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: theme.colors.primary.withValues(alpha: 0.1),
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
                 Icons.calendar_today,
-                color: theme.colors.primary,
+                color: theme.colorScheme.primary,
                 size: 18,
               ),
             ),
@@ -213,7 +212,7 @@ class UploadNoteScreen extends StatelessWidget {
                 children: [
                   Text(
                     '${_formatDate(schedule.startDate)} - ${_formatDate(schedule.endDate)}',
-                    style: theme.typography.sm.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -224,13 +223,13 @@ class UploadNoteScreen extends StatelessWidget {
                       Icon(
                         Icons.access_time,
                         size: 12,
-                        color: theme.colors.mutedForeground,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         schedule.time.format(context),
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 12,
                         ),
                       ),
@@ -238,13 +237,13 @@ class UploadNoteScreen extends StatelessWidget {
                       Icon(
                         Icons.people,
                         size: 12,
-                        color: theme.colors.mutedForeground,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         '${schedule.enrolledStudents.length}/${schedule.capacity} students',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 12,
                         ),
                       ),
@@ -263,11 +262,11 @@ class UploadNoteScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.note, size: 14, color: theme.colors.primary),
+                    Icon(Icons.note, size: 14, color: theme.colorScheme.primary),
                     const SizedBox(width: 6),
                     Text(
                       'Notes (${schedule.notes.length})',
-                      style: theme.typography.sm.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -284,14 +283,13 @@ class UploadNoteScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
-                  child: FButton(
-                    onPress:
+                  child: FilledButton(
+        onPressed:
                         () => _showUploadNoteDialog(
                           context,
                           trainingId,
                           schedule.id,
                         ),
-                    style: FButtonStyle.primary,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -310,18 +308,18 @@ class UploadNoteScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNoteItem(BuildContext context, Note note, FThemeData theme) {
+  Widget _buildNoteItem(BuildContext context, Note note, ThemeData theme) {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: theme.colors.muted,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: theme.colors.border),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Row(
         children: [
-          Icon(Icons.description, size: 16, color: theme.colors.primary),
+          Icon(Icons.description, size: 16, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -329,7 +327,7 @@ class UploadNoteScreen extends StatelessWidget {
               children: [
                 Text(
                   note.title,
-                  style: theme.typography.sm.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -337,8 +335,8 @@ class UploadNoteScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '${note.fileType.toUpperCase()} • ${_formatDate(note.uploadedAt)}',
-                  style: theme.typography.sm.copyWith(
-                    color: theme.colors.mutedForeground,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontSize: 11,
                   ),
                 ),
@@ -350,7 +348,7 @@ class UploadNoteScreen extends StatelessWidget {
             icon: Icon(
               Icons.delete_outline,
               size: 16,
-              color: theme.colors.destructive,
+              color: theme.colorScheme.error,
             ),
             tooltip: 'Delete Note',
             padding: EdgeInsets.zero,
@@ -361,13 +359,13 @@ class UploadNoteScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyNotesState(FThemeData theme) {
+  Widget _buildEmptyNotesState(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colors.muted,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: theme.colors.border),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Center(
         child: Column(
@@ -375,13 +373,13 @@ class UploadNoteScreen extends StatelessWidget {
             Icon(
               Icons.note_outlined,
               size: 24,
-              color: theme.colors.mutedForeground,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 6),
             Text(
               'No notes uploaded yet',
-              style: theme.typography.sm.copyWith(
-                color: theme.colors.mutedForeground,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -389,8 +387,8 @@ class UploadNoteScreen extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               'Upload your first note to get started',
-              style: theme.typography.sm.copyWith(
-                color: theme.colors.mutedForeground,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 11,
               ),
             ),
@@ -417,18 +415,18 @@ class UploadNoteScreen extends StatelessWidget {
     );
   }
 
-  void _deleteNote(BuildContext context, String noteId, FThemeData theme) {
+  void _deleteNote(BuildContext context, String noteId, ThemeData theme) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             title: Text(
               'Delete Note',
-              style: theme.typography.lg.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             content: Text(
               'Are you sure you want to delete this note? This action cannot be undone.',
-              style: theme.typography.sm,
+              style: theme.textTheme.bodySmall,
             ),
             actions: [
               TextButton(
@@ -442,12 +440,12 @@ class UploadNoteScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Note deleted successfully'),
-                      backgroundColor: theme.colors.primary,
+                      backgroundColor: theme.colorScheme.primary,
                     ),
                   );
                 },
                 style: TextButton.styleFrom(
-                  foregroundColor: theme.colors.destructive,
+                  foregroundColor: theme.colorScheme.error,
                 ),
                 child: Text('Delete'),
               ),

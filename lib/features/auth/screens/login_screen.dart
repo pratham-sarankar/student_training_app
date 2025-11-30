@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
@@ -107,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final isLoading = Provider.of<AuthProvider>(context).isLoading;
     return Scaffold(
@@ -115,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarColor: theme.colorScheme.surface,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         child: Stack(
@@ -134,8 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          theme.colors.background,
-                          theme.colors.background.withValues(alpha: 0.4),
+                          theme.colorScheme.surface,
+                          theme.colorScheme.surface.withValues(alpha: 0.4),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -162,8 +161,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Welcome Text
                       Text(
                         'Welcome back!',
-                        style: theme.typography.xl3.copyWith(
-                          color: theme.colors.foreground,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -171,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // const SizedBox(height: 8),
                       Text(
                         'A journey of a thousand miles begins with a single step...',
-                        style: theme.typography.lg.copyWith(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           color: Colors.grey.shade900,
                         ),
                         textAlign: TextAlign.start,
@@ -184,15 +183,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             'Email',
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 6),
-                          FTextField(
+                          TextField(
                             controller: _emailController,
-                            hint: 'Enter your email',
+                            decoration: InputDecoration(
+                              hintText: 'Enter your email',
+                            ),
+
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                           ),
@@ -206,9 +208,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             'Password',
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: theme.colors.foreground,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -221,9 +223,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          FButton(
-                            style: FButtonStyle.ghost,
-                            onPress: () {
+                          TextButton(
+                            onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder:
@@ -234,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Forgot Password?',
                               style: TextStyle(
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                                 fontSize: 14,
                               ),
                             ),
@@ -246,18 +247,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Sign In Button
                       Consumer<AuthProvider>(
                         builder: (context, authProvider, _) {
-                          return FButton(
-                            onPress:
+                          return FilledButton(
+                            onPressed:
                                 authProvider.isLoading
                                     ? null
                                     : _signInWithEmail,
-                            style: FButtonStyle.primary,
                             child: Text(
                               'Sign In',
-                              style: theme.typography.sm.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.2,
-                                color: theme.colors.primaryForeground,
+                                color: theme.colorScheme.onPrimary,
                               ),
                             ),
                           );
@@ -278,7 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
                               'or continue with',
-                              style: theme.typography.sm.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 color: Colors.grey.shade900,
                               ),
                             ),
@@ -314,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             'Don\'t have an account? ',
-                            style: theme.typography.sm.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               color: Colors.grey.shade900,
                             ),
                           ),
@@ -329,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Sign Up',
                               style: TextStyle(
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -373,7 +373,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             'Please wait, signing in...',
                             textAlign: TextAlign.center,
-                            style: theme.typography.sm.copyWith(),
+                            style: theme.textTheme.bodySmall?.copyWith(),
                           ),
                         ],
                       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
@@ -57,7 +56,7 @@ class AppleAuthButton extends StatelessWidget {
             type == AuthType.signIn
                 ? 'Sign in with Apple'
                 : 'Sign up with Apple',
-            style: context.theme.typography.sm.copyWith(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w500,
             ),

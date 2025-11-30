@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:forui/forui.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:learn_work/screens/student_screens/main_screen.dart';
 import 'package:learn_work/services/user_service.dart';
@@ -10,14 +9,16 @@ class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
 
   @override
-  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
+  State<EmailVerificationScreen> createState() =>
+      _EmailVerificationScreenState();
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool _isResendEnabled = true;
-  int _resendCountdown = 60;        
+  int _resendCountdown = 60;
   Timer? _verificationCheckTimer;
-  bool _isVerificationInProgress = false; // Add flag to prevent duplicate verification
+  bool _isVerificationInProgress =
+      false; // Add flag to prevent duplicate verification
 
   @override
   void initState() {
@@ -49,7 +50,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   void _startVerificationCheck() {
     // Check verification status every 3 seconds
-    _verificationCheckTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    _verificationCheckTimer = Timer.periodic(const Duration(seconds: 3), (
+      timer,
+    ) {
       _checkEmailVerification();
     });
   }
@@ -57,14 +60,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   void _checkEmailVerification() async {
     // Prevent duplicate verification checks
     if (_isVerificationInProgress) return;
-    
+
     try {
       _isVerificationInProgress = true;
-      
+
       // Reload the user to get the latest verification status
       await FirebaseAuth.instance.currentUser?.reload();
       final user = FirebaseAuth.instance.currentUser;
-      
+
       if (user != null && user.emailVerified) {
         // Email is verified, update Firestore and navigate
         try {
@@ -74,7 +77,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           print('Error updating verification status in Firestore: $e');
           // Continue with navigation even if Firestore update fails
         }
-        
+
         // Cancel timer and navigate
         _verificationCheckTimer?.cancel();
         if (mounted) {
@@ -85,9 +88,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             ),
           );
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const MainScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const MainScreen()),
           );
         }
       }
@@ -104,16 +105,16 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       final user = FirebaseAuth.instance.currentUser;
       print('Current user: ${user?.email}');
       print('User email verified: ${user?.emailVerified}');
-      
+
       await FirebaseAuth.instance.currentUser?.sendEmailVerification();
       print('Email verification sent successfully!');
-      
+
       setState(() {
         _isResendEnabled = false;
         _resendCountdown = 60;
       });
       _startResendCountdown();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -128,7 +129,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to send email: $e'),
-            backgroundColor: context.theme.colors.destructive,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -138,14 +139,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final theme = context.theme;
-    
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: theme.colors.background,
+          systemNavigationBarColor: theme.colorScheme.surface,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         child: SafeArea(
@@ -160,50 +161,50 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: theme.colors.primaryForeground,
+                        color: theme.colorScheme.onPrimary,
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
-                          color: theme.colors.border,
+                          color: theme.colorScheme.outline,
                           width: 1,
                         ),
                       ),
                       child: Icon(
                         Icons.email_outlined,
                         size: 48,
-                        color: theme.colors.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: 32),
                     Text(
                       'Verify your email',
-                      style: theme.typography.lg.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                        color: theme.colorScheme.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'We\'ve sent a verification email to:',
-                      style: theme.typography.sm.copyWith(
-                        color: theme.colors.foreground,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       user?.email ?? '',
-                      style: theme.typography.sm.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: theme.colors.primary,
+                        color: theme.colorScheme.primary,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
                     Text(
                       'Please check your email and click the verification link to continue.',
-                      style: theme.typography.sm.copyWith(
-                        color: theme.colors.foreground,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -211,24 +212,22 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 56,
-                      child: FButton(
-                        onPress: _isResendEnabled ? _onResendEmail : null,
-                        style: FButtonStyle.primary,
+                      child: FilledButton(
+                        onPressed: _isResendEnabled ? _onResendEmail : null,
                         child: Text(
                           _isResendEnabled
                               ? 'Resend Email'
                               : 'Resend in $_resendCountdown seconds',
-                          style: theme.typography.sm.copyWith(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: theme.colors.primaryForeground,
+                            color: theme.colorScheme.onPrimary,
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    FButton(
-                      style: FButtonStyle.ghost,
-                      onPress: () {
+                    TextButton(
+                      onPressed: () {
                         // Check verification status immediately
                         if (!_isVerificationInProgress) {
                           _checkEmailVerification();
@@ -237,21 +236,22 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       child: Text(
                         'I\'ve verified my email',
                         style: TextStyle(
-                          color: theme.colors.primary,
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
-                    FButton(
-                      style: FButtonStyle.ghost,
-                      onPress: () {
+                    TextButton(
+                      onPressed: () {
                         // Skip email verification and proceed
                         // You can add navigation logic here to go to the main app
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Email verification skipped. You can verify later in settings.'),
-                            backgroundColor: theme.colors.destructive,
+                            content: Text(
+                              'Email verification skipped. You can verify later in settings.',
+                            ),
+                            backgroundColor: theme.colorScheme.error,
                           ),
                         );
                         Navigator.of(context).pushReplacement(
@@ -263,7 +263,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       child: Text(
                         'Skip for now',
                         style: TextStyle(
-                          color: theme.colors.foreground,
+                          color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

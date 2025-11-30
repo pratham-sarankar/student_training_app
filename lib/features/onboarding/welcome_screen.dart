@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
 import '../auth/screens/login_screen.dart';
 import '../auth/screens/register_screen.dart';
@@ -12,10 +11,9 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final theme = context.theme;
-    final typography = context.theme.typography;
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colorScheme.surface,
       body: Stack(
         children: [
           // Background image at bottom
@@ -53,8 +51,8 @@ class WelcomeScreen extends StatelessWidget {
                         theme: theme,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colors.primary.withValues(alpha: 0.15),
-                            theme.colors.primary.withValues(alpha: 0.05),
+                            theme.colorScheme.primary.withValues(alpha: 0.15),
+                            theme.colorScheme.primary.withValues(alpha: 0.05),
                           ],
                         ),
                       ),
@@ -64,8 +62,8 @@ class WelcomeScreen extends StatelessWidget {
                         theme: theme,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colors.primary.withValues(alpha: 0.15),
-                            theme.colors.primary.withValues(alpha: 0.05),
+                            theme.colorScheme.primary.withValues(alpha: 0.15),
+                            theme.colorScheme.primary.withValues(alpha: 0.05),
                           ],
                         ),
                       ),
@@ -75,8 +73,8 @@ class WelcomeScreen extends StatelessWidget {
                         theme: theme,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colors.primary.withValues(alpha: 0.15),
-                            theme.colors.primary.withValues(alpha: 0.05),
+                            theme.colorScheme.primary.withValues(alpha: 0.15),
+                            theme.colorScheme.primary.withValues(alpha: 0.05),
                           ],
                         ),
                       ),
@@ -132,7 +130,7 @@ class WelcomeScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: theme.colors.primary,
+                          color: theme.colorScheme.primary,
                         ),
                       ),
                     ),
@@ -155,12 +153,12 @@ class WelcomeScreen extends StatelessWidget {
                     icon: Icon(
                       Icons.admin_panel_settings,
                       size: 18,
-                      color: theme.colors.mutedForeground,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                     label: Text(
                       'Login as Admin',
-                      style: typography.sm.copyWith(
-                        color: theme.colors.mutedForeground,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -178,7 +176,7 @@ class WelcomeScreen extends StatelessWidget {
 class _FeatureItem extends StatelessWidget {
   final IconData icon;
   final String label;
-  final FThemeData theme;
+  final ThemeData theme;
   final Gradient gradient;
 
   const _FeatureItem({
@@ -199,17 +197,17 @@ class _FeatureItem extends StatelessWidget {
             gradient: gradient,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: theme.colors.primary.withValues(alpha: 0.3),
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
-          child: Icon(icon, size: 30, color: theme.colors.primary),
+          child: Icon(icon, size: 30, color: theme.colorScheme.primary),
         ),
         const SizedBox(height: 10),
         Text(
           label,
-          style: theme.typography.xs.copyWith(
-            color: theme.colors.foreground,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w600,
             height: 1.3,
           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:forui/forui.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:learn_work/models/traning.dart';
 import 'package:learn_work/models/user.dart';
@@ -44,12 +43,12 @@ class _StudentsScreenState extends State<StudentsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
         return Scaffold(
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colorScheme.surface,
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -66,7 +65,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                             children: [
                               Icon(
                                 Icons.people,
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
@@ -77,18 +76,23 @@ class _StudentsScreenState extends State<StudentsScreen>
                                   children: [
                                     Text(
                                       'Student Management',
-                                      style: theme.typography.lg.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: theme.colors.foreground,
-                                      ),
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: theme.colorScheme.onSurface,
+                                          ),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       'Manage student accounts and training progress',
-                                      style: theme.typography.sm.copyWith(
-                                        color: theme.colors.mutedForeground,
-                                        fontSize: 11,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                            fontSize: 11,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -110,14 +114,15 @@ class _StudentsScreenState extends State<StudentsScreen>
                                   children: [
                                     CircularProgressIndicator(
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        theme.colors.primary,
+                                        theme.colorScheme.primary,
                                       ),
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
                                       'Loading students...',
                                       style: TextStyle(
-                                        color: theme.colors.mutedForeground,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -140,7 +145,7 @@ class _StudentsScreenState extends State<StudentsScreen>
     BuildContext context,
     AdminProvider adminProvider,
   ) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     // Use original students list directly
     final studentsList = adminProvider.allStudents;
@@ -153,21 +158,21 @@ class _StudentsScreenState extends State<StudentsScreen>
             Icon(
               Icons.people_outline,
               size: 48,
-              color: theme.colors.mutedForeground,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 12),
             Text(
               'No students found',
               style: TextStyle(
                 fontSize: 16,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'Students will appear here once they register with the Student role',
               style: TextStyle(
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
               ),
             ),
@@ -202,7 +207,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -213,7 +218,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -224,7 +229,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -235,7 +240,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -246,7 +251,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -257,7 +262,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -268,7 +273,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: theme.colors.foreground,
+                  color: theme.colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -324,12 +329,11 @@ class _StudentsScreenState extends State<StudentsScreen>
                           decoration: BoxDecoration(
                             color:
                                 student.hasCompletedProfile
-                                    ? theme.colors.primary.withValues(
+                                    ? theme.colorScheme.primary.withValues(
                                       alpha: 0.1,
                                     )
-                                    : theme.colors.mutedForeground.withValues(
-                                      alpha: 0.1,
-                                    ),
+                                    : theme.colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -339,8 +343,8 @@ class _StudentsScreenState extends State<StudentsScreen>
                             style: TextStyle(
                               color:
                                   student.hasCompletedProfile
-                                      ? theme.colors.primary
-                                      : theme.colors.mutedForeground,
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                             ),
@@ -358,10 +362,10 @@ class _StudentsScreenState extends State<StudentsScreen>
                           decoration: BoxDecoration(
                             color:
                                 student.jobAlerts
-                                    ? theme.colors.primary.withValues(
+                                    ? theme.colorScheme.primary.withValues(
                                       alpha: 0.1,
                                     )
-                                    : theme.colors.destructive.withValues(
+                                    : theme.colorScheme.error.withValues(
                                       alpha: 0.1,
                                     ),
                             borderRadius: BorderRadius.circular(8),
@@ -371,8 +375,8 @@ class _StudentsScreenState extends State<StudentsScreen>
                             style: TextStyle(
                               color:
                                   student.jobAlerts
-                                      ? theme.colors.primary
-                                      : theme.colors.destructive,
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.error,
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                             ),
@@ -388,8 +392,8 @@ class _StudentsScreenState extends State<StudentsScreen>
                         style: TextStyle(
                           color:
                               enrolledTrainings.isNotEmpty
-                                  ? theme.colors.mutedForeground
-                                  : theme.colors.mutedForeground,
+                                  ? theme.colorScheme.onSurfaceVariant
+                                  : theme.colorScheme.onSurfaceVariant,
                           fontSize: 11,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -400,11 +404,11 @@ class _StudentsScreenState extends State<StudentsScreen>
                         child: PopupMenuButton<String>(
                           icon: const Icon(Icons.more_vert, size: 18),
                           tooltip: 'Actions',
-                          color: theme.colors.background,
+                          color: theme.colorScheme.surface,
                           elevation: 8,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: theme.colors.border),
+                            side: BorderSide(color: theme.colorScheme.outline),
                           ),
                           onSelected: (value) {
                             if (value == 'details') {
@@ -429,7 +433,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                                     children: [
                                       Icon(
                                         Icons.info,
-                                        color: theme.colors.primary,
+                                        color: theme.colorScheme.primary,
                                         size: 16,
                                       ),
                                       const SizedBox(width: 8),
@@ -450,8 +454,10 @@ class _StudentsScreenState extends State<StudentsScreen>
                                             : Icons.notifications_active,
                                         color:
                                             student.jobAlerts
-                                                ? theme.colors.mutedForeground
-                                                : theme.colors.primary,
+                                                ? theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant
+                                                : theme.colorScheme.primary,
                                         size: 16,
                                       ),
                                       const SizedBox(width: 8),
@@ -485,7 +491,7 @@ class _StudentsScreenState extends State<StudentsScreen>
     UserModel student,
     AdminProvider adminProvider,
   ) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     // Find all schedules this student is enrolled in
     final enrollments = <MapEntry<String, TrainingSchedule>>[];
@@ -510,7 +516,7 @@ class _StudentsScreenState extends State<StudentsScreen>
             builder:
                 (context, scrollController) => Container(
                   decoration: BoxDecoration(
-                    color: theme.colors.background,
+                    color: theme.colorScheme.surface,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),
@@ -523,7 +529,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                         width: 32,
                         height: 3,
                         decoration: BoxDecoration(
-                          color: theme.colors.mutedForeground,
+                          color: theme.colorScheme.onSurfaceVariant,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -534,10 +540,10 @@ class _StudentsScreenState extends State<StudentsScreen>
                           children: [
                             CircleAvatar(
                               radius: 20,
-                              backgroundColor: theme.colors.primaryForeground,
+                              backgroundColor: theme.colorScheme.onPrimary,
                               child: Icon(
                                 Icons.person,
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                                 size: 22,
                               ),
                             ),
@@ -548,14 +554,13 @@ class _StudentsScreenState extends State<StudentsScreen>
                                 children: [
                                   Text(
                                     student.fullName,
-                                    style: theme.typography.lg.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   Text(
                                     'Student Details',
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -565,7 +570,9 @@ class _StudentsScreenState extends State<StudentsScreen>
                               onPressed: () => Navigator.of(context).pop(),
                               icon: Icon(Icons.close, size: 20),
                               style: IconButton.styleFrom(
-                                backgroundColor: theme.colors.mutedForeground
+                                backgroundColor: theme
+                                    .colorScheme
+                                    .onSurfaceVariant
                                     .withValues(alpha: 0.1),
                                 shape: const CircleBorder(),
                                 padding: const EdgeInsets.all(8),
@@ -589,7 +596,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                                   Icons.email,
                                   'Email',
                                   student.email,
-                                  theme.colors.primary,
+                                  theme.colorScheme.primary,
                                 ),
                                 if (student.phoneNumber != null &&
                                     student.phoneNumber!.isNotEmpty)
@@ -597,20 +604,20 @@ class _StudentsScreenState extends State<StudentsScreen>
                                     Icons.phone,
                                     'Phone',
                                     student.phoneNumber!,
-                                    theme.colors.primary,
+                                    theme.colorScheme.primary,
                                   ),
                                 _buildInfoTile(
                                   Icons.calendar_today,
                                   'Registration Date',
                                   _formatDate(student.createdAt),
-                                  theme.colors.primary,
+                                  theme.colorScheme.primary,
                                 ),
                                 if (student.dateOfBirth != null)
                                   _buildInfoTile(
                                     Icons.cake,
                                     'Date of Birth',
                                     student.formattedDateOfBirth ?? 'N/A',
-                                    theme.colors.primary,
+                                    theme.colorScheme.primary,
                                   ),
                                 _buildInfoTile(
                                   student.jobAlerts
@@ -621,8 +628,8 @@ class _StudentsScreenState extends State<StudentsScreen>
                                       ? 'Subscribed'
                                       : 'Not Subscribed',
                                   student.jobAlerts
-                                      ? theme.colors.primary
-                                      : theme.colors.destructive,
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.error,
                                 ),
                                 _buildInfoTile(
                                   student.hasCompletedProfile
@@ -633,8 +640,8 @@ class _StudentsScreenState extends State<StudentsScreen>
                                       ? 'Complete'
                                       : 'Incomplete',
                                   student.hasCompletedProfile
-                                      ? theme.colors.primary
-                                      : theme.colors.mutedForeground,
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
                                 ),
                               ]),
                               if (student.bio != null &&
@@ -644,18 +651,18 @@ class _StudentsScreenState extends State<StudentsScreen>
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: theme.colors.mutedForeground
+                                      color: theme.colorScheme.onSurfaceVariant
                                           .withValues(alpha: 0.05),
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
-                                        color: theme.colors.border,
+                                        color: theme.colorScheme.outline,
                                       ),
                                     ),
                                     child: Text(
                                       student.bio!,
                                       style: TextStyle(
                                         fontSize: 13,
-                                        color: theme.colors.foreground,
+                                        color: theme.colorScheme.onSurface,
                                       ),
                                     ),
                                   ),
@@ -670,14 +677,14 @@ class _StudentsScreenState extends State<StudentsScreen>
                                       Icons.work,
                                       'Job Categories',
                                       student.jobCategories.join(', '),
-                                      theme.colors.primary,
+                                      theme.colorScheme.primary,
                                     ),
                                   if (student.preferredLocations.isNotEmpty)
                                     _buildInfoTile(
                                       Icons.location_on,
                                       'Preferred Locations',
                                       student.preferredLocations.join(', '),
-                                      theme.colors.primary,
+                                      theme.colorScheme.primary,
                                     ),
                                 ]),
                               ],
@@ -700,13 +707,15 @@ class _StudentsScreenState extends State<StudentsScreen>
                                       Container(
                                         padding: const EdgeInsets.all(16),
                                         decoration: BoxDecoration(
-                                          color: theme.colors.mutedForeground
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant
                                               .withValues(alpha: 0.05),
                                           borderRadius: BorderRadius.circular(
                                             8,
                                           ),
                                           border: Border.all(
-                                            color: theme.colors.border,
+                                            color: theme.colorScheme.outline,
                                           ),
                                         ),
                                         child: Row(
@@ -714,7 +723,9 @@ class _StudentsScreenState extends State<StudentsScreen>
                                             Icon(
                                               Icons.info_outline,
                                               color:
-                                                  theme.colors.mutedForeground,
+                                                  theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
                                               size: 18,
                                             ),
                                             const SizedBox(width: 12),
@@ -724,8 +735,8 @@ class _StudentsScreenState extends State<StudentsScreen>
                                                 style: TextStyle(
                                                   color:
                                                       theme
-                                                          .colors
-                                                          .mutedForeground,
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
                                                   fontSize: 12,
                                                 ),
                                               ),
@@ -748,7 +759,7 @@ class _StudentsScreenState extends State<StudentsScreen>
   }
 
   Widget _buildInfoSection(String title, List<Widget> children) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -758,7 +769,7 @@ class _StudentsScreenState extends State<StudentsScreen>
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: theme.colors.foreground,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
@@ -773,15 +784,15 @@ class _StudentsScreenState extends State<StudentsScreen>
     String subtitle,
     Color iconColor,
   ) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colors.mutedForeground.withValues(alpha: 0.05),
+        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.colors.border),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -802,7 +813,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                   title,
                   style: TextStyle(
                     fontSize: 11,
-                    color: theme.colors.mutedForeground,
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -812,7 +823,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: theme.colors.foreground,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -827,18 +838,18 @@ class _StudentsScreenState extends State<StudentsScreen>
     BuildContext context,
     MapEntry<String, TrainingSchedule> enrollment,
   ) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colors.background,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.colors.border),
+        border: Border.all(color: theme.colorScheme.outline),
         boxShadow: [
           BoxShadow(
-            color: theme.colors.border,
+            color: theme.colorScheme.outline,
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -849,7 +860,7 @@ class _StudentsScreenState extends State<StudentsScreen>
         children: [
           Row(
             children: [
-              Icon(Icons.school, color: theme.colors.primary, size: 18),
+              Icon(Icons.school, color: theme.colorScheme.primary, size: 18),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -857,7 +868,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: theme.colors.foreground,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -868,14 +879,14 @@ class _StudentsScreenState extends State<StudentsScreen>
             children: [
               Icon(
                 Icons.schedule,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
                 size: 14,
               ),
               const SizedBox(width: 6),
               Text(
                 '${_formatDate(enrollment.value.startDate)} - ${_formatDate(enrollment.value.endDate)}',
                 style: TextStyle(
-                  color: theme.colors.mutedForeground,
+                  color: theme.colorScheme.onSurfaceVariant,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
                 ),
@@ -892,7 +903,7 @@ class _StudentsScreenState extends State<StudentsScreen>
     UserModel student,
     AdminProvider adminProvider,
   ) async {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     try {
       await adminProvider.updateUserJobAlerts(student.uid, !student.jobAlerts);
@@ -906,15 +917,15 @@ class _StudentsScreenState extends State<StudentsScreen>
           ),
           backgroundColor:
               !student.jobAlerts
-                  ? theme.colors.primary
-                  : theme.colors.mutedForeground,
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update job notifications: $e'),
-          backgroundColor: theme.colors.destructive,
+          backgroundColor: theme.colorScheme.error,
         ),
       );
     }

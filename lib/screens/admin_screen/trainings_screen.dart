@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:forui/forui.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:learn_work/models/traning.dart';
 import 'package:learn_work/screens/admin_screen/add_edit_training_screen.dart';
@@ -34,7 +33,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     return Consumer<AdminProvider>(
       builder: (context, adminProvider, child) {
@@ -46,7 +45,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         });
 
         return Scaffold(
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colorScheme.surface,
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -65,7 +64,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                                 children: [
                                   Icon(
                                     Icons.school,
-                                    color: theme.colors.primary,
+                                    color: theme.colorScheme.primary,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
@@ -77,16 +76,16 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                                       children: [
                                         Text(
                                           'Training Courses',
-                                          style: theme.typography.lg.copyWith(
+                                          style: theme.textTheme.titleMedium?.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: theme.colors.foreground,
+                                            color: theme.colorScheme.onSurface,
                                           ),
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
                                           'Manage training courses and schedules',
-                                          style: theme.typography.sm.copyWith(
-                                            color: theme.colors.mutedForeground,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: theme.colorScheme.onSurfaceVariant,
                                             fontSize: 11,
                                           ),
                                         ),
@@ -99,8 +98,8 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: FButton(
-                                      onPress:
+                                    child: FilledButton(
+        onPressed:
                                           () => _navigateToAddEditTraining(
                                             context,
                                             adminProvider,
@@ -149,7 +148,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
     BuildContext context,
     AdminProvider adminProvider,
   ) {
-    final theme = context.theme;
+    final theme = Theme.of(context);
 
     if (adminProvider.isLoading) {
       return Center(
@@ -157,14 +156,14 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(theme.colors.primary),
+              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
             ),
             const SizedBox(height: 16),
             Text(
               'Loading trainings...',
               style: TextStyle(
                 fontSize: 16,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -180,14 +179,14 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             Icon(
               Icons.error_outline,
               size: 48,
-              color: theme.colors.destructive,
+              color: theme.colorScheme.error,
             ),
             const SizedBox(height: 12),
             Text(
               'Error loading trainings',
               style: TextStyle(
                 fontSize: 16,
-                color: theme.colors.destructive,
+                color: theme.colorScheme.error,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -195,14 +194,14 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             Text(
               adminProvider.errorMessage!,
               style: TextStyle(
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            FButton(
-              onPress: () {
+            FilledButton(
+        onPressed: () {
                 // Store reference to AdminProvider before using it
                 final adminProvider = context.read<AdminProvider>();
                 adminProvider.loadTrainings();
@@ -222,13 +221,13 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colors.mutedForeground.withValues(alpha: 0.1),
+                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Icon(
                 Icons.school_outlined,
                 size: 48,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 16),
@@ -237,7 +236,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: theme.colors.foreground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -246,13 +245,13 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: theme.colors.mutedForeground,
+                color: theme.colorScheme.onSurfaceVariant,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: 16),
-            FButton(
-              onPress: () => _navigateToAddEditTraining(context, adminProvider),
+            FilledButton(
+        onPressed: () => _navigateToAddEditTraining(context, adminProvider),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -274,11 +273,11 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
-            color: theme.colors.background,
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: theme.colors.foreground.withValues(alpha: 0.06),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.06),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
                 spreadRadius: 0,
@@ -308,16 +307,16 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                             children: [
                               Text(
                                 training.title,
-                                style: theme.typography.lg.copyWith(
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: theme.colors.foreground,
+                                  color: theme.colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 training.description,
                                 style: TextStyle(
-                                  color: theme.colors.mutedForeground,
+                                  color: theme.colorScheme.onSurfaceVariant,
                                   fontSize: 13,
                                   height: 1.3,
                                 ),
@@ -337,7 +336,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -345,7 +344,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: theme.colors.primaryForeground,
+                                  color: theme.colorScheme.onPrimary,
                                 ),
                               ),
                             ),
@@ -356,7 +355,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withValues(
+                                color: theme.colorScheme.primary.withValues(
                                   alpha: 0.1,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
@@ -364,7 +363,7 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                               child: Text(
                                 '${training.schedules.length} schedule${training.schedules.length != 1 ? 's' : ''}',
                                 style: TextStyle(
-                                  color: theme.colors.primary,
+                                  color: theme.colorScheme.primary,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -383,13 +382,13 @@ class _TrainingsScreenState extends State<TrainingsScreen> {
                               Icon(
                                 Icons.arrow_forward_ios,
                                 size: 12,
-                                color: theme.colors.primary,
+                                color: theme.colorScheme.primary,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 'Tap to view details and manage course',
                                 style: TextStyle(
-                                  color: theme.colors.primary,
+                                  color: theme.colorScheme.primary,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w500,
                                 ),
