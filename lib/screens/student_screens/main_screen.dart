@@ -24,17 +24,17 @@ class _MainScreenState extends State<MainScreen> {
     BottomNavigationBarItem(
       icon: Icon(Icons.work_outline, size: 24),
       activeIcon: Icon(Icons.work, size: 24),
-      label: 'All Jobs',
+      label: 'Careers',
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.school_outlined, size: 24),
       activeIcon: Icon(Icons.school, size: 24),
-      label: 'Courses',
+      label: 'Assessments',
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.person_outline, size: 24),
       activeIcon: Icon(Icons.person, size: 24),
-      label: 'Profile',
+      label: 'Upskill',
     ),
   ];
 

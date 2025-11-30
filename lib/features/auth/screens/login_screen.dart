@@ -161,17 +161,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Welcome Text
                       Text(
                         'Welcome back!',
-                        style: theme.typography.xl2.copyWith(
+                        style: theme.typography.xl3.copyWith(
                           color: theme.colors.foreground,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       Text(
-                        'A journey of a thousand miles begins with a single step',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
+                        'A journey of a thousand miles begins with a single step...',
+                        style: theme.typography.lg.copyWith(
+                          color: Colors.grey.shade900,
                         ),
                         textAlign: TextAlign.start,
                       ),
