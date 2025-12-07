@@ -5,7 +5,6 @@ import 'package:learn_work/core/theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'widgets/splash_screen.dart';
-import 'utils/custom_theme.dart';
 import 'utils/service_locator.dart';
 import 'features/auth/providers/auth_provider.dart';
 

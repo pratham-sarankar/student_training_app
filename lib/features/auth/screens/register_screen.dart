@@ -221,39 +221,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 16),
 
                       // Password Field
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Password',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          PasswordFormField(controller: _passwordController),
-                        ],
-                      ),
+                      PasswordFormField(controller: _passwordController),
                       const SizedBox(height: 16),
 
                       // Confirm Password Field
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Confirm Password',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          PasswordFormField(
-                            controller: _confirmPasswordController,
-                          ),
-                        ],
-                      ),
+                      PasswordFormField(controller: _confirmPasswordController),
                       const SizedBox(height: 8),
 
                       const SizedBox(height: 20),

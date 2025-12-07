@@ -345,6 +345,24 @@ class MaterialTheme {
     ),
     scaffoldBackgroundColor: colorScheme.surface,
     canvasColor: colorScheme.surface,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size.fromHeight(40),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        minimumSize: Size.fromHeight(40),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        side: BorderSide(color: colorScheme.primary, width: 1.5),
+        textStyle: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
   );
 
   List<ExtendedColor> get extendedColors => [];

@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/utils/auth_type.dart';
 import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
@@ -178,45 +180,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 32),
 
                       // Email Field
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Email',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.colorScheme.onSurface,
-                            ),
+                      TextField(
+                        autofocus: true,
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Enter your email',
+                          border: UnderlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: _emailController,
-                            decoration: InputDecoration(
-                              hintText: 'Enter your email',
-                            ),
-
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                          ),
-                        ],
+                          prefixIcon: Icon(HeroIcons.envelope),
+                          fillColor: theme.colorScheme.surfaceBright,
+                          filled: true,
+                        ),
+                        cursorHeight: 16,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
                       ),
                       const SizedBox(height: 16),
 
                       // Password Field
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Password',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          PasswordFormField(controller: _passwordController),
-                        ],
-                      ),
+                      PasswordFormField(controller: _passwordController),
                       const SizedBox(height: 8),
 
                       // Forgot Password
@@ -248,6 +231,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       Consumer<AuthProvider>(
                         builder: (context, authProvider, _) {
                           return FilledButton(
+                            style: TextButton.styleFrom(
+                              minimumSize: Size(size.width, 0),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
                             onPressed:
                                 authProvider.isLoading
                                     ? null

@@ -84,11 +84,12 @@ class WelcomeScreen extends StatelessWidget {
 
                   // Primary Action Button with enhanced styling
                   ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(
-                        const Color(0xFFFFB020),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFB020),
+                      textStyle: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
-                      foregroundColor: WidgetStateProperty.all(Colors.black),
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
@@ -97,26 +98,19 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Get Started',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Icon(Icons.arrow_forward_rounded, size: 20),
-                      ],
+                    child: Text(
+                      'Login',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
 
                   // Secondary Action Button with better styling
                   OutlinedButton(
+                    style: OutlinedButton.styleFrom(),
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -124,22 +118,13 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Center(
-                      child: Text(
-                        'Create New Account',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ),
+                    child: const Text('Create an Account'),
                   ),
                   const SizedBox(height: 16),
 
                   // Admin Login Button
-                  TextButton.icon(
-                    onPressed: () {
+                  InkWell(
+                    onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder:
@@ -150,16 +135,28 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    icon: Icon(
-                      Icons.admin_panel_settings,
-                      size: 18,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    label: Text(
-                      'Login as Admin',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.admin_panel_settings,
+                            size: 18,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Login as Admin',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -191,16 +188,16 @@ class _FeatureItem extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 64,
-          height: 64,
           decoration: BoxDecoration(
             gradient: gradient,
-            borderRadius: BorderRadius.circular(18),
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: theme.colorScheme.primary.withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
+          padding: const EdgeInsets.all(16),
           child: Icon(icon, size: 30, color: theme.colorScheme.primary),
         ),
         const SizedBox(height: 10),
