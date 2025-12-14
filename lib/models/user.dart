@@ -16,18 +16,18 @@ class UserModel {
   final bool isPhoneVerified;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
+
   // Preferences and settings
   final bool emailNotifications;
   final bool pushNotifications;
   final bool jobAlerts;
   final List<String> jobCategories;
   final List<String> preferredLocations;
-  
+
   // Job-related
   final List<String> savedJobs;
   final List<String> appliedJobs;
-  
+
   // Education-related
   final String? educationId;
 
@@ -58,10 +58,10 @@ class UserModel {
 
   // Getter for full name
   String get fullName => '$firstName $lastName'.trim();
-  
+
   // Getter for display name (first name only if last name is empty)
   String get displayName => lastName.isNotEmpty ? fullName : firstName;
-  
+
   // Getter for initials
   String get initials {
     if (lastName.isNotEmpty) {
@@ -71,7 +71,8 @@ class UserModel {
   }
 
   // Create from Firebase Auth User
-  factory UserModel.fromFirebaseUser(User user, {
+  factory UserModel.fromFirebaseUser(
+    User user, {
     String? phoneNumber,
     String? bio,
     String? gender,
@@ -116,11 +117,12 @@ class UserModel {
       photoUrl: map['photoUrl'],
       bio: map['bio'],
       gender: map['gender'],
-      dateOfBirth: map['dateOfBirth'] != null 
-          ? (map['dateOfBirth'] is Timestamp 
-              ? (map['dateOfBirth'] as Timestamp).toDate()
-              : DateTime.parse(map['dateOfBirth']))
-          : null,
+      dateOfBirth:
+          map['dateOfBirth'] != null
+              ? (map['dateOfBirth'] is Timestamp
+                  ? (map['dateOfBirth'] as Timestamp).toDate()
+                  : DateTime.parse(map['dateOfBirth']))
+              : null,
       role: map['role'] ?? 'Student',
       isEmailVerified: map['isEmailVerified'] ?? false,
       isPhoneVerified: map['isPhoneVerified'] ?? false,
@@ -147,9 +149,8 @@ class UserModel {
       'photoUrl': photoUrl,
       'bio': bio,
       'gender': gender,
-      'dateOfBirth': dateOfBirth != null 
-          ? Timestamp.fromDate(dateOfBirth!)
-          : null,
+      'dateOfBirth':
+          dateOfBirth != null ? Timestamp.fromDate(dateOfBirth!) : null,
       'role': role,
       'isEmailVerified': isEmailVerified,
       'isPhoneVerified': isPhoneVerified,
@@ -216,11 +217,11 @@ class UserModel {
 
   // Check if user has completed profile
   bool get hasCompletedProfile {
-    return firstName.isNotEmpty && 
-           lastName.isNotEmpty && 
-           phoneNumber != null && 
-           phoneNumber!.isNotEmpty &&
-           dateOfBirth != null;
+    return firstName.isNotEmpty &&
+        lastName.isNotEmpty &&
+        phoneNumber != null &&
+        phoneNumber!.isNotEmpty &&
+        dateOfBirth != null;
   }
 
   // Check if user is verified
@@ -231,7 +232,7 @@ class UserModel {
     if (dateOfBirth == null) return null;
     final now = DateTime.now();
     int age = now.year - dateOfBirth!.year;
-    if (now.month < dateOfBirth!.month || 
+    if (now.month < dateOfBirth!.month ||
         (now.month == dateOfBirth!.month && now.day < dateOfBirth!.day)) {
       age--;
     }

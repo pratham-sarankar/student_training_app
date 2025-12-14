@@ -14,6 +14,7 @@ import '../../widgets/shimmer_loading.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:learn_work/screens/student_screens/job_subscription_screen.dart';
 
 class AllJobsScreen extends StatefulWidget {
   const AllJobsScreen({super.key});
@@ -30,6 +31,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   UserModel? _currentUser;
   String _currentLocation = 'Getting location...';
   bool _isLoadingLocation = true;
+  bool _isLoadingUser = true;
 
   @override
   void initState() {
@@ -39,13 +41,24 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   }
 
   Future<void> _loadCurrentUser() async {
+    setState(() {
+      _isLoadingUser = true;
+    });
     try {
       final user = await _userService.getCurrentUserDataWithFallback();
-      setState(() {
-        _currentUser = user;
-      });
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+          _isLoadingUser = false;
+        });
+      }
     } catch (e) {
       print('Error loading current user: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingUser = false;
+        });
+      }
     }
   }
 
@@ -323,6 +336,21 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   }
 
   Widget _buildJobsListWithCarousel(FThemeData theme) {
+    if (_isLoadingUser) {
+      return _buildShimmerLoading(theme);
+    }
+
+    if (_currentUser == null || !_currentUser!.jobAlerts) {
+      return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          _buildBannerCarousel(theme),
+          const SizedBox(height: 16),
+          _buildSubscriptionCard(theme),
+        ],
+      );
+    }
+
     if (_searchQuery.isEmpty) {
       return StreamBuilder<List<Job>>(
         stream: _jobService.getJobs(),
@@ -446,6 +474,77 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         },
       );
     }
+  }
+
+  Widget _buildSubscriptionCard(FThemeData theme) {
+    return Container(
+      padding: EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.colors.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colors.border, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.foreground.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.lock_outline,
+              size: 48,
+              color: theme.colors.primary,
+            ),
+          ),
+          SizedBox(height: 24),
+          Text(
+            'Access Restricted',
+            style: theme.typography.xl.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colors.foreground,
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            'Subscribe to job alerts to view exclusive job opportunities and stay updated with the latest openings.',
+            textAlign: TextAlign.center,
+            style: theme.typography.base.copyWith(
+              color: theme.colors.mutedForeground,
+            ),
+          ),
+          SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: FButton(
+              onPress: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const JobSubscriptionScreen(),
+                  ),
+                );
+                // Refresh user data when returning from subscription screen
+                _loadCurrentUser();
+              },
+              child: Text(
+                'Subscribe Now',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildJobCard(Job job) {

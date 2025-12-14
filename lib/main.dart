@@ -9,6 +9,8 @@ import 'utils/service_locator.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'providers/admin_provider.dart';
 
+import 'package:learn_work/services/push_notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -17,6 +19,13 @@ void main() async {
     );
 
     print('Firebase initialized successfully');
+
+    // Initialize Push Notifications
+    try {
+      await PushNotificationService().initialize();
+    } catch (e) {
+      print('Failed to initialize push notifications: $e');
+    }
   } catch (e) {
     print('Firebase initialization failed: $e');
   }

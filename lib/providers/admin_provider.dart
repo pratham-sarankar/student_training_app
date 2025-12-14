@@ -6,9 +6,49 @@ import 'package:learn_work/services/admin_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:learn_work/services/notification_service.dart';
+
 class AdminProvider extends ChangeNotifier {
   final AdminService _adminService = AdminService();
+  final NotificationService _notificationService = NotificationService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // ... existing code ...
+
+  Future<void> addJob(Job job) async {
+    try {
+      setState(isLoading: true, errorMessage: null);
+
+      // Add to Firestore
+      final docRef = await _firestore.collection('jobs').add(job.toMap());
+
+      // Update local state with the new job (including the generated ID)
+      final newJob = job.copyWith(id: docRef.id);
+      _jobs.add(newJob);
+
+      // Refresh the jobs list to ensure consistency
+      await loadJobs();
+
+      // Send notifications to subscribed students
+      // We do this asynchronously and don't await/block the UI success for it
+      _notificationService.sendJobNotificationToSubscribers(
+        jobTitle: job.title,
+        companyName: job.company,
+        jobId: docRef.id,
+      );
+    } catch (e) {
+      print('Error adding job: $e');
+      _errorMessage = 'Failed to add job: $e';
+      if (!_disposed) {
+        notifyListeners();
+      }
+      throw e; // Re-throw to let the UI handle the error
+    } finally {
+      if (!_disposed) {
+        setState(isLoading: false);
+      }
+    }
+  }
 
   List<Job> _jobs = [];
   List<Training> _trainings = [];
@@ -399,33 +439,6 @@ class AdminProvider extends ChangeNotifier {
     _selectedIndex = index;
     if (!_disposed) {
       notifyListeners();
-    }
-  }
-
-  Future<void> addJob(Job job) async {
-    try {
-      setState(isLoading: true, errorMessage: null);
-
-      // Add to Firestore
-      final docRef = await _firestore.collection('jobs').add(job.toMap());
-
-      // Update local state with the new job (including the generated ID)
-      final newJob = job.copyWith(id: docRef.id);
-      _jobs.add(newJob);
-
-      // Refresh the jobs list to ensure consistency
-      await loadJobs();
-    } catch (e) {
-      print('Error adding job: $e');
-      _errorMessage = 'Failed to add job: $e';
-      if (!_disposed) {
-        notifyListeners();
-      }
-      throw e; // Re-throw to let the UI handle the error
-    } finally {
-      if (!_disposed) {
-        setState(isLoading: false);
-      }
     }
   }
 
