@@ -9,12 +9,19 @@ import 'package:learn_work/screens/admin_screen/dashboard_screen.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:provider/provider.dart';
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  User? _currentUser;
+  Future<DocumentSnapshot>? _userProfileFuture;
+
+  @override
   Widget build(BuildContext context) {
-    // Check if Firebase is already initialized
     if (Firebase.apps.isEmpty) {
       return const Scaffold(
         body: Center(
@@ -30,7 +37,6 @@ class AuthWrapper extends StatelessWidget {
       );
     }
 
-    // Firebase is initialized, check auth state
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
@@ -40,20 +46,33 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        if (authSnapshot.hasData && authSnapshot.data != null) {
-          // User is signed in, check their role
-          final user = authSnapshot.data!;
-          print('🔐 AuthWrapper: User signed in with UID: ${user.uid}');
+        final user = authSnapshot.data;
 
-          return FutureBuilder<DocumentSnapshot>(
-            future:
+        // If user changed (logged in, logged out, or switched user), update our cache
+        if (user?.uid != _currentUser?.uid) {
+          _currentUser = user;
+          if (user != null) {
+            print(
+              '🔐 AuthWrapper: User changed to ${user.uid}, fetching profile...',
+            );
+            _userProfileFuture =
                 FirebaseFirestore.instance
                     .collection('users')
                     .doc(user.uid)
-                    .get(),
+                    .get();
+          } else {
+            _userProfileFuture = null;
+          }
+        }
+
+        if (user != null && _userProfileFuture != null) {
+          return FutureBuilder<DocumentSnapshot>(
+            future: _userProfileFuture,
             builder: (context, userDocSnapshot) {
               if (userDocSnapshot.connectionState == ConnectionState.waiting) {
-                print('🔐 AuthWrapper: Loading user data...');
+                // Only show loading if we don't have data yet?
+                // Actually, for a *new* user login, we want to show loading.
+                // But this FutureBuilder will preserve its state if the Future instance is the same!
                 return const Scaffold(
                   body: Center(child: CircularProgressIndicator()),
                 );
@@ -63,7 +82,6 @@ class AuthWrapper extends StatelessWidget {
                 print(
                   '🔐 AuthWrapper: Error loading user data: ${userDocSnapshot.error}',
                 );
-                // If there's an error loading user data, sign out and show welcome
                 FirebaseAuth.instance.signOut();
                 return const WelcomeScreen();
               }
@@ -73,40 +91,19 @@ class AuthWrapper extends StatelessWidget {
                     userDocSnapshot.data!.data() as Map<String, dynamic>;
                 final userRole = userData['role'] as String?;
 
-                print('🔐 AuthWrapper: User role: $userRole');
-
                 if (userRole == 'Admin') {
-                  print('🔐 AuthWrapper: Routing to admin dashboard');
-                  // User is admin, show admin dashboard
-                  return MultiProvider(
-                    providers: [
-                      ChangeNotifierProvider<AdminProvider>(
-                        create: (context) => AdminProvider(),
-                        lazy:
-                            false, // Create immediately to avoid disposal issues
-                      ),
-                    ],
-                    child: const DashboardScreen(),
-                  );
+                  return const DashboardScreen();
                 } else if (userRole == 'Student') {
-                  print('🔐 AuthWrapper: Routing to student screen');
-                  // User is student, check email verification
                   if (user.emailVerified) {
                     return const MainScreen();
                   } else {
                     return const EmailVerificationScreen();
                   }
                 } else {
-                  print('🔐 AuthWrapper: Unknown role, signing out');
-                  // Unknown role, sign out and show welcome
                   FirebaseAuth.instance.signOut();
                   return const WelcomeScreen();
                 }
               } else {
-                print(
-                  '🔐 AuthWrapper: User document doesn\'t exist, signing out',
-                );
-                // User document doesn't exist, sign out and show welcome
                 FirebaseAuth.instance.signOut();
                 return const WelcomeScreen();
               }
@@ -114,7 +111,6 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        // User is not signed in
         return const WelcomeScreen();
       },
     );

@@ -90,6 +90,15 @@ class _AddJobScreenState extends State<AddJobScreen> {
     _selectedJobType = widget.job?.type ?? 'Full-time';
     _selectedCategory = widget.job?.category ?? 'General';
 
+    // Ensure selected values exist in dropdown options to avoid crashes
+    if (_selectedJobType != null && !_jobTypes.contains(_selectedJobType)) {
+      _jobTypes.add(_selectedJobType!);
+    }
+    if (_selectedCategory != null &&
+        !_jobCategories.contains(_selectedCategory)) {
+      _jobCategories.add(_selectedCategory!);
+    }
+
     // Handle requirements and responsibilities initialization safely
     if (widget.job != null) {
       print('Initializing with existing job:');
