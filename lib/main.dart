@@ -7,6 +7,7 @@ import 'widgets/splash_screen.dart';
 import 'utils/custom_theme.dart';
 import 'utils/service_locator.dart';
 import 'features/auth/providers/auth_provider.dart';
+import 'providers/admin_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,8 +34,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = CustomThemes.navy.light;
-    return ChangeNotifierProvider(
-      create: (_) => getIt<AuthProvider>(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => getIt<AuthProvider>()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
+      ],
       child: FTheme(
         data: theme,
         child: MaterialApp(
