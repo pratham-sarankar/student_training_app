@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 
 class PasswordFormField extends StatefulWidget {
-  const PasswordFormField({super.key, this.controller});
+  const PasswordFormField({
+    super.key,
+    this.hintText = "Enter your password",
+    this.controller,
+  });
   final TextEditingController? controller;
+  final String? hintText;
   @override
   State<PasswordFormField> createState() => _PasswordFormFieldState();
 }
@@ -19,22 +24,15 @@ class _PasswordFormFieldState extends State<PasswordFormField> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return TextField(
       controller: widget.controller,
       decoration: InputDecoration(
-        hintText: 'Enter your password',
+        hintText: widget.hintText,
         suffixIcon: IconButton(
-          icon: Icon(
-            _obscureText ? Icons.visibility_off : Icons.visibility,
-            color: Colors.grey,
-          ),
+          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
           onPressed: _toggleObscureText,
         ),
-        border: UnderlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        prefixIcon: Icon(HeroIcons.lock_closed),
-        fillColor: theme.colorScheme.surfaceBright,
-        filled: true,
+        prefixIcon: const Icon(HeroIcons.lock_closed),
       ),
       obscureText: _obscureText,
       textInputAction: TextInputAction.done,

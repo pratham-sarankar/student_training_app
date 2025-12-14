@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:learn_work/features/auth/widgets/apple_auth_button.dart';
 import 'package:learn_work/features/auth/widgets/google_auth_button.dart';
@@ -197,26 +198,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 32),
 
                       // Email Field
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Email',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: _emailController,
-                            decoration: InputDecoration(
-                              hintText: 'Enter your email',
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                          ),
-                        ],
+                      TextField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your email',
+                          prefixIcon: Icon(HeroIcons.envelope),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
                       ),
                       const SizedBox(height: 16),
 
@@ -225,7 +214,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 16),
 
                       // Confirm Password Field
-                      PasswordFormField(controller: _confirmPasswordController),
+                      PasswordFormField(
+                        controller: _confirmPasswordController,
+                        hintText: "Confirm your password",
+                      ),
                       const SizedBox(height: 8),
 
                       const SizedBox(height: 20),
@@ -238,14 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 authProvider.isLoading
                                     ? null
                                     : _signUpWithEmail,
-                            child: Text(
-                              'Sign Up',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.2,
-                                color: theme.colorScheme.onPrimary,
-                              ),
-                            ),
+                            child: const Text('Sign Up'),
                           );
                         },
                       ),

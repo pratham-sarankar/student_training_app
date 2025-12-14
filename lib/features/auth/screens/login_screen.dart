@@ -183,16 +183,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextField(
                         autofocus: true,
                         controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Enter your email',
-                          border: UnderlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your email',
                           prefixIcon: Icon(HeroIcons.envelope),
-                          fillColor: theme.colorScheme.surfaceBright,
-                          filled: true,
                         ),
-                        cursorHeight: 16,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                       ),
@@ -231,25 +225,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       Consumer<AuthProvider>(
                         builder: (context, authProvider, _) {
                           return FilledButton(
-                            style: TextButton.styleFrom(
-                              minimumSize: Size(size.width, 0),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
                             onPressed:
                                 authProvider.isLoading
                                     ? null
                                     : _signInWithEmail,
-                            child: Text(
-                              'Sign In',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.2,
-                                color: theme.colorScheme.onPrimary,
-                              ),
-                            ),
+                            child: const Text('Sign In'),
                           );
                         },
                       ),
