@@ -15,6 +15,7 @@ class Job {
   final List<String> responsibilities;
   final DateTime createdAt;
   final bool isActive;
+  final DateTime? deadline;
 
   Job({
     required this.id,
@@ -31,6 +32,7 @@ class Job {
     required this.responsibilities,
     required this.createdAt,
     required this.isActive,
+    this.deadline,
   });
 
   factory Job.fromMap(Map<String, dynamic> map, String id) {
@@ -49,6 +51,7 @@ class Job {
       responsibilities: List<String>.from(map['responsibilities'] ?? []),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
+      deadline: (map['deadline'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -67,6 +70,7 @@ class Job {
       'responsibilities': responsibilities,
       'createdAt': createdAt,
       'isActive': isActive,
+      'deadline': deadline,
     };
   }
 
@@ -85,6 +89,7 @@ class Job {
     List<String>? responsibilities,
     DateTime? createdAt,
     bool? isActive,
+    DateTime? deadline,
   }) {
     return Job(
       id: id ?? this.id,
@@ -101,6 +106,7 @@ class Job {
       responsibilities: responsibilities ?? this.responsibilities,
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
+      deadline: deadline ?? this.deadline,
     );
   }
 }
