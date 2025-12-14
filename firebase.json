@@ -1,1 +1,16 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"learn-work-9bbf7","appId":"1:755210924592:android:b7f7dee76a0767a3c1f3f5","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"learn-work-9bbf7","configurations":{"ios":"1:755210924592:ios:4193eb4e648596fac1f3f5"}}},"ios":{"default":{"projectId":"learn-work-9bbf7","appId":"1:755210924592:ios:4193eb4e648596fac1f3f5","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}}}}}
+{
+    "functions": [
+        {
+            "source": "functions",
+            "codebase": "default",
+            "ignore": [
+                "node_modules",
+                ".git",
+                "firebase-debug.log",
+                "firebase-debug.*.log"
+            ],
+            "predeploy": [],
+            "runtime": "nodejs22"
+        }
+    ]
+}

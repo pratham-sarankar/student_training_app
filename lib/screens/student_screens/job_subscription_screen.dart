@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:learn_work/models/user.dart';
+import 'package:learn_work/services/user_service.dart';
 
 class JobSubscriptionScreen extends StatefulWidget {
   const JobSubscriptionScreen({super.key});
@@ -11,6 +13,86 @@ class JobSubscriptionScreen extends StatefulWidget {
 
 class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
   bool _isSubscribed = false;
+  bool _isLoading = false;
+  final UserService _userService = UserService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSubscriptionStatus();
+  }
+
+  Future<void> _loadSubscriptionStatus() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = await _userService.getCurrentUserData();
+      if (user != null) {
+        if (mounted) {
+          setState(() {
+            _isSubscribed = user.jobAlerts;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load subscription status'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _updateSubscription(bool isSubscribed) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _userService.updateUserProfile(jobAlerts: isSubscribed);
+      if (mounted) {
+        setState(() {
+          _isSubscribed = isSubscribed;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isSubscribed
+                  ? 'Successfully subscribed to job updates'
+                  : 'Successfully unsubscribed from job updates',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update subscription'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -216,29 +298,29 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     width: double.infinity,
                     height: 48,
                     child: FButton(
-                      onPress: () {
-                        setState(() {
-                          _isSubscribed = false;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Successfully unsubscribed from job updates',
-                            ),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Unsubscribe',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
+                      onPress:
+                          _isLoading ? null : () => _updateSubscription(false),
+                      child:
+                          _isLoading
+                              ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              )
+                              : Text(
+                                'Unsubscribe',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              ),
                     ),
                   ),
                 ] else ...[
@@ -246,29 +328,29 @@ class _JobSubscriptionScreenState extends State<JobSubscriptionScreen> {
                     width: double.infinity,
                     height: 48,
                     child: FButton(
-                      onPress: () {
-                        setState(() {
-                          _isSubscribed = true;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Successfully subscribed to job updates',
-                            ),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Subscribe Now',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
+                      onPress:
+                          _isLoading ? null : () => _updateSubscription(true),
+                      child:
+                          _isLoading
+                              ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              )
+                              : Text(
+                                'Subscribe Now',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              ),
                     ),
                   ),
                 ],

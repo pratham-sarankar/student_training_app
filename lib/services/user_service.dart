@@ -12,10 +12,10 @@ class UserService {
   // Create or update user document with UserModel
   Future<void> createOrUpdateUser(UserModel userModel) async {
     try {
-      await _firestore.collection('users').doc(userModel.uid).set(
-        userModel.toMap(),
-        SetOptions(merge: true),
-      );
+      await _firestore
+          .collection('users')
+          .doc(userModel.uid)
+          .set(userModel.toMap(), SetOptions(merge: true));
     } catch (e) {
       throw Exception('Failed to create/update user: $e');
     }
@@ -65,7 +65,7 @@ class UserService {
   Future<UserModel?> getCurrentUserData() async {
     final user = currentUser;
     if (user == null) return null;
-    
+
     return await getUserById(user.uid);
   }
 
@@ -76,7 +76,7 @@ class UserService {
 
     // Try to get from Firestore first
     UserModel? userModel = await getUserById(user.uid);
-    
+
     if (userModel != null) {
       return userModel;
     }
@@ -85,7 +85,8 @@ class UserService {
     if (user.displayName != null && user.displayName!.isNotEmpty) {
       final nameParts = user.displayName!.split(' ');
       final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
-      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      final lastName =
+          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
       userModel = UserModel(
         uid: user.uid,
@@ -127,7 +128,7 @@ class UserService {
     try {
       // Get current user data
       UserModel? currentUserModel = await getUserById(user.uid);
-      
+
       if (currentUserModel != null) {
         // Update with new values
         final updatedUser = currentUserModel.copyWith(
@@ -205,6 +206,22 @@ class UserService {
     }
   }
 
+  // Update FCM Token
+  Future<void> updateFCMToken(String token) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore.collection('users').doc(user.uid).update({
+        'fcmToken': token,
+        'lastActive': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error updating FCM token: $e');
+      // Non-critical, so we don't throw
+    }
+  }
+
   // Save job to user's saved jobs
   Future<void> saveJob(String jobId) async {
     final user = currentUser;
@@ -236,7 +253,7 @@ class UserService {
         if (currentUserModel.hasSavedJob(jobId)) {
           final updatedSavedJobs = List<String>.from(currentUserModel.savedJobs)
             ..remove(jobId);
-          
+
           final updatedUser = currentUserModel.copyWith(
             savedJobs: updatedSavedJobs,
           );
@@ -275,30 +292,37 @@ class UserService {
       if (currentUser == null) return [];
 
       // Search by first name (case-insensitive)
-      final firstNameQuery = await _firestore
-          .collection('users')
-          .where('firstName', isGreaterThanOrEqualTo: query)
-          .where('firstName', isLessThan: query + '\uf8ff')
-          .get();
+      final firstNameQuery =
+          await _firestore
+              .collection('users')
+              .where('firstName', isGreaterThanOrEqualTo: query)
+              .where('firstName', isLessThan: query + '\uf8ff')
+              .get();
 
       // Search by last name (case-insensitive)
-      final lastNameQuery = await _firestore
-          .collection('users')
-          .where('lastName', isGreaterThanOrEqualTo: query)
-          .where('lastName', isLessThan: query + '\uf8ff')
-          .get();
+      final lastNameQuery =
+          await _firestore
+              .collection('users')
+              .where('lastName', isGreaterThanOrEqualTo: query)
+              .where('lastName', isLessThan: query + '\uf8ff')
+              .get();
 
       // Search by email (case-insensitive)
-      final emailQuery = await _firestore
-          .collection('users')
-          .where('email', isGreaterThanOrEqualTo: query)
-          .where('email', isLessThan: query + '\uf8ff')
-          .get();
+      final emailQuery =
+          await _firestore
+              .collection('users')
+              .where('email', isGreaterThanOrEqualTo: query)
+              .where('email', isLessThan: query + '\uf8ff')
+              .get();
 
       // Combine and deduplicate results
-      final allDocs = [...firstNameQuery.docs, ...lastNameQuery.docs, ...emailQuery.docs];
+      final allDocs = [
+        ...firstNameQuery.docs,
+        ...lastNameQuery.docs,
+        ...emailQuery.docs,
+      ];
       final uniqueDocs = <String, DocumentSnapshot>{};
-      
+
       for (final doc in allDocs) {
         uniqueDocs[doc.id] = doc;
       }
@@ -306,7 +330,10 @@ class UserService {
       // Filter out current user and convert to UserModel list
       return uniqueDocs.values
           .where((doc) => doc.id != currentUser.uid)
-          .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .map(
+            (doc) =>
+                UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id),
+          )
           .toList();
     } catch (e) {
       throw Exception('Failed to search users: $e');
@@ -321,7 +348,7 @@ class UserService {
     try {
       // Delete user document
       await _firestore.collection('users').doc(user.uid).delete();
-      
+
       // Delete user authentication
       await user.delete();
     } catch (e) {
@@ -333,9 +360,9 @@ class UserService {
   Future<List<UserModel>> getAllUsers() async {
     try {
       final snapshot = await _firestore.collection('users').get();
-      return snapshot.docs.map((doc) => 
-        UserModel.fromMap(doc.data(), doc.id)
-      ).toList();
+      return snapshot.docs
+          .map((doc) => UserModel.fromMap(doc.data(), doc.id))
+          .toList();
     } catch (e) {
       throw Exception('Failed to get all users: $e');
     }
@@ -344,14 +371,15 @@ class UserService {
   // Get users by role
   Future<List<UserModel>> getUsersByRole(String role) async {
     try {
-      final snapshot = await _firestore
-          .collection('users')
-          .where('role', isEqualTo: role)
-          .get();
-      
-      return snapshot.docs.map((doc) => 
-        UserModel.fromMap(doc.data(), doc.id)
-      ).toList();
+      final snapshot =
+          await _firestore
+              .collection('users')
+              .where('role', isEqualTo: role)
+              .get();
+
+      return snapshot.docs
+          .map((doc) => UserModel.fromMap(doc.data(), doc.id))
+          .toList();
     } catch (e) {
       throw Exception('Failed to get users by role: $e');
     }

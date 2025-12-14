@@ -46,3 +46,12 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Firebase service account keys (NEVER commit these!)
+*-firebase-adminsdk-*.json
+learn-work-*-*.json
+
+# Cloud Functions
+functions/node_modules/
+functions/.log
+functions/firebase-debug*.log
