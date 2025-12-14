@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:forui/forui.dart';
 import 'package:learn_work/models/job.dart';
 import 'package:learn_work/providers/admin_provider.dart';
+import 'package:intl/intl.dart';
 
 class AddJobScreen extends StatefulWidget {
   final Job? job;
@@ -34,6 +35,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
   // Dropdown selection variables
   String? _selectedJobType;
   String? _selectedCategory;
+  DateTime? _selectedDeadline;
+  late TextEditingController _deadlineController;
 
   // Job type options
   final List<String> _jobTypes = [
@@ -89,6 +92,13 @@ class _AddJobScreenState extends State<AddJobScreen> {
     // Initialize dropdown selections
     _selectedJobType = widget.job?.type ?? 'Full-time';
     _selectedCategory = widget.job?.category ?? 'General';
+    _selectedDeadline = widget.job?.deadline;
+    _deadlineController = TextEditingController(
+      text:
+          _selectedDeadline != null
+              ? DateFormat('MMM d, yyyy').format(_selectedDeadline!)
+              : '',
+    );
 
     // Ensure selected values exist in dropdown options to avoid crashes
     if (_selectedJobType != null && !_jobTypes.contains(_selectedJobType)) {
@@ -135,6 +145,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
     _categoryController.dispose();
     _requirementsController.dispose();
     _responsibilitiesController.dispose();
+    _deadlineController.dispose();
     super.dispose();
   }
 
@@ -476,6 +487,88 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       return 'Please enter salary information';
                     }
                     return null;
+                  },
+                ),
+                const SizedBox(height: 8),
+
+                // Deadline
+                TextFormField(
+                  controller: _deadlineController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Job Deadline',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.calendar_today,
+                      color: theme.colors.primary,
+                      size: 16,
+                    ),
+                    hintText: 'Select deadline date',
+                    filled: true,
+                    fillColor: theme.colors.muted,
+                    isDense: true,
+                    suffixIcon:
+                        _selectedDeadline != null
+                            ? IconButton(
+                              icon: Icon(
+                                Icons.clear,
+                                size: 16,
+                                color: theme.colors.mutedForeground,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedDeadline = null;
+                                  _deadlineController.clear();
+                                });
+                              },
+                            )
+                            : null,
+                  ),
+                  onTap: () async {
+                    final now = DateTime.now();
+                    // Ensure firstDate includes the current selection even if it's in the past
+                    final firstDate =
+                        (_selectedDeadline != null &&
+                                _selectedDeadline!.isBefore(now))
+                            ? _selectedDeadline!
+                            : now;
+
+                    final pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate:
+                          _selectedDeadline ??
+                          now.add(const Duration(days: 30)),
+                      firstDate: firstDate,
+                      lastDate: now.add(const Duration(days: 365 * 2)),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.light(
+                              primary: theme.colors.primary,
+                              onPrimary: theme.colors.primaryForeground,
+                              surface: theme.colors.background,
+                              onSurface: theme.colors.foreground,
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+
+                    if (pickedDate != null) {
+                      setState(() {
+                        _selectedDeadline = pickedDate;
+                        _deadlineController.text = DateFormat(
+                          'MMM d, yyyy',
+                        ).format(pickedDate);
+                      });
+                    }
                   },
                 ),
                 const SizedBox(height: 8),
@@ -1019,15 +1112,26 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   ),
                   child: Row(
                     children: [
-                      Checkbox(
-                        value: _isActive,
-                        onChanged: (value) {
-                          setState(() {
-                            _isActive = value ?? true;
-                          });
+                      Builder(
+                        builder: (context) {
+                          final isExpired =
+                              _selectedDeadline != null &&
+                              _selectedDeadline!.isBefore(DateTime.now());
+                          return Checkbox(
+                            value: isExpired ? false : _isActive,
+                            onChanged:
+                                isExpired
+                                    ? null
+                                    : (value) {
+                                      setState(() {
+                                        _isActive = value ?? true;
+                                      });
+                                    },
+                            activeColor: theme.colors.primary,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          );
                         },
-                        activeColor: theme.colors.primary,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       const SizedBox(width: 6),
                       Expanded(
@@ -1041,13 +1145,25 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                 color: theme.colors.foreground,
                               ),
                             ),
-                            Text(
-                              _isActive
-                                  ? 'Active and visible to students'
-                                  : 'Inactive and hidden from students',
-                              style: theme.typography.xs.copyWith(
-                                color: theme.colors.mutedForeground,
-                              ),
+                            Builder(
+                              builder: (context) {
+                                final isExpired =
+                                    _selectedDeadline != null &&
+                                    _selectedDeadline!.isBefore(DateTime.now());
+                                return Text(
+                                  isExpired
+                                      ? 'Inactive (Deadline Passed)'
+                                      : (_isActive
+                                          ? 'Active and visible to students'
+                                          : 'Inactive and hidden from students'),
+                                  style: theme.typography.xs.copyWith(
+                                    color:
+                                        isExpired
+                                            ? theme.colors.destructive
+                                            : theme.colors.mutedForeground,
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -1165,6 +1281,10 @@ class _AddJobScreenState extends State<AddJobScreen> {
           salary = '₹$salary';
         }
 
+        final isExpired =
+            _selectedDeadline != null &&
+            _selectedDeadline!.isBefore(DateTime.now());
+
         final job = Job(
           id:
               widget.job?.id ??
@@ -1185,7 +1305,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
           requirements: requirements,
           responsibilities: responsibilities,
           createdAt: widget.job?.createdAt ?? DateTime.now(),
-          isActive: _isActive,
+          isActive: isExpired ? false : _isActive,
+          deadline: _selectedDeadline,
         );
         print('Job object created successfully with ID: ${job.id}');
 

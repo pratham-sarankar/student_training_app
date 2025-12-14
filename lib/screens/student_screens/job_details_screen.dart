@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:intl/intl.dart';
+
+import '../../models/job.dart';
 
 class JobDetailsScreen extends StatefulWidget {
-  final Map<String, dynamic> job;
+  final Job job;
 
   const JobDetailsScreen({super.key, required this.job});
 
@@ -60,40 +63,64 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            widget.job['logo'],
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Text(
-                                  widget.job['company'][0].toUpperCase(),
-                                  style: TextStyle(
-                                    color: theme.colors.primary,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              );
-                            },
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value:
-                                      loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
+                          child:
+                              widget.job.logo.isNotEmpty &&
+                                      widget.job.logo.startsWith('http')
+                                  ? Image.network(
+                                    widget.job.logo,
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Center(
+                                        child: Text(
+                                          widget.job.company.isNotEmpty
+                                              ? widget.job.company[0]
+                                                  .toUpperCase()
+                                              : 'C',
+                                          style: TextStyle(
+                                            color: theme.colors.primary,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    loadingBuilder: (
+                                      context,
+                                      child,
+                                      loadingProgress,
+                                    ) {
+                                      if (loadingProgress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value:
                                               loadingProgress
-                                                  .expectedTotalBytes!
-                                          : null,
-                                  strokeWidth: 2,
-                                  color: theme.colors.primary,
-                                ),
-                              );
-                            },
-                          ),
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                  : null,
+                                          strokeWidth: 2,
+                                          color: theme.colors.primary,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                  : Center(
+                                    child: Text(
+                                      widget.job.company.isNotEmpty
+                                          ? widget.job.company[0].toUpperCase()
+                                          : 'C',
+                                      style: TextStyle(
+                                        color: theme.colors.primary,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -102,7 +129,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.job['title'],
+                              widget.job.title,
                               style: theme.typography.lg.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: theme.colors.foreground,
@@ -111,7 +138,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              widget.job['company'],
+                              widget.job.company,
                               style: TextStyle(
                                 color: theme.colors.mutedForeground,
                                 fontSize: 14,
@@ -132,7 +159,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         child: _buildDetailCard(
                           Icons.location_on_outlined,
                           'Location',
-                          widget.job['location'],
+                          widget.job.location,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -140,7 +167,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         child: _buildDetailCard(
                           Icons.work_outline,
                           'Job Type',
-                          widget.job['type'],
+                          widget.job.type,
                         ),
                       ),
                     ],
@@ -152,7 +179,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         child: _buildDetailCard(
                           Icons.attach_money,
                           'Salary',
-                          widget.job['salary'],
+                          widget.job.salary,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -160,7 +187,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         child: _buildDetailCard(
                           Icons.category,
                           'Category',
-                          widget.job['category'],
+                          widget.job.category,
                         ),
                       ),
                     ],
@@ -169,8 +196,15 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   _buildDetailCard(
                     Icons.access_time,
                     'Posted',
-                    widget.job['posted'],
+                    widget.job.posted,
                   ),
+                  const SizedBox(height: 8),
+                  if (widget.job.deadline != null)
+                    _buildDetailCard(
+                      Icons.event,
+                      'Job Deadline',
+                      _formatDeadline(widget.job.deadline),
+                    ),
                 ],
               ),
             ),
@@ -208,7 +242,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 16),
 
                   Text(
-                    'Benefits',
+                    'Responsibilities',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -216,7 +250,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildBenefitsList(),
+                  _buildResponsibilitiesList(),
                 ],
               ),
             ),
@@ -227,17 +261,32 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               child: SizedBox(
                 width: double.infinity,
                 height: 44,
-                child: FButton(
-                  style: FButtonStyle.primary,
-                  onPress: () => _showApplicationDialog(),
-                  child: Text(
-                    'Apply Now',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colors.primaryForeground,
-                    ),
-                  ),
+                child: Builder(
+                  builder: (context) {
+                    final deadline = widget.job.deadline;
+                    final isExpired =
+                        deadline != null && deadline.isBefore(DateTime.now());
+
+                    return FButton(
+                      style:
+                          isExpired
+                              ? FButtonStyle.outline
+                              : FButtonStyle.primary,
+                      onPress:
+                          isExpired ? null : () => _showApplicationDialog(),
+                      child: Text(
+                        isExpired ? 'Job Expired' : 'Apply Now',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color:
+                              isExpired
+                                  ? theme.colors.mutedForeground
+                                  : theme.colors.primaryForeground,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -286,12 +335,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildDescriptionText() {
     final theme = context.theme;
-
     return Text(
-      'We are looking for a talented and experienced professional to join our team. '
-      'This role involves working on exciting projects, collaborating with cross-functional teams, '
-      'and contributing to the success of our organization. The ideal candidate will have strong '
-      'technical skills, excellent communication abilities, and a passion for innovation.',
+      widget.job.description,
       style: TextStyle(
         color: theme.colors.mutedForeground,
         fontSize: 13,
@@ -302,15 +347,18 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildRequirementsList() {
     final theme = context.theme;
+    final requirements = widget.job.requirements;
 
-    final requirements = [
-      'Bachelor\'s degree in related field',
-      '3+ years of relevant experience',
-      'Strong problem-solving skills',
-      'Excellent communication abilities',
-      'Ability to work in a team environment',
-      'Proficiency in required technologies',
-    ];
+    if (requirements.isEmpty) {
+      return Text(
+        'No requirements specified.',
+        style: TextStyle(
+          color: theme.colors.mutedForeground,
+          fontSize: 13,
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
 
     return Column(
       children:
@@ -349,23 +397,26 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     );
   }
 
-  Widget _buildBenefitsList() {
+  Widget _buildResponsibilitiesList() {
     final theme = context.theme;
+    final responsibilities = widget.job.responsibilities;
 
-    final benefits = [
-      'Competitive salary and benefits package',
-      'Flexible working hours and remote options',
-      'Professional development opportunities',
-      'Health insurance and wellness programs',
-      'Collaborative and inclusive work environment',
-      'Career growth and advancement potential',
-    ];
+    if (responsibilities.isEmpty) {
+      return Text(
+        'No responsibilities specified.',
+        style: TextStyle(
+          color: theme.colors.mutedForeground,
+          fontSize: 13,
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
 
     return Column(
       children:
-          benefits
+          responsibilities
               .map(
-                (benefit) => Padding(
+                (resp) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,7 +429,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          benefit,
+                          resp,
                           style: TextStyle(
                             color: theme.colors.mutedForeground,
                             fontSize: 13,
@@ -402,7 +453,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       builder:
           (context) => AlertDialog(
             title: Text(
-              'Apply for ${widget.job['title']}',
+              'Apply for ${widget.job.title}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -515,7 +566,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Your application for ${widget.job['title']} has been submitted successfully. '
+                  'Your application for ${widget.job.title} has been submitted successfully. '
                   'We will review your application and get back to you soon.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -558,5 +609,14 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         ],
       ),
     );
+  }
+
+  String _formatDeadline(DateTime? date) {
+    if (date == null) return 'N/A';
+    try {
+      return DateFormat('MMM d, yyyy').format(date);
+    } catch (e) {
+      return date.toString();
+    }
   }
 }

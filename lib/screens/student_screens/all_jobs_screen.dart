@@ -12,6 +12,8 @@ import '../../services/job_service.dart';
 import '../../services/user_service.dart';
 import '../../widgets/shimmer_loading.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class AllJobsScreen extends StatefulWidget {
   const AllJobsScreen({super.key});
@@ -25,7 +27,6 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   final UserService _userService = UserService();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _isInitialized = false;
   UserModel? _currentUser;
   String _currentLocation = 'Getting location...';
   bool _isLoadingLocation = true;
@@ -33,23 +34,8 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeJobs();
     _loadCurrentUser();
     _getCurrentLocation();
-  }
-
-  Future<void> _initializeJobs() async {
-    try {
-      await _jobService.initializeSampleJobs();
-      setState(() {
-        _isInitialized = true;
-      });
-    } catch (e) {
-      print('Error initializing jobs: $e');
-      setState(() {
-        _isInitialized = true;
-      });
-    }
   }
 
   Future<void> _loadCurrentUser() async {
@@ -298,12 +284,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
               const SizedBox(height: 16),
 
               // Jobs List with Carousel
-              Expanded(
-                child:
-                    _isInitialized
-                        ? _buildJobsListWithCarousel(theme)
-                        : _buildShimmerLoading(theme),
-              ),
+              Expanded(child: _buildJobsListWithCarousel(theme)),
             ],
           ),
         ),
@@ -474,9 +455,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => JobDetailsScreen(job: job.toMap()),
-          ),
+          MaterialPageRoute(builder: (context) => JobDetailsScreen(job: job)),
         );
       },
       child: Container(
@@ -599,6 +578,10 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 _buildJobDetail(Icons.work_outline, job.type),
                 const SizedBox(width: 16),
                 _buildJobDetail(Icons.access_time, job.posted),
+                // if (job.deadline != null) ...[
+                //   const SizedBox(width: 16),
+                //   _buildJobDetail(Icons.event, _formatDeadline(job.deadline)),
+                // ],
               ],
             ),
             const SizedBox(height: 12),
@@ -667,6 +650,21 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         ...List.generate(5, (index) => ShimmerLoading.jobCardShimmer(theme)),
       ],
     );
+  }
+
+  String _formatDeadline(dynamic date) {
+    if (date == null) return 'N/A';
+    try {
+      if (date is Timestamp) {
+        return DateFormat('MMM d, yyyy').format(date.toDate());
+      }
+      if (date is DateTime) {
+        return DateFormat('MMM d, yyyy').format(date);
+      }
+      return date.toString();
+    } catch (e) {
+      return date.toString();
+    }
   }
 }
 

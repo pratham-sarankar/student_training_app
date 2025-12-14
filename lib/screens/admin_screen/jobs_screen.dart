@@ -320,16 +320,27 @@ class JobsScreen extends StatelessWidget {
                   ),
                   DataCell(
                     Center(
-                      child: Text(
-                        job.isActive ? 'Active' : 'Inactive',
-                        style: TextStyle(
-                          color:
-                              job.isActive
-                                  ? Colors.green[800]
-                                  : Colors.red[800],
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      child: Builder(
+                        builder: (context) {
+                          final isExpired =
+                              job.deadline != null &&
+                              job.deadline!.isBefore(DateTime.now());
+                          // Even if marked active, if it's expired, show as Inactive
+                          final isEffectivelyActive =
+                              job.isActive && !isExpired;
+
+                          return Text(
+                            isEffectivelyActive ? 'Active' : 'Inactive',
+                            style: TextStyle(
+                              color:
+                                  isEffectivelyActive
+                                      ? Colors.green[800]
+                                      : Colors.red[800],
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
