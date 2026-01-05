@@ -67,10 +67,12 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        setState(() {
-          _currentLocation = 'Location services disabled';
-          _isLoadingLocation = false;
-        });
+        if (mounted) {
+          setState(() {
+            _currentLocation = 'Location services disabled';
+            _isLoadingLocation = false;
+          });
+        }
         return;
       }
 
@@ -79,19 +81,23 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          setState(() {
-            _currentLocation = 'Location permission denied';
-            _isLoadingLocation = false;
-          });
+          if (mounted) {
+            setState(() {
+              _currentLocation = 'Location permission denied';
+              _isLoadingLocation = false;
+            });
+          }
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        setState(() {
-          _currentLocation = 'Location permission permanently denied';
-          _isLoadingLocation = false;
-        });
+        if (mounted) {
+          setState(() {
+            _currentLocation = 'Location permission permanently denied';
+            _isLoadingLocation = false;
+          });
+        }
         return;
       }
 
@@ -142,29 +148,37 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
             location = 'Unknown location';
           }
 
-          setState(() {
-            _currentLocation = location;
-            _isLoadingLocation = false;
-          });
+          if (mounted) {
+            setState(() {
+              _currentLocation = location;
+              _isLoadingLocation = false;
+            });
+          }
         } else {
+          if (mounted) {
+            setState(() {
+              _currentLocation = 'Unknown location';
+              _isLoadingLocation = false;
+            });
+          }
+        }
+      } catch (e) {
+        print('Error getting address: $e');
+        if (mounted) {
           setState(() {
             _currentLocation = 'Unknown location';
             _isLoadingLocation = false;
           });
         }
-      } catch (e) {
-        print('Error getting address: $e');
-        setState(() {
-          _currentLocation = 'Unknown location';
-          _isLoadingLocation = false;
-        });
       }
     } catch (e) {
       print('Error getting location: $e');
-      setState(() {
-        _currentLocation = 'Error getting location';
-        _isLoadingLocation = false;
-      });
+      if (mounted) {
+        setState(() {
+          _currentLocation = 'Error getting location';
+          _isLoadingLocation = false;
+        });
+      }
     }
   }
 
@@ -204,7 +218,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Gradspark',
+                            'Gradspark.AI',
                             style: theme.typography.xl.copyWith(
                               fontWeight: FontWeight.bold,
                               color: theme.colors.primary,

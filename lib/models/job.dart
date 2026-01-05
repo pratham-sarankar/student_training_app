@@ -16,6 +16,7 @@ class Job {
   final DateTime createdAt;
   final bool isActive;
   final DateTime? deadline;
+  final String? applyLink;
 
   Job({
     required this.id,
@@ -33,6 +34,7 @@ class Job {
     required this.createdAt,
     required this.isActive,
     this.deadline,
+    this.applyLink,
   });
 
   factory Job.fromMap(Map<String, dynamic> map, String id) {
@@ -52,6 +54,7 @@ class Job {
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
       deadline: (map['deadline'] as Timestamp?)?.toDate(),
+      applyLink: map['applyLink'],
     );
   }
 
@@ -71,6 +74,7 @@ class Job {
       'createdAt': createdAt,
       'isActive': isActive,
       'deadline': deadline,
+      'applyLink': applyLink,
     };
   }
 
@@ -90,6 +94,7 @@ class Job {
     DateTime? createdAt,
     bool? isActive,
     DateTime? deadline,
+    String? applyLink,
   }) {
     return Job(
       id: id ?? this.id,
@@ -107,6 +112,7 @@ class Job {
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
       deadline: deadline ?? this.deadline,
+      applyLink: applyLink ?? this.applyLink,
     );
   }
 }
