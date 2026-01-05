@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'assessments_screen.dart';
 import 'profile_screen.dart';
 import 'all_jobs_screen.dart';
 import 'training_courses_screen.dart';
@@ -16,6 +17,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const AllJobsScreen(),
+    const AssessmentsScreen(),
     const TrainingCoursesScreen(),
     const ProfileScreen(),
   ];
@@ -26,15 +28,21 @@ class _MainScreenState extends State<MainScreen> {
       activeIcon: Icon(Icons.work, size: 24),
       label: 'Careers',
     ),
+    // here add the icon for the assessments
+    BottomNavigationBarItem(
+      icon: Icon(Icons.assessment_outlined, size: 24),
+      activeIcon: Icon(Icons.assessment, size: 24),
+      label: 'Assessments',
+    ),
     BottomNavigationBarItem(
       icon: Icon(Icons.school_outlined, size: 24),
       activeIcon: Icon(Icons.school, size: 24),
-      label: 'Assessments',
+      label: 'Upskill',
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.person_outline, size: 24),
       activeIcon: Icon(Icons.person, size: 24),
-      label: 'Upskill',
+      label: 'Profile',
     ),
   ];
 

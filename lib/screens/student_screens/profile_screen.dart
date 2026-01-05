@@ -332,32 +332,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 8),
 
-                  _buildProfileOption(
-                    context,
-                    icon: Icons.notifications_outlined,
-                    title: 'Notifications',
-                    subtitle: 'Manage your notification preferences',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const NotificationScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
+                  // _buildProfileOption(
+                  //   context,
+                  //   icon: Icons.notifications_outlined,
+                  //   title: 'Notifications',
+                  //   subtitle: 'Manage your notification preferences',
+                  //   onTap: () {
+                  //     Navigator.of(context).push(
+                  //       MaterialPageRoute(
+                  //         builder: (context) => const NotificationScreen(),
+                  //       ),
+                  //     );
+                  //   },
+                  // // ),
+                  // const SizedBox(height: 8),
 
-                  _buildProfileOption(
-                    context,
-                    icon: Icons.security_outlined,
-                    title: 'Privacy & Security',
-                    subtitle: 'Control your account security',
-                    onTap: () {
-                      // TODO: Navigate to privacy settings
-                    },
-                  ),
-                  const SizedBox(height: 8),
-
+                  // _buildProfileOption(
+                  //   context,
+                  //   icon: Icons.security_outlined,
+                  //   title: 'Privacy & Security',
+                  //   subtitle: 'Control your account security',
+                  //   onTap: () {
+                  //     // TODO: Navigate to privacy settings
+                  //   },
+                  // ),
+                  // const SizedBox(height: 8),
                   _buildProfileOption(
                     context,
                     icon: Icons.help_outline,

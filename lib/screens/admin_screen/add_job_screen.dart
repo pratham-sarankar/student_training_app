@@ -37,6 +37,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
   String? _selectedCategory;
   DateTime? _selectedDeadline;
   late TextEditingController _deadlineController;
+  late TextEditingController _applyLinkController;
 
   // Job type options
   final List<String> _jobTypes = [
@@ -87,6 +88,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
     );
     _categoryController = TextEditingController(
       text: widget.job?.category ?? 'General',
+    );
+    _applyLinkController = TextEditingController(
+      text: widget.job?.applyLink ?? '',
     );
 
     // Initialize dropdown selections
@@ -146,6 +150,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
     _requirementsController.dispose();
     _responsibilitiesController.dispose();
     _deadlineController.dispose();
+    _applyLinkController.dispose();
     super.dispose();
   }
 
@@ -491,12 +496,37 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 ),
                 const SizedBox(height: 8),
 
+                // Apply Link
+                TextFormField(
+                  controller: _applyLinkController,
+                  decoration: InputDecoration(
+                    labelText: 'Apply Link',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.link,
+                      color: theme.colors.primary,
+                      size: 16,
+                    ),
+                    hintText: 'e.g., https://example.com/apply',
+                    filled: true,
+                    fillColor: theme.colors.muted,
+                    isDense: true,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
                 // Deadline
                 TextFormField(
                   controller: _deadlineController,
                   readOnly: true,
                   decoration: InputDecoration(
-                    labelText: 'Job Deadline',
+                    labelText: 'Application Deadline',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -730,7 +760,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Requirements *',
+                              'Requirements',
                               style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: theme.colors.foreground,
@@ -935,7 +965,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Responsibilities *',
+                              'Responsibilities',
                               style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: theme.colors.foreground,
@@ -1307,6 +1337,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
           createdAt: widget.job?.createdAt ?? DateTime.now(),
           isActive: isExpired ? false : _isActive,
           deadline: _selectedDeadline,
+          applyLink: _applyLinkController.text.trim(),
         );
         print('Job object created successfully with ID: ${job.id}');
 
