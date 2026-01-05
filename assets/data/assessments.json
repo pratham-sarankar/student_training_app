@@ -1,0 +1,296 @@
+{
+    "technical": [
+        {
+            "id": "tech_aptitude",
+            "title": "Quantitative",
+            "subtitle": "General aptitude evaluation",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "A train running at the speed of 60 km/hr crosses a pole in 9 seconds. What is the length of the train?",
+                    "options": [
+                        "120 metres",
+                        "180 metres",
+                        "324 metres",
+                        "150 metres"
+                    ],
+                    "correct_option_index": 3
+                },
+                {
+                    "question": "The sum of ages of 5 children born at the intervals of 3 years each is 50 years. What is the age of the youngest child?",
+                    "options": [
+                        "4 years",
+                        "8 years",
+                        "10 years",
+                        "None of these"
+                    ],
+                    "correct_option_index": 0
+                }
+            ]
+        },
+        {
+            "id": "tech_logical",
+            "title": "Logical",
+            "subtitle": "Logical reasoning and analysis",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "Look at this series: 2, 1, (1/2), (1/4), ... What number should come next?",
+                    "options": [
+                        "(1/3)",
+                        "(1/8)",
+                        "(2/8)",
+                        "(1/16)"
+                    ],
+                    "correct_option_index": 1
+                },
+                {
+                    "question": "SCD, TEF, UGH, ____, WKL",
+                    "options": [
+                        "CMN",
+                        "UJI",
+                        "VIJ",
+                        "IJT"
+                    ],
+                    "correct_option_index": 2
+                }
+            ]
+        },
+        {
+            "id": "tech_communication",
+            "title": "Verbal",
+            "subtitle": "Professional communication skills",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "Which of the following is essential for effective communication?",
+                    "options": [
+                        "Listening",
+                        "Speaking loudly",
+                        "Using complex words",
+                        "Ignoring feedback"
+                    ],
+                    "correct_option_index": 0
+                },
+                {
+                    "question": "In a formal email, which of the following is an appropriate greeting?",
+                    "options": [
+                        "Hey there,",
+                        "Dear Mr./Ms.,",
+                        "Yo,",
+                        "Hiya,"
+                    ],
+                    "correct_option_index": 1
+                }
+            ]
+        },
+        {
+            "id": "tech_communication",
+            "title": "Communication",
+            "subtitle": "Professional communication skills",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "Which of the following is essential for effective communication?",
+                    "options": [
+                        "Listening",
+                        "Speaking loudly",
+                        "Using complex words",
+                        "Ignoring feedback"
+                    ],
+                    "correct_option_index": 0
+                },
+                {
+                    "question": "In a formal email, which of the following is an appropriate greeting?",
+                    "options": [
+                        "Hey there,",
+                        "Dear Mr./Ms.,",
+                        "Yo,",
+                        "Hiya,"
+                    ],
+                    "correct_option_index": 1
+                }
+            ]
+        },
+        {
+            "id": "tech_programming",
+            "title": "Programming Skills",
+            "subtitle": "Core programming concepts",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "What is the primary language used for Flutter development?",
+                    "options": [
+                        "Kotlin",
+                        "Swift",
+                        "Dart",
+                        "Java"
+                    ],
+                    "correct_option_index": 2
+                },
+                {
+                    "question": "Which widget is used for scrolling lists in Flutter?",
+                    "options": [
+                        "Column",
+                        "ListView",
+                        "Stack",
+                        "Container"
+                    ],
+                    "correct_option_index": 1
+                },
+                {
+                    "question": "What is the key difference between StatelessWidget and StatefulWidget?",
+                    "options": [
+                        "Performance",
+                        "Mutable State",
+                        "Rendering Speed",
+                        "code syntax"
+                    ],
+                    "correct_option_index": 1
+                },
+                {
+                    "question": "What function is the entry point of a Flutter app?",
+                    "options": [
+                        "runApp()",
+                        "main()",
+                        "build()",
+                        "init()"
+                    ],
+                    "correct_option_index": 1
+                },
+                {
+                    "question": "Which keyword is used to handle asynchronous operations in Dart?",
+                    "options": [
+                        "await",
+                        "defer",
+                        "sync",
+                        "future"
+                    ],
+                    "correct_option_index": 0
+                }
+            ]
+        }
+    ],
+    "non_technical": [
+        {
+            "id": "non_tech_communication",
+            "title": "Communication",
+            "subtitle": "Verbal and written ability",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "Select the synonym of: ALERT",
+                    "options": [
+                        "Energetic",
+                        "Observant",
+                        "Intelligent",
+                        "Active"
+                    ],
+                    "correct_option_index": 1
+                },
+                {
+                    "question": "Find the correctly spelled word.",
+                    "options": [
+                        "Necesary",
+                        "Neccesary",
+                        "Necessary",
+                        "Necassary"
+                    ],
+                    "correct_option_index": 2
+                }
+            ]
+        },
+        {
+            "id": "non_tech_basic",
+            "title": "Basic Skills",
+            "subtitle": "General knowledge and basics",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "Which comes first in the alphabet?",
+                    "options": [
+                        "A",
+                        "B",
+                        "C",
+                        "D"
+                    ],
+                    "correct_option_index": 0
+                }
+            ]
+        },
+        {
+            "id": "non_tech_computer",
+            "title": "Computer Skills",
+            "subtitle": "Computer literacy evaluation",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "What does CPU stand for?",
+                    "options": [
+                        "Central Processing Unit",
+                        "Computer Personal Unit",
+                        "Central Process Utility",
+                        "Central Processor Unit"
+                    ],
+                    "correct_option_index": 0
+                },
+                {
+                    "question": "Which key is used to copy text?",
+                    "options": [
+                        "Ctrl + V",
+                        "Ctrl + C",
+                        "Ctrl + X",
+                        "Ctrl + P"
+                    ],
+                    "correct_option_index": 1
+                }
+            ]
+        },
+        {
+            "id": "non_tech_logical",
+            "title": "Logical",
+            "subtitle": "Analytical thinking",
+            "duration_minutes": 15,
+            "total_questions": 15,
+            "pass_marks": 9,
+            "questions": [
+                {
+                    "question": "Cup is to coffee as bowl is to",
+                    "options": [
+                        "dish",
+                        "soup",
+                        "spoon",
+                        "food"
+                    ],
+                    "correct_option_index": 1
+                },
+                {
+                    "question": "Odometer is to mileage as compass is to",
+                    "options": [
+                        "speed",
+                        "hiking",
+                        "needle",
+                        "direction"
+                    ],
+                    "correct_option_index": 3
+                }
+            ]
+        }
+    ]
+}

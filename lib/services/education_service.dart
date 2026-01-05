@@ -16,7 +16,7 @@ class EducationService {
       if (user == null) throw Exception('User not authenticated');
 
       String educationId;
-      
+
       // If education model has an ID, update existing document
       if (educationModel.id != null) {
         educationId = educationModel.id!;
@@ -26,7 +26,9 @@ class EducationService {
             .set(educationModel.toMap(), SetOptions(merge: true));
       } else {
         // Create new document
-        final docRef = await _firestore.collection('education').add(educationModel.toMap());
+        final docRef = await _firestore
+            .collection('education')
+            .add(educationModel.toMap());
         educationId = docRef.id;
       }
 
@@ -46,11 +48,12 @@ class EducationService {
       final user = currentUser;
       if (user == null) return null;
 
-      final querySnapshot = await _firestore
-          .collection('education')
-          .where('userId', isEqualTo: user.uid)
-          .limit(1)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('education')
+              .where('userId', isEqualTo: user.uid)
+              .limit(1)
+              .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
@@ -72,6 +75,7 @@ class EducationService {
     int? completionYear,
     String? medium,
     List<String>? careerGoals,
+    String? resumeFileName,
   }) async {
     try {
       final user = currentUser;
@@ -79,7 +83,7 @@ class EducationService {
 
       // Get current education data
       EducationModel? currentEducation = await getCurrentUserEducation();
-      
+
       if (currentEducation != null) {
         // Update existing education
         final updatedEducation = currentEducation.copyWith(
@@ -91,6 +95,7 @@ class EducationService {
           completionYear: completionYear,
           medium: medium,
           careerGoals: careerGoals,
+          resumeFileName: resumeFileName,
         );
 
         await createOrUpdateEducation(updatedEducation);
@@ -106,6 +111,7 @@ class EducationService {
           completionYear: completionYear,
           medium: medium,
           careerGoals: careerGoals ?? [],
+          resumeFileName: resumeFileName,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
@@ -138,11 +144,12 @@ class EducationService {
   // Get education by user ID
   Future<EducationModel?> getEducationByUserId(String userId) async {
     try {
-      final querySnapshot = await _firestore
-          .collection('education')
-          .where('userId', isEqualTo: userId)
-          .limit(1)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('education')
+              .where('userId', isEqualTo: userId)
+              .limit(1)
+              .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
@@ -158,9 +165,9 @@ class EducationService {
   Future<List<EducationModel>> getAllEducation() async {
     try {
       final snapshot = await _firestore.collection('education').get();
-      return snapshot.docs.map((doc) => 
-        EducationModel.fromMap(doc.data(), doc.id)
-      ).toList();
+      return snapshot.docs
+          .map((doc) => EducationModel.fromMap(doc.data(), doc.id))
+          .toList();
     } catch (e) {
       throw Exception('Failed to get all education records: $e');
     }

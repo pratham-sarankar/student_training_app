@@ -476,10 +476,8 @@ class AdminProvider extends ChangeNotifier {
 
   Future<void> deleteJob(String jobId) async {
     try {
-      // Delete from Firestore (soft delete by setting isActive to false)
-      await _firestore.collection('jobs').doc(jobId).update({
-        'isActive': false,
-      });
+      // Delete from Firestore
+      await _firestore.collection('jobs').doc(jobId).delete();
       // Remove from local state
       _jobs.removeWhere((job) => job.id == jobId);
       if (!_disposed) {

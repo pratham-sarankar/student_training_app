@@ -11,6 +11,7 @@ class EducationModel {
   final int? completionYear;
   final String? medium;
   final List<String> careerGoals;
+  final String? resumeFileName;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -25,6 +26,7 @@ class EducationModel {
     this.completionYear,
     this.medium,
     this.careerGoals = const [],
+    this.resumeFileName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -42,6 +44,7 @@ class EducationModel {
       completionYear: map['completionYear'],
       medium: map['medium'],
       careerGoals: List<String>.from(map['careerGoals'] ?? []),
+      resumeFileName: map['resumeFileName'],
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -59,6 +62,7 @@ class EducationModel {
       'completionYear': completionYear,
       'medium': medium,
       'careerGoals': careerGoals,
+      'resumeFileName': resumeFileName,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -76,6 +80,7 @@ class EducationModel {
     int? completionYear,
     String? medium,
     List<String>? careerGoals,
+    String? resumeFileName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -90,6 +95,7 @@ class EducationModel {
       completionYear: completionYear ?? this.completionYear,
       medium: medium ?? this.medium,
       careerGoals: careerGoals ?? this.careerGoals,
+      resumeFileName: resumeFileName ?? this.resumeFileName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
@@ -97,18 +103,18 @@ class EducationModel {
 
   // Check if education details are complete
   bool get isComplete {
-    return highestEducation != null && 
-           highestEducation!.isNotEmpty &&
-           degree != null && 
-           degree!.isNotEmpty &&
-           specialization != null && 
-           specialization!.isNotEmpty &&
-           collegeName != null &&
-           collegeName!.isNotEmpty &&
-           completionYear != null &&
-           medium != null && 
-           medium!.isNotEmpty &&
-           careerGoals.isNotEmpty;
+    return highestEducation != null &&
+        highestEducation!.isNotEmpty &&
+        degree != null &&
+        degree!.isNotEmpty &&
+        specialization != null &&
+        specialization!.isNotEmpty &&
+        collegeName != null &&
+        collegeName!.isNotEmpty &&
+        completionYear != null &&
+        medium != null &&
+        medium!.isNotEmpty &&
+        careerGoals.isNotEmpty;
   }
 
   @override

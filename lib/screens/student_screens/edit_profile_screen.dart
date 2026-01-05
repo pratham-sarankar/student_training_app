@@ -20,7 +20,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _bioController = TextEditingController();
 
   String _selectedGender = 'Prefer not to say';
   DateTime? _selectedDate;
@@ -59,7 +58,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _firstNameController.text = userModel.firstName;
             _lastNameController.text = userModel.lastName;
             _phoneController.text = userModel.phoneNumber ?? '';
-            _bioController.text = userModel.bio ?? '';
+
             _selectedGender = userModel.gender ?? 'Prefer not to say';
             _selectedDate = userModel.dateOfBirth;
           });
@@ -84,7 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
             // Load other profile data from SharedPreferences
             _phoneController.text = prefs.getString('phoneNumber') ?? '';
-            _bioController.text = prefs.getString('bio') ?? '';
+
             _selectedGender = prefs.getString('gender') ?? 'Prefer not to say';
             _selectedDate =
                 prefs.getString('dateOfBirth') != null
@@ -118,7 +117,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _lastNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _bioController.dispose();
+
     super.dispose();
   }
 
@@ -357,24 +356,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                               ),
                             ),
-                          const SizedBox(height: 24),
-
-                          // Bio
-                          _buildTextField(
-                            controller: _bioController,
-                            label: 'Bio',
-                            hint: 'Tell us about yourself',
-                            maxLines: 4,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Bio is required';
-                              }
-                              if (value.length < 10) {
-                                return 'Bio must be at least 10 characters';
-                              }
-                              return null;
-                            },
-                          ),
                           const SizedBox(height: 24),
 
                           // Save Button
@@ -638,7 +619,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             firstName: _firstNameController.text.trim(),
             lastName: _lastNameController.text.trim(),
             phoneNumber: _phoneController.text.trim(),
-            bio: _bioController.text.trim(),
+
             gender: _selectedGender,
             dateOfBirth: _selectedDate,
           );
@@ -652,7 +633,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           // Save to SharedPreferences as backup
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('phoneNumber', _phoneController.text.trim());
-          await prefs.setString('bio', _bioController.text.trim());
+
           await prefs.setString('gender', _selectedGender);
           if (_selectedDate != null) {
             await prefs.setString(

@@ -437,15 +437,9 @@ class JobsScreen extends StatelessWidget {
     // Get the AdminProvider instance from the current context
     final adminProvider = context.read<AdminProvider>();
 
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder:
-            (context) => ChangeNotifierProvider.value(
-              value: adminProvider,
-              child: AddJobScreen(job: job),
-            ),
-      ),
-    );
+    final result = await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => AddJobScreen(job: job)));
 
     // If we're returning from editing and there's a result, refresh the jobs
     if (result == true) {

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:learn_work/services/education_service.dart';
 import 'package:learn_work/widgets/shimmer_loading.dart';
+import 'package:file_picker/file_picker.dart';
 
 class EducationDetailsScreen extends StatefulWidget {
   const EducationDetailsScreen({super.key});
@@ -27,6 +28,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   DateTime? _completionDate;
   String? _selectedMedium;
   final List<String> _selectedCareerGoals = [];
+  String? _resumeFileName;
 
   // Dropdown options
   static const List<String> _highestEducationOptions = [
@@ -56,6 +58,30 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     'Business Administration',
     'Accounting',
     'Computer Science',
+    'Others',
+  ];
+
+  static const List<String> _collegeOptions = [
+    'IIT Bombay',
+    'IIT Delhi',
+    'IIT Madras',
+    'IIT Kanpur',
+    'IIT Kharagpur',
+    'IIT Roorkee',
+    'IIT Guwahati',
+    'NIT Trichy',
+    'NIT Warangal',
+    'NIT Surathkal',
+    'BITS Pilani',
+    'VIT Vellore',
+    'Anna University',
+    'Jadavpur University',
+    'Delhi University',
+    'Mumbai University',
+    'Pune University',
+    'Bangalore University',
+    'Calcutta University',
+    'Osmania University',
     'Others',
   ];
 
@@ -94,6 +120,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
           _selectedMedium = education.medium;
           _selectedCareerGoals.clear();
           _selectedCareerGoals.addAll(education.careerGoals);
+          _resumeFileName = education.resumeFileName;
         });
       }
     } catch (e) {
@@ -109,6 +136,33 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _pickResume() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx'],
+      );
+
+      if (result != null) {
+        // Since we are not uploading to Firebase, we just store the file name
+        // In a real app without cloud storage, you might copy the file to app directory
+        // but for this requirement, we'll just track the name.
+        setState(() {
+          _resumeFileName = result.files.single.name;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick resume: $e'),
+            backgroundColor: context.theme.colors.destructive,
+          ),
+        );
+      }
     }
   }
 
@@ -131,6 +185,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
         completionYear: _completionDate?.year,
         medium: _selectedMedium,
         careerGoals: _selectedCareerGoals,
+        resumeFileName: _resumeFileName,
       );
 
       if (mounted) {
@@ -333,9 +388,10 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                           // College Name
                           _buildSectionTitle('College Name'),
                           const SizedBox(height: 8),
-                          _buildTextField(
+                          _buildDropdownField(
                             value: _collegeName,
-                            hint: 'Enter your college name',
+                            items: _collegeOptions,
+                            hint: 'Select your college',
                             onChanged: (value) {
                               setState(() {
                                 _collegeName = value;
@@ -343,83 +399,186 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your college name';
+                                return 'Please select your college';
                               }
                               return null;
                             },
                           ),
-                          const SizedBox(height: 24),
 
-                          // Completion Date
-                          _buildSectionTitle('Completion Date'),
-                          const SizedBox(height: 8),
-                          _buildDateField(
-                            value: _completionDate,
-                            hint: 'Select completion date',
-                            onChanged: (value) {
-                              setState(() {
-                                _completionDate = value;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Please select completion date';
-                              }
-                              final currentDate = DateTime.now();
-                              final minDate = DateTime(1950, 1, 1);
-                              final maxDate = DateTime(
-                                currentDate.year + 5,
-                                12,
-                                31,
-                              );
-                              if (value.isBefore(minDate) ||
-                                  value.isAfter(maxDate)) {
-                                return 'Please select a valid date between 1950 and ${currentDate.year + 5}';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 24),
+                          // const SizedBox(height: 24),
 
-                          // Medium
-                          _buildSectionTitle('Medium'),
-                          const SizedBox(height: 8),
-                          _buildDropdownField(
-                            value: _selectedMedium,
-                            items: _mediumOptions,
-                            hint: 'Select your medium',
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedMedium = value;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select your medium';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 24),
+                          // // Completion Date
+                          // _buildSectionTitle('Completion Date'),
+                          // const SizedBox(height: 8),
+                          // _buildDateField(
+                          //   value: _completionDate,
+                          //   hint: 'Select completion date',
+                          //   onChanged: (value) {
+                          //     setState(() {
+                          //       _completionDate = value;
+                          //     });
+                          //   },
+                          //   validator: (value) {
+                          //     if (value == null) {
+                          //       return 'Please select completion date';
+                          //     }
+                          //     final currentDate = DateTime.now();
+                          //     final minDate = DateTime(1950, 1, 1);
+                          //     final maxDate = DateTime(
+                          //       currentDate.year + 5,
+                          //       12,
+                          //       31,
+                          //     );
+                          //     if (value.isBefore(minDate) ||
+                          //         value.isAfter(maxDate)) {
+                          //       return 'Please select a valid date between 1950 and ${currentDate.year + 5}';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+                          // const SizedBox(height: 24),
 
-                          // Career Goals
-                          _buildSectionTitle('I am looking for'),
+                          // // Medium
+                          // _buildSectionTitle('Medium'),
+                          // const SizedBox(height: 8),
+                          // _buildDropdownField(
+                          //   value: _selectedMedium,
+                          //   items: _mediumOptions,
+                          //   hint: 'Select your medium',
+                          //   onChanged: (value) {
+                          //     setState(() {
+                          //       _selectedMedium = value;
+                          //     });
+                          //   },
+                          //   validator: (value) {
+                          //     if (value == null || value.isEmpty) {
+                          //       return 'Please select your medium';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+                          // const SizedBox(height: 24),
+
+                          // // Career Goals
+                          // _buildSectionTitle('I am looking for'),
+                          // const SizedBox(height: 8),
+                          // _buildMultiSelectField(
+                          //   selectedItems: _selectedCareerGoals,
+                          //   items: _careerGoalOptions,
+                          //   onChanged: (selectedItems) {
+                          //     setState(() {
+                          //       _selectedCareerGoals.clear();
+                          //       _selectedCareerGoals.addAll(selectedItems);
+                          //     });
+                          //   },
+                          //   validator: (value) {
+                          //     if (_selectedCareerGoals.isEmpty) {
+                          //       return 'Please select at least one career goal';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+                          const SizedBox(height: 24),
+                          // Resume Upload
+                          _buildSectionTitle('Resume'),
                           const SizedBox(height: 8),
-                          _buildMultiSelectField(
-                            selectedItems: _selectedCareerGoals,
-                            items: _careerGoalOptions,
-                            onChanged: (selectedItems) {
-                              setState(() {
-                                _selectedCareerGoals.clear();
-                                _selectedCareerGoals.addAll(selectedItems);
-                              });
-                            },
-                            validator: (value) {
-                              if (_selectedCareerGoals.isEmpty) {
-                                return 'Please select at least one career goal';
-                              }
-                              return null;
-                            },
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: theme.colors.border),
+                              borderRadius: BorderRadius.circular(12),
+                              color: theme.colors.background,
+                            ),
+                            child: Column(
+                              children: [
+                                if (_resumeFileName != null)
+                                  Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: theme.colors.primary.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: theme.colors.primary.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.description,
+                                          color: theme.colors.primary,
+                                          size: 24,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            _resumeFileName!,
+                                            style: theme.typography.sm.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                              color: theme.colors.foreground,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.close,
+                                            color: theme.colors.destructive,
+                                            size: 20,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _resumeFileName = null;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FButton(
+                                    style: FButtonStyle.outline,
+                                    onPress: _pickResume,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.upload_file,
+                                          size: 18,
+                                          color: theme.colors.primary,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          _resumeFileName != null
+                                              ? 'Change Resume'
+                                              : 'Upload Resume',
+                                          style: theme.typography.sm.copyWith(
+                                            color: theme.colors.primary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                if (_resumeFileName == null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: Text(
+                                      'Supported formats: PDF, DOC, DOCX',
+                                      style: theme.typography.xs.copyWith(
+                                        color: theme.colors.mutedForeground,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 32),
 
@@ -696,50 +855,6 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildTextField({
-    required String? value,
-    required String hint,
-    required ValueChanged<String> onChanged,
-    String? Function(String?)? validator,
-  }) {
-    final theme = context.theme;
-
-    return TextFormField(
-      initialValue: value,
-      onChanged: onChanged,
-      validator: validator,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: theme.typography.sm.copyWith(
-          color: theme.colors.mutedForeground,
-        ),
-        filled: true,
-        fillColor: theme.colors.background,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.primary),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: theme.colors.destructive),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-      ),
-      style: theme.typography.sm.copyWith(color: theme.colors.foreground),
     );
   }
 
