@@ -32,14 +32,18 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
   Future<void> _initializeCourses() async {
     try {
       await _courseService.initializeSampleCourses();
-      setState(() {
-        _isInitialized = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
     } catch (e) {
       print('Error initializing courses: $e');
-      setState(() {
-        _isInitialized = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
     }
   }
 
@@ -65,16 +69,20 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
         }
       }
 
-      setState(() {
-        _categories = allCategories;
-        _categoryCounts = counts;
-        _categoriesLoaded = true;
-      });
+      if (mounted) {
+        setState(() {
+          _categories = allCategories;
+          _categoryCounts = counts;
+          _categoriesLoaded = true;
+        });
+      }
     } catch (e) {
       print('Error loading categories and counts: $e');
-      setState(() {
-        _categoriesLoaded = true;
-      });
+      if (mounted) {
+        setState(() {
+          _categoriesLoaded = true;
+        });
+      }
     }
   }
 

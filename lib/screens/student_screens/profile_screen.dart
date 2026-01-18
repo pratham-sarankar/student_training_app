@@ -11,6 +11,8 @@ import 'package:learn_work/screens/student_screens/education_details_screen.dart
 import 'package:learn_work/utils/service_locator.dart';
 import 'my_courses_screen.dart';
 import 'job_subscription_screen.dart';
+import 'help_support_screen.dart';
+import 'about_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -363,7 +365,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'Help & Support',
                     subtitle: 'Get help and contact support',
                     onTap: () {
-                      // TODO: Navigate to help
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const HelpSupportScreen(),
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 8),
@@ -374,7 +380,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'About',
                     subtitle: 'Learn more about Gradspark',
                     onTap: () {
-                      // TODO: Navigate to about
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AboutScreen(),
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 20),

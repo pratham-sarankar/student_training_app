@@ -174,7 +174,7 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
               MaterialPageRoute(
                 builder:
                     (context) => AssessmentListScreen(
-                      title: '$_selectedCategory - Set 1',
+                      title: '$_selectedCategory - PracticeSet 1',
                       assessments:
                           _selectedCategory == 'Technical'
                               ? (_data['technical'] ?? [])
@@ -219,7 +219,7 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Set 1',
+                        'Practice Set 1',
                         style: TextStyle(
                           color: theme.colors.foreground,
                           fontSize: 18,

@@ -21,17 +21,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
 
-  String _selectedGender = 'Prefer not to say';
+  String _selectedGender = 'Male';
   DateTime? _selectedDate;
   bool _isLoading = false;
   bool _isDataLoading = true;
 
-  final List<String> _genderOptions = [
-    'Male',
-    'Female',
-    'Non-binary',
-    'Prefer not to say',
-  ];
+  final List<String> _genderOptions = ['Male', 'Female'];
 
   @override
   void initState() {
@@ -59,7 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _lastNameController.text = userModel.lastName;
             _phoneController.text = userModel.phoneNumber ?? '';
 
-            _selectedGender = userModel.gender ?? 'Prefer not to say';
+            _selectedGender = userModel.gender ?? 'Male';
             _selectedDate = userModel.dateOfBirth;
           });
         } else {
@@ -84,7 +79,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             // Load other profile data from SharedPreferences
             _phoneController.text = prefs.getString('phoneNumber') ?? '';
 
-            _selectedGender = prefs.getString('gender') ?? 'Prefer not to say';
+            _selectedGender = prefs.getString('gender') ?? 'Male';
             _selectedDate =
                 prefs.getString('dateOfBirth') != null
                     ? DateTime.parse(prefs.getString('dateOfBirth')!)

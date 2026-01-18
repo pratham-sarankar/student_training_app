@@ -194,12 +194,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  _buildDetailCard(
-                    Icons.access_time,
-                    'Posted',
-                    widget.job.posted,
-                  ),
-                  const SizedBox(height: 8),
                   if (widget.job.deadline != null)
                     _buildDetailCard(
                       Icons.event,
@@ -219,19 +213,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Job Description',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildDescriptionText(),
-                  const SizedBox(height: 16),
-
-                  Text(
-                    'Requirements',
+                    'Eligibility',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -243,7 +225,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 16),
 
                   Text(
-                    'Responsibilities',
+                    'Job Description',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -251,7 +233,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildResponsibilitiesList(),
+                  _buildDescriptionText(),
                 ],
               ),
             ),
@@ -364,7 +346,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
     if (requirements.isEmpty) {
       return Text(
-        'No requirements specified.',
+        'No eligibility criteria specified.',
         style: TextStyle(
           color: theme.colors.mutedForeground,
           fontSize: 13,
@@ -395,54 +377,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       Expanded(
                         child: Text(
                           req,
-                          style: TextStyle(
-                            color: theme.colors.mutedForeground,
-                            fontSize: 13,
-                            height: 1.3,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(),
-    );
-  }
-
-  Widget _buildResponsibilitiesList() {
-    final theme = context.theme;
-    final responsibilities = widget.job.responsibilities;
-
-    if (responsibilities.isEmpty) {
-      return Text(
-        'No responsibilities specified.',
-        style: TextStyle(
-          color: theme.colors.mutedForeground,
-          fontSize: 13,
-          fontStyle: FontStyle.italic,
-        ),
-      );
-    }
-
-    return Column(
-      children:
-          responsibilities
-              .map(
-                (resp) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        size: 14,
-                        color: theme.colors.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          resp,
                           style: TextStyle(
                             color: theme.colors.mutedForeground,
                             fontSize: 13,

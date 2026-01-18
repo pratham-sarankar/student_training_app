@@ -689,8 +689,6 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 _buildJobDetail(Icons.location_on_outlined, job.location),
                 const SizedBox(width: 16),
                 _buildJobDetail(Icons.work_outline, job.type),
-                const SizedBox(width: 16),
-                _buildJobDetail(Icons.access_time, job.posted),
                 // if (job.deadline != null) ...[
                 //   const SizedBox(width: 16),
                 //   _buildJobDetail(Icons.event, _formatDeadline(job.deadline)),

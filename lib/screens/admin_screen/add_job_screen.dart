@@ -23,14 +23,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
   late TextEditingController _salaryController;
   late TextEditingController _typeController;
   late TextEditingController _categoryController;
-  late TextEditingController _requirementsController;
-  late TextEditingController _responsibilitiesController;
+  late TextEditingController _eligibilityController;
   bool _isActive = true;
   bool _isLoading = false;
 
-  // State variables for requirements and responsibilities
-  List<String> _requirements = [];
-  List<String> _responsibilities = [];
+  // State variables for eligibility
+  List<String> _eligibility = [];
 
   // Dropdown selection variables
   String? _selectedJobType;
@@ -113,28 +111,22 @@ class _AddJobScreenState extends State<AddJobScreen> {
       _jobCategories.add(_selectedCategory!);
     }
 
-    // Handle requirements and responsibilities initialization safely
+    // Handle eligibility initialization safely
     if (widget.job != null) {
       print('Initializing with existing job:');
       print('Job requirements: ${widget.job!.requirements}');
-      print('Job responsibilities: ${widget.job!.responsibilities}');
       print('Requirements length: ${widget.job!.requirements.length}');
-      print('Responsibilities length: ${widget.job!.responsibilities.length}');
 
       // Initialize state variables with existing data
-      _requirements = List<String>.from(widget.job!.requirements);
-      _responsibilities = List<String>.from(widget.job!.responsibilities);
+      _eligibility = List<String>.from(widget.job!.requirements);
 
-      print('State requirements: $_requirements');
-      print('State responsibilities: $_responsibilities');
+      print('State eligibility: $_eligibility');
     } else {
       print('Initializing for new job');
-      _requirements = [];
-      _responsibilities = [];
+      _eligibility = [];
     }
 
-    _requirementsController = TextEditingController();
-    _responsibilitiesController = TextEditingController();
+    _eligibilityController = TextEditingController();
     _isActive = widget.job?.isActive ?? true;
   }
 
@@ -147,8 +139,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
     _salaryController.dispose();
     _typeController.dispose();
     _categoryController.dispose();
-    _requirementsController.dispose();
-    _responsibilitiesController.dispose();
+    _eligibilityController.dispose();
     _deadlineController.dispose();
     _applyLinkController.dispose();
     super.dispose();
@@ -469,7 +460,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 TextFormField(
                   controller: _salaryController,
                   decoration: InputDecoration(
-                    labelText: 'Salary *',
+                    labelText: 'Salary',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -482,17 +473,11 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       color: theme.colors.primary,
                       size: 16,
                     ),
-                    hintText: 'e.g., 50,000 - 80,000 annually',
+                    hintText: 'e.g., 50,000 - 80,000 annually (optional)',
                     filled: true,
                     fillColor: theme.colors.muted,
                     isDense: true,
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter salary information';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 8),
 
@@ -760,7 +745,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Requirements',
+                              'Eligibility',
                               style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: theme.colors.foreground,
@@ -776,9 +761,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Display existing requirements
-                            if (_requirements.isNotEmpty) ...[
-                              ..._requirements.asMap().entries.map((entry) {
+                            // Display existing eligibility
+                            if (_eligibility.isNotEmpty) ...[
+                              ..._eligibility.asMap().entries.map((entry) {
                                 final index = entry.key;
                                 final req = entry.value;
                                 return Padding(
@@ -811,7 +796,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                       GestureDetector(
                                         onTap: () {
                                           setState(() {
-                                            _requirements.removeAt(index);
+                                            _eligibility.removeAt(index);
                                           });
                                         },
                                         child: Icon(
@@ -827,16 +812,17 @@ class _AddJobScreenState extends State<AddJobScreen> {
                               const SizedBox(height: 12),
                             ],
 
-                            // Input field for new requirements
+                            // Input field for new eligibility
                             Row(
                               children: [
                                 Expanded(
                                   child: Container(
                                     height: 38,
                                     child: TextFormField(
-                                      controller: _requirementsController,
+                                      controller: _eligibilityController,
                                       decoration: InputDecoration(
-                                        hintText: 'Enter a new requirement...',
+                                        hintText:
+                                            'Enter eligibility criteria...',
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(
                                             4,
@@ -861,7 +847,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                         filled: true,
                                         fillColor: theme.colors.background,
                                         suffixIcon:
-                                            _requirementsController
+                                            _eligibilityController
                                                     .text
                                                     .isNotEmpty
                                                 ? IconButton(
@@ -875,7 +861,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                                   ),
                                                   onPressed:
                                                       () =>
-                                                          _requirementsController
+                                                          _eligibilityController
                                                               .clear(),
                                                   tooltip: 'Clear',
                                                 )
@@ -898,225 +884,19 @@ class _AddJobScreenState extends State<AddJobScreen> {
                                       color: theme.colors.primaryForeground,
                                     ),
                                     onPressed: () {
-                                      if (_requirementsController.text
+                                      if (_eligibilityController.text
                                           .trim()
                                           .isNotEmpty) {
                                         setState(() {
                                           final newReq =
-                                              _requirementsController.text
+                                              _eligibilityController.text
                                                   .trim();
-                                          _requirements.add(newReq);
-                                          _requirementsController.clear();
+                                          _eligibility.add(newReq);
+                                          _eligibilityController.clear();
                                         });
                                       }
                                     },
-                                    tooltip: 'Add requirement',
-                                    padding: const EdgeInsets.all(8),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                // Responsibilities
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: theme.colors.border),
-                    borderRadius: BorderRadius.circular(8),
-                    color: theme.colors.background,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colors.primary.withValues(alpha: 0.05),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: theme.colors.primary.withValues(
-                                  alpha: 0.1,
-                                ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Icon(
-                                Icons.task_alt,
-                                color: theme.colors.primary,
-                                size: 14,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Responsibilities',
-                              style: theme.typography.sm.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: theme.colors.foreground,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Content
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Display existing responsibilities
-                            if (_responsibilities.isNotEmpty) ...[
-                              ..._responsibilities.asMap().entries.map((entry) {
-                                final index = entry.key;
-                                final resp = entry.value;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: 4,
-                                        height: 4,
-                                        margin: const EdgeInsets.only(
-                                          top: 8,
-                                          right: 10,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: theme.colors.primary,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          resp,
-                                          style: theme.typography.sm.copyWith(
-                                            height: 1.4,
-                                            color: theme.colors.foreground,
-                                          ),
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _responsibilities.removeAt(index);
-                                          });
-                                        },
-                                        child: Icon(
-                                          Icons.remove_circle_outline,
-                                          size: 16,
-                                          color: theme.colors.destructive,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                              const SizedBox(height: 12),
-                            ],
-
-                            // Input field for new responsibilities
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    height: 38,
-                                    child: TextFormField(
-                                      controller: _responsibilitiesController,
-                                      decoration: InputDecoration(
-                                        hintText:
-                                            'Enter a new responsibility...',
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                          borderSide: BorderSide(
-                                            color: theme.colors.border,
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                          borderSide: BorderSide(
-                                            color: theme.colors.primary,
-                                          ),
-                                        ),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 8,
-                                            ),
-                                        filled: true,
-                                        fillColor: theme.colors.background,
-                                        suffixIcon:
-                                            _responsibilitiesController
-                                                    .text
-                                                    .isNotEmpty
-                                                ? IconButton(
-                                                  icon: Icon(
-                                                    Icons.clear,
-                                                    size: 16,
-                                                    color:
-                                                        theme
-                                                            .colors
-                                                            .mutedForeground,
-                                                  ),
-                                                  onPressed:
-                                                      () =>
-                                                          _responsibilitiesController
-                                                              .clear(),
-                                                  tooltip: 'Clear',
-                                                )
-                                                : null,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Container(
-                                  height: 38,
-                                  decoration: BoxDecoration(
-                                    color: theme.colors.primary,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.add,
-                                      size: 18,
-                                      color: theme.colors.primaryForeground,
-                                    ),
-                                    onPressed: () {
-                                      if (_responsibilitiesController.text
-                                          .trim()
-                                          .isNotEmpty) {
-                                        setState(() {
-                                          final newResp =
-                                              _responsibilitiesController.text
-                                                  .trim();
-                                          _responsibilities.add(newResp);
-                                          _responsibilitiesController.clear();
-                                        });
-                                      }
-                                    },
-                                    tooltip: 'Add responsibility',
+                                    tooltip: 'Add eligibility',
                                     padding: const EdgeInsets.all(8),
                                   ),
                                 ),
@@ -1281,29 +1061,17 @@ class _AddJobScreenState extends State<AddJobScreen> {
       try {
         print('Creating job object...');
         print('Existing job requirements: ${widget.job?.requirements}');
-        print('Existing job responsibilities: ${widget.job?.responsibilities}');
-        print(
-          'Requirements controller text: "${_requirementsController.text}"',
-        );
-        print(
-          'Responsibilities controller text: "${_responsibilitiesController.text}"',
-        );
+        print('Eligibility controller text: "${_eligibilityController.text}"');
 
-        // Use the state variables for requirements and responsibilities
-        List<String> requirements = List<String>.from(_requirements);
-        List<String> responsibilities = List<String>.from(_responsibilities);
+        // Use the state variables for eligibility
+        List<String> requirements = List<String>.from(_eligibility);
 
-        // Add any new text from the controllers if they're not empty
-        if (_requirementsController.text.trim().isNotEmpty) {
-          requirements.add(_requirementsController.text.trim());
+        // Add any new text from the controller if it's not empty
+        if (_eligibilityController.text.trim().isNotEmpty) {
+          requirements.add(_eligibilityController.text.trim());
         }
 
-        if (_responsibilitiesController.text.trim().isNotEmpty) {
-          responsibilities.add(_responsibilitiesController.text.trim());
-        }
-
-        print('Final requirements list: $requirements');
-        print('Final responsibilities list: $responsibilities');
+        print('Final eligibility list: $requirements');
 
         // Ensure salary has rupee symbol
         String salary = _salaryController.text.trim();
@@ -1333,7 +1101,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
               'https://example.com/default-logo.png', // Preserve original logo when editing
           description: _descriptionController.text.trim(),
           requirements: requirements,
-          responsibilities: responsibilities,
+          responsibilities: [],
           createdAt: widget.job?.createdAt ?? DateTime.now(),
           isActive: isExpired ? false : _isActive,
           deadline: _selectedDeadline,
