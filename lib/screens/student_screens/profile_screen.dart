@@ -6,11 +6,9 @@ import 'package:learn_work/features/auth/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learn_work/widgets/auth_wrapper.dart';
 import 'package:learn_work/screens/student_screens/edit_profile_screen.dart';
-import 'package:learn_work/screens/student_screens/notification_screen.dart';
 import 'package:learn_work/screens/student_screens/education_details_screen.dart';
 import 'package:learn_work/utils/service_locator.dart';
 import 'my_courses_screen.dart';
-import 'job_subscription_screen.dart';
 import 'help_support_screen.dart';
 import 'about_screen.dart';
 
@@ -313,21 +311,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const EducationDetailsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-
-                  _buildProfileOption(
-                    context,
-                    icon: Icons.work_outline,
-                    title: 'Job Subscriptions',
-                    subtitle: 'Manage your job alerts and preferences',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const JobSubscriptionScreen(),
                         ),
                       );
                     },

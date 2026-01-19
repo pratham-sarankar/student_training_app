@@ -49,8 +49,12 @@ class Job {
       posted: map['posted'] ?? '',
       logo: map['logo'] ?? '',
       description: map['description'] ?? '',
-      requirements: List<String>.from(map['requirements'] ?? []),
-      responsibilities: List<String>.from(map['responsibilities'] ?? []),
+      // Read from 'eligibility' first, fallback to 'requirements' for backward compatibility
+      requirements: List<String>.from(
+        map['eligibility'] ?? map['requirements'] ?? [],
+      ),
+      // Responsibilities are no longer stored in Firebase, return empty list
+      responsibilities: [],
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
       deadline: (map['deadline'] as Timestamp?)?.toDate(),
@@ -69,8 +73,9 @@ class Job {
       'posted': posted,
       'logo': logo,
       'description': description,
-      'requirements': requirements,
-      'responsibilities': responsibilities,
+      // Send requirements as 'eligibility'
+      'eligibility': requirements,
+      // Responsibilities are not sent to Firebase
       'createdAt': createdAt,
       'isActive': isActive,
       'deadline': deadline,
