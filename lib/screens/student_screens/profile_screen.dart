@@ -26,7 +26,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String get _userName {
     final user = _authService.currentUser;
-    return user?.displayName ?? 'User';
+    final String? displayName = user?.displayName;
+    if (displayName == null || displayName.trim().isEmpty) {
+      return 'User';
+    }
+    return displayName;
   }
 
   String get _userEmail {
