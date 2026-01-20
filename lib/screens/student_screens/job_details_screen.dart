@@ -342,9 +342,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   Widget _buildRequirementsList() {
     final theme = context.theme;
-    final requirements = widget.job.requirements;
+    final eligibility = widget.job.eligibility;
 
-    if (requirements.isEmpty) {
+    if (eligibility.isEmpty) {
       return Text(
         'No eligibility criteria specified.',
         style: TextStyle(
@@ -357,7 +357,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
     return Column(
       children:
-          requirements
+          eligibility
               .map(
                 (req) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),

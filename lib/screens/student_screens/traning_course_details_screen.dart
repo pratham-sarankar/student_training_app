@@ -14,8 +14,6 @@ class TraningCourseDetailsScreen extends StatefulWidget {
 
 class _TraningCourseDetailsScreenState
     extends State<TraningCourseDetailsScreen> {
-  Map<String, dynamic>? _selectedSchedule;
-
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
@@ -160,7 +158,7 @@ class _TraningCourseDetailsScreenState
                           child: _buildSimpleDetail(
                             Icons.attach_money,
                             'Cost',
-                            '₹${widget.course['cost']}',
+                            '₹1000',
                             const Color(0xFF10B981),
                           ),
                         ),
@@ -168,93 +166,74 @@ class _TraningCourseDetailsScreenState
                     ),
                     const SizedBox(height: 16),
 
-                    // Available Schedules
-                    Text(
-                      'Available Schedules',
-                      style: theme.typography.lg.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
+                    // Tentative Start Date & Free Demo
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: theme.colors.primary.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: theme.colors.primary.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                size: 16,
+                                color: theme.colors.primary,
+                              ),
+                              const SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Tentative Start Date',
+                                    style: theme.typography.xs.copyWith(
+                                      color: theme.colors.mutedForeground,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    widget.course['schedules'] != null &&
+                                            (widget.course['schedules'] as List)
+                                                .isNotEmpty
+                                        ? widget
+                                            .course['schedules'][0]['startDate']
+                                        : 'To be announced',
+                                    style: theme.typography.sm.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: theme.colors.foreground,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.play_circle_outline,
+                                size: 16,
+                                color: theme.colors.mutedForeground,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'This course includes a Free Demo',
+                                style: theme.typography.sm.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.colors.mutedForeground,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-
-                    ...widget.course['schedules'].map<Widget>((schedule) {
-                      bool isSelected = _selectedSchedule == schedule;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 6),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _selectedSchedule = schedule;
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(6),
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color:
-                                  isSelected
-                                      ? theme.colors.primary.withValues(
-                                        alpha: 0.05,
-                                      )
-                                      : Colors.transparent,
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                color:
-                                    isSelected
-                                        ? theme.colors.primary.withValues(
-                                          alpha: 0.3,
-                                        )
-                                        : theme.colors.border.withValues(
-                                          alpha: 0.2,
-                                        ),
-                                width: isSelected ? 1.5 : 0.5,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        schedule['time'],
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.foreground,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Starts: ${schedule['startDate']} • ${schedule['seats']} seats',
-                                        style: theme.typography.sm.copyWith(
-                                          color: theme.colors.mutedForeground,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Radio<Map<String, dynamic>>(
-                                  value: schedule,
-                                  groupValue: _selectedSchedule,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedSchedule = value;
-                                    });
-                                  },
-                                  activeColor: theme.colors.primary,
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
 
                     const SizedBox(height: 60), // Minimal space for FAB
                   ],
@@ -264,46 +243,43 @@ class _TraningCourseDetailsScreenState
           ],
         ),
       ),
-      floatingActionButton:
-          _selectedSchedule != null
-              ? Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: FButton(
-                  onPress:
-                      () => _showPurchaseDialog(
-                        context,
-                        widget.course,
-                        _selectedSchedule!,
-                      ),
-                  style: FButtonStyle.primary,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.shopping_cart,
-                          size: 16,
-                          color: theme.colors.primaryForeground,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Purchase Course - ₹${widget.course['cost']}',
-                          style: theme.typography.sm.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: theme.colors.primaryForeground,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        child: FButton(
+          onPress:
+              () => _showPurchaseDialog(
+                context,
+                widget.course,
+                widget.course['schedules'] != null &&
+                        (widget.course['schedules'] as List).isNotEmpty
+                    ? widget.course['schedules'][0]
+                    : {},
+              ),
+          style: FButtonStyle.primary,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.shopping_cart,
+                  size: 16,
+                  color: theme.colors.primaryForeground,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Enroll Now ₹499',
+                  style: theme.typography.sm.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colors.primaryForeground,
+                    fontSize: 13,
                   ),
                 ),
-              )
-              : null,
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -377,14 +353,10 @@ class _TraningCourseDetailsScreenState
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.shopping_cart,
-                        color: theme.colors.primary,
-                        size: 20,
-                      ),
+                      Icon(Icons.school, color: theme.colors.primary, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'Purchase Confirmation',
+                        'Enrollment Confirmation',
                         style: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -407,14 +379,7 @@ class _TraningCourseDetailsScreenState
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Schedule: ${schedule['time']}',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Start Date: ${schedule['startDate']}',
+                        'Start Date: ${schedule['startDate'] ?? 'TBA'}',
                         style: theme.typography.sm.copyWith(
                           color: theme.colors.mutedForeground,
                         ),
@@ -430,13 +395,13 @@ class _TraningCourseDetailsScreenState
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Total Cost:',
+                              'Enrollment Fee:',
                               style: theme.typography.sm.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
-                              '₹${course['cost']}',
+                              '₹499',
                               style: theme.typography.lg.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: theme.colors.primary,
@@ -493,7 +458,7 @@ class _TraningCourseDetailsScreenState
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                'Successfully purchased ${course['title']} for ${schedule['time']}',
+                'Successfully enrolled in ${course['title']}',
                 style: const TextStyle(fontSize: 12),
               ),
             ),

@@ -346,83 +346,11 @@ class JobsScreen extends StatelessWidget {
                   ),
                   DataCell(
                     Center(
-                      child: PopupMenuButton<String>(
+                      child: IconButton(
                         icon: const Icon(Icons.more_vert, size: 18),
+                        color: theme.colors.mutedForeground,
                         tooltip: 'Actions',
-                        color: theme.colors.background,
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: theme.colors.border),
-                        ),
-                        onSelected: (value) async {
-                          if (value == 'edit') {
-                            // Show brief loading indicator
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              theme.colors.primaryForeground,
-                                            ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    const Text('Opening editor...'),
-                                  ],
-                                ),
-                                duration: const Duration(seconds: 1),
-                                backgroundColor: theme.colors.primary,
-                              ),
-                            );
-                            _navigateToAddJob(context, job: job);
-                          } else if (value == 'delete') {
-                            _deleteJob(context, job.id);
-                          }
-                        },
-                        itemBuilder:
-                            (context) => [
-                              PopupMenuItem<String>(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.edit,
-                                      color: theme.colors.primary,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Text(
-                                      'Edit',
-                                      style: TextStyle(fontSize: 13),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.delete,
-                                      color: theme.colors.destructive,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Text(
-                                      'Delete',
-                                      style: TextStyle(fontSize: 13),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                        onPressed: () => _showJobActions(context, job),
                       ),
                     ),
                   ),
@@ -430,6 +358,79 @@ class JobsScreen extends StatelessWidget {
               );
             }).toList(),
       ),
+    );
+  }
+
+  void _showJobActions(BuildContext context, Job job) {
+    final theme = context.theme;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: theme.colors.background,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+            ),
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.colors.mutedForeground.withValues(
+                        alpha: 0.3,
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.edit, color: theme.colors.primary),
+                    title: Text(
+                      'Edit Job',
+                      style: TextStyle(color: theme.colors.foreground),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Adding a small delay to ensure the bottom sheet is closed
+                      // before navigation starts, which can solve context issues
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        if (context.mounted) {
+                          _navigateToAddJob(context, job: job);
+                        }
+                      });
+                    },
+                  ),
+                  Divider(height: 1, color: theme.colors.border),
+                  ListTile(
+                    leading: Icon(
+                      Icons.delete,
+                      color: theme.colors.destructive,
+                    ),
+                    title: Text(
+                      'Delete Job',
+                      style: TextStyle(color: theme.colors.destructive),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        if (context.mounted) {
+                          _deleteJob(context, job.id);
+                        }
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              ),
+            ),
+          ),
     );
   }
 

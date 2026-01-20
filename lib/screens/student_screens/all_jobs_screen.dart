@@ -189,7 +189,7 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Gradspark.AI',
+                            'Gradspark',
                             style: theme.typography.xl.copyWith(
                               fontWeight: FontWeight.bold,
                               color: theme.colors.primary,
@@ -632,21 +632,6 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
         ...List.generate(5, (index) => ShimmerLoading.jobCardShimmer(theme)),
       ],
     );
-  }
-
-  String _formatDeadline(dynamic date) {
-    if (date == null) return 'N/A';
-    try {
-      if (date is Timestamp) {
-        return DateFormat('MMM d, yyyy').format(date.toDate());
-      }
-      if (date is DateTime) {
-        return DateFormat('MMM d, yyyy').format(date);
-      }
-      return date.toString();
-    } catch (e) {
-      return date.toString();
-    }
   }
 }
 

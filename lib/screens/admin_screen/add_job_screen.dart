@@ -4,6 +4,9 @@ import 'package:forui/forui.dart';
 import 'package:learn_work/models/job.dart';
 import 'package:learn_work/providers/admin_provider.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
 
 class AddJobScreen extends StatefulWidget {
   final Job? job;
@@ -114,11 +117,11 @@ class _AddJobScreenState extends State<AddJobScreen> {
     // Handle eligibility initialization safely
     if (widget.job != null) {
       print('Initializing with existing job:');
-      print('Job requirements: ${widget.job!.requirements}');
-      print('Requirements length: ${widget.job!.requirements.length}');
+      print('Job eligibility: ${widget.job!.eligibility}');
+      print('Eligibility length: ${widget.job!.eligibility.length}');
 
       // Initialize state variables with existing data
-      _eligibility = List<String>.from(widget.job!.requirements);
+      _eligibility = List<String>.from(widget.job!.eligibility);
 
       print('State eligibility: $_eligibility');
     } else {
@@ -143,6 +146,157 @@ class _AddJobScreenState extends State<AddJobScreen> {
     _deadlineController.dispose();
     _applyLinkController.dispose();
     super.dispose();
+  }
+
+  Future<void> _importCSV() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result != null) {
+        final path = result.files.single.path;
+        if (path != null) {
+          final file = File(path);
+          final csvString = await file.readAsString();
+          // Use a custom converter to handle different EOL styles if needed
+          final List<List<dynamic>> rows = const CsvToListConverter(
+            eol: '\n',
+          ).convert(csvString);
+
+          // If rows is small (maybe 1 row), check if it's because of \r\n
+          List<List<dynamic>> processedRows = rows;
+          if (rows.length <= 1 && csvString.contains('\r\n')) {
+            processedRows = const CsvToListConverter(
+              eol: '\r\n',
+            ).convert(csvString);
+          }
+
+          if (processedRows.isEmpty) return;
+
+          // Check for header
+          int startRow = 0;
+          if (processedRows.isNotEmpty &&
+              processedRows[0].isNotEmpty &&
+              processedRows[0][0].toString().toLowerCase().contains('title')) {
+            startRow = 1;
+          }
+
+          List<Job> jobs = [];
+          int duplicatesSkipped = 0;
+
+          // Get existing jobs to check for duplicates
+          final adminProvider = Provider.of<AdminProvider>(
+            context,
+            listen: false,
+          );
+          final existingJobs = adminProvider.jobs;
+
+          for (int i = startRow; i < processedRows.length; i++) {
+            final row = processedRows[i];
+            // Expected columns: Title, Company, Location, Description, Salary, Apply Link, Deadline, Job Type, Job Category, Eligibility, Job Status
+
+            if (row.length < 3) continue; // Skip incomplete provided rows
+
+            String title = row[0].toString().trim();
+            String company = row[1].toString().trim();
+            String location = row[2].toString().trim();
+
+            // Check if job already exists (case-insensitive title and company check)
+            bool isDuplicate =
+                existingJobs.any(
+                  (job) =>
+                      job.title.toLowerCase() == title.toLowerCase() &&
+                      job.company.toLowerCase() == company.toLowerCase(),
+                ) ||
+                jobs.any(
+                  (job) =>
+                      job.title.toLowerCase() == title.toLowerCase() &&
+                      job.company.toLowerCase() == company.toLowerCase(),
+                );
+
+            if (isDuplicate) {
+              duplicatesSkipped++;
+              continue;
+            }
+
+            String descriptionString =
+                row.length > 3 ? row[3].toString() : 'No description provided.';
+            String salary = row.length > 4 ? row[4].toString() : '';
+            String applyLink = row.length > 5 ? row[5].toString() : '';
+            String deadlineString = row.length > 6 ? row[6].toString() : '';
+            String type = row.length > 7 ? row[7].toString() : 'Full-time';
+            String category = row.length > 8 ? row[8].toString() : 'General';
+            String eligibilityString = row.length > 9 ? row[9].toString() : '';
+            String statusString =
+                row.length > 10 ? row[10].toString() : 'Active';
+
+            List<String> eligibilityList =
+                eligibilityString.isNotEmpty
+                    ? eligibilityString.split(',').map((e) => e.trim()).toList()
+                    : [];
+
+            DateTime? deadline;
+            if (deadlineString.isNotEmpty) {
+              try {
+                deadline = DateFormat('dd-MM-yyyy').parse(deadlineString);
+              } catch (e) {
+                print('Error parsing date: $deadlineString');
+              }
+            }
+
+            jobs.add(
+              Job(
+                id: '', // generated by provider
+                title: title,
+                company: company,
+                location: location,
+                type: type,
+                salary: salary,
+                category: category,
+                posted: DateFormat('MMM d, yyyy').format(DateTime.now()),
+                logo: '',
+                description: descriptionString,
+                eligibility: eligibilityList,
+                createdAt: DateTime.now(),
+                isActive: statusString.toLowerCase() == 'active',
+                deadline: deadline,
+                applyLink: applyLink,
+              ),
+            );
+          }
+
+          if (jobs.isNotEmpty && mounted) {
+            await adminProvider.addJobs(jobs);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Successfully imported ${jobs.length} jobs. Skipped $duplicatesSkipped duplicates.',
+                ),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            Navigator.pop(context);
+          } else if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No valid jobs found in CSV')),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error importing CSV: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -181,6 +335,12 @@ class _AddJobScreenState extends State<AddJobScreen> {
               ),
               onPressed: _showDeleteConfirmation,
               tooltip: 'Delete Job',
+            )
+          else
+            IconButton(
+              icon: Icon(Icons.upload_file, color: theme.colors.primary),
+              onPressed: _importCSV,
+              tooltip: 'Import from CSV',
             ),
         ],
       ),
@@ -287,13 +447,16 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 const SizedBox(height: 8),
 
                 // Company and Location Row
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth > 600) {
+                // Company and Location Row
+                Builder(
+                  builder: (context) {
+                    final isWide = MediaQuery.of(context).size.width > 600;
+                    if (isWide) {
                       return Row(
                         children: [
                           Expanded(
                             child: TextFormField(
+                              key: const ValueKey('company'),
                               controller: _companyController,
                               decoration: InputDecoration(
                                 labelText: 'Company *',
@@ -325,6 +488,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: TextFormField(
+                              key: const ValueKey('location'),
                               controller: _locationController,
                               decoration: InputDecoration(
                                 labelText: 'Location *',
@@ -359,6 +523,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       return Column(
                         children: [
                           TextFormField(
+                            key: const ValueKey('company'),
                             controller: _companyController,
                             decoration: InputDecoration(
                               labelText: 'Company *',
@@ -388,6 +553,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
+                            key: const ValueKey('location'),
                             controller: _locationController,
                             decoration: InputDecoration(
                               labelText: 'Location *',
@@ -589,8 +755,9 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 const SizedBox(height: 8),
 
                 // Job Type
-                DropdownButtonFormField<String>(
-                  value: _selectedJobType,
+                TextFormField(
+                  controller: _typeController,
+                  readOnly: true,
                   decoration: InputDecoration(
                     labelText: 'Job Type *',
                     border: OutlineInputBorder(
@@ -605,28 +772,27 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       color: theme.colors.primary,
                       size: 16,
                     ),
+                    suffixIcon: Icon(
+                      Icons.arrow_drop_down,
+                      color: theme.colors.primary,
+                    ),
                     hintText: 'Select job type',
                     filled: true,
                     fillColor: theme.colors.muted,
                     isDense: true,
                   ),
-                  items:
-                      _jobTypes.map((String type) {
-                        return DropdownMenuItem<String>(
-                          value: type,
-                          child: Text(
-                            type,
-                            style: TextStyle(color: theme.colors.foreground),
-                          ),
-                        );
-                      }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedJobType = newValue;
-                        _typeController.text = newValue;
-                      });
-                    }
+                  onTap: () {
+                    _showSelectionSheet(
+                      title: 'Select Job Type',
+                      items: _jobTypes,
+                      selectedItem: _selectedJobType,
+                      onSelected: (value) {
+                        setState(() {
+                          _selectedJobType = value;
+                          _typeController.text = value;
+                        });
+                      },
+                    );
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -634,21 +800,13 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     }
                     return null;
                   },
-                  dropdownColor: theme.colors.background,
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: theme.colors.primary,
-                  ),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: theme.colors.foreground,
-                  ),
                 ),
                 const SizedBox(height: 8),
 
                 // Category
-                DropdownButtonFormField<String>(
-                  value: _selectedCategory,
+                TextFormField(
+                  controller: _categoryController,
+                  readOnly: true,
                   decoration: InputDecoration(
                     labelText: 'Job Category *',
                     border: OutlineInputBorder(
@@ -663,28 +821,27 @@ class _AddJobScreenState extends State<AddJobScreen> {
                       color: theme.colors.primary,
                       size: 16,
                     ),
+                    suffixIcon: Icon(
+                      Icons.arrow_drop_down,
+                      color: theme.colors.primary,
+                    ),
                     hintText: 'Select job category',
                     filled: true,
                     fillColor: theme.colors.muted,
                     isDense: true,
                   ),
-                  items:
-                      _jobCategories.map((String category) {
-                        return DropdownMenuItem<String>(
-                          value: category,
-                          child: Text(
-                            category,
-                            style: TextStyle(color: theme.colors.foreground),
-                          ),
-                        );
-                      }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedCategory = newValue;
-                        _categoryController.text = newValue;
-                      });
-                    }
+                  onTap: () {
+                    _showSelectionSheet(
+                      title: 'Select Job Category',
+                      items: _jobCategories,
+                      selectedItem: _selectedCategory,
+                      onSelected: (value) {
+                        setState(() {
+                          _selectedCategory = value;
+                          _categoryController.text = value;
+                        });
+                      },
+                    );
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -692,15 +849,6 @@ class _AddJobScreenState extends State<AddJobScreen> {
                     }
                     return null;
                   },
-                  dropdownColor: theme.colors.background,
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: theme.colors.primary,
-                  ),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: theme.colors.foreground,
-                  ),
                 ),
                 const SizedBox(height: 8),
 
@@ -1060,7 +1208,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
 
       try {
         print('Creating job object...');
-        print('Existing job requirements: ${widget.job?.requirements}');
+        print('Existing job eligibility: ${widget.job?.eligibility}');
         print('Eligibility controller text: "${_eligibilityController.text}"');
 
         // Use the state variables for eligibility
@@ -1100,8 +1248,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
               widget.job?.logo ??
               'https://example.com/default-logo.png', // Preserve original logo when editing
           description: _descriptionController.text.trim(),
-          requirements: requirements,
-          responsibilities: [],
+          eligibility: requirements,
           createdAt: widget.job?.createdAt ?? DateTime.now(),
           isActive: isExpired ? false : _isActive,
           deadline: _selectedDeadline,
@@ -1159,6 +1306,142 @@ class _AddJobScreenState extends State<AddJobScreen> {
     } else {
       print('Form validation failed');
     }
+  }
+
+  void _showSelectionSheet({
+    required String title,
+    required List<String> items,
+    required String? selectedItem,
+    required Function(String) onSelected,
+  }) {
+    final theme = context.theme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.3,
+            maxChildSize: 0.8,
+            builder:
+                (context, scrollController) => Container(
+                  decoration: BoxDecoration(
+                    color: theme.colors.background,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Handle
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: theme.colors.mutedForeground.withValues(
+                            alpha: 0.3,
+                          ),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              title,
+                              style: theme.typography.lg.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: theme.colors.foreground,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.close),
+                              color: theme.colors.mutedForeground,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      // List
+                      Expanded(
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            final item = items[index];
+                            final isSelected = item == selectedItem;
+
+                            return InkWell(
+                              onTap: () {
+                                onSelected(item);
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isSelected
+                                          ? theme.colors.primary.withValues(
+                                            alpha: 0.05,
+                                          )
+                                          : null,
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: theme.colors.border.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        item,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight:
+                                              isSelected
+                                                  ? FontWeight.w600
+                                                  : FontWeight.normal,
+                                          color:
+                                              isSelected
+                                                  ? theme.colors.primary
+                                                  : theme.colors.foreground,
+                                        ),
+                                      ),
+                                    ),
+                                    if (isSelected)
+                                      Icon(
+                                        Icons.check,
+                                        color: theme.colors.primary,
+                                        size: 20,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+          ),
+    );
   }
 
   void _showDeleteConfirmation() {

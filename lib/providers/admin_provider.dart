@@ -50,6 +50,37 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> addJobs(List<Job> newJobs) async {
+    try {
+      setState(isLoading: true, errorMessage: null);
+
+      final batch = _firestore.batch();
+      for (final job in newJobs) {
+        // Create a new document reference to get an ID
+        final docRef = _firestore.collection('jobs').doc();
+        // Create job with new ID
+        final jobWithId = job.copyWith(id: docRef.id);
+        batch.set(docRef, jobWithId.toMap());
+      }
+
+      await batch.commit();
+
+      // Refresh the jobs list to ensure consistency
+      await loadJobs();
+    } catch (e) {
+      print('Error adding jobs batch: $e');
+      _errorMessage = 'Failed to add jobs batch: $e';
+      if (!_disposed) {
+        notifyListeners();
+      }
+      throw e;
+    } finally {
+      if (!_disposed) {
+        setState(isLoading: false);
+      }
+    }
+  }
+
   List<Job> _jobs = [];
   List<Training> _trainings = [];
   List<UserModel> _adminUsers = [];

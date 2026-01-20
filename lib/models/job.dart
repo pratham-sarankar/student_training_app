@@ -11,8 +11,7 @@ class Job {
   final String posted;
   final String logo;
   final String description;
-  final List<String> requirements;
-  final List<String> responsibilities;
+  final List<String> eligibility;
   final DateTime createdAt;
   final bool isActive;
   final DateTime? deadline;
@@ -29,8 +28,7 @@ class Job {
     required this.posted,
     required this.logo,
     required this.description,
-    required this.requirements,
-    required this.responsibilities,
+    required this.eligibility,
     required this.createdAt,
     required this.isActive,
     this.deadline,
@@ -49,12 +47,9 @@ class Job {
       posted: map['posted'] ?? '',
       logo: map['logo'] ?? '',
       description: map['description'] ?? '',
-      // Read from 'eligibility' first, fallback to 'requirements' for backward compatibility
-      requirements: List<String>.from(
+      eligibility: List<String>.from(
         map['eligibility'] ?? map['requirements'] ?? [],
       ),
-      // Responsibilities are no longer stored in Firebase, return empty list
-      responsibilities: [],
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
       deadline: (map['deadline'] as Timestamp?)?.toDate(),
@@ -73,9 +68,7 @@ class Job {
       'posted': posted,
       'logo': logo,
       'description': description,
-      // Send requirements as 'eligibility'
-      'eligibility': requirements,
-      // Responsibilities are not sent to Firebase
+      'eligibility': eligibility,
       'createdAt': createdAt,
       'isActive': isActive,
       'deadline': deadline,
@@ -94,8 +87,7 @@ class Job {
     String? posted,
     String? logo,
     String? description,
-    List<String>? requirements,
-    List<String>? responsibilities,
+    List<String>? eligibility,
     DateTime? createdAt,
     bool? isActive,
     DateTime? deadline,
@@ -112,8 +104,7 @@ class Job {
       posted: posted ?? this.posted,
       logo: logo ?? this.logo,
       description: description ?? this.description,
-      requirements: requirements ?? this.requirements,
-      responsibilities: responsibilities ?? this.responsibilities,
+      eligibility: eligibility ?? this.eligibility,
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
       deadline: deadline ?? this.deadline,
