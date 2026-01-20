@@ -113,12 +113,6 @@ class _TraningCourseDetailsScreenState
   Widget build(BuildContext context) {
     final theme = context.theme;
 
-    final schedule =
-        widget.course['schedules'] != null &&
-                (widget.course['schedules'] as List).isNotEmpty
-            ? widget.course['schedules'][0]
-            : {};
-
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -371,11 +365,7 @@ class _TraningCourseDetailsScreenState
                     onTap:
                         isEnrolled
                             ? null
-                            : () => _showPurchaseDialog(
-                              context,
-                              widget.course,
-                              schedule,
-                            ),
+                            : () => _showPurchaseDialog(context, widget.course),
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
@@ -471,11 +461,7 @@ class _TraningCourseDetailsScreenState
     );
   }
 
-  void _showPurchaseDialog(
-    BuildContext context,
-    Map<String, dynamic> course,
-    Map<String, dynamic> schedule,
-  ) {
+  void _showPurchaseDialog(BuildContext context, Map<String, dynamic> course) {
     final theme = context.theme;
 
     showDialog(
@@ -518,13 +504,6 @@ class _TraningCourseDetailsScreenState
                         'Course: ${course['title']}',
                         style: theme.typography.sm.copyWith(
                           fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Start Date: ${schedule['startDate'] ?? 'TBA'}',
-                        style: theme.typography.sm.copyWith(
-                          color: theme.colors.mutedForeground,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -572,7 +551,7 @@ class _TraningCourseDetailsScreenState
                       FButton(
                         onPress: () {
                           Navigator.of(context).pop();
-                          _processPurchase(course, schedule);
+                          _processPurchase(course);
                         },
                         style: FButtonStyle.primary,
                         child: Text('Confirm'),
@@ -588,10 +567,7 @@ class _TraningCourseDetailsScreenState
     );
   }
 
-  void _processPurchase(
-    Map<String, dynamic> course,
-    Map<String, dynamic> schedule,
-  ) async {
+  void _processPurchase(Map<String, dynamic> course) async {
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.user;
 

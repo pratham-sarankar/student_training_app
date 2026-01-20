@@ -278,15 +278,20 @@ class _StudentsScreenState extends State<StudentsScreen>
               sortedStudents.map((student) {
                 // Find which trainings this student is enrolled in
                 final enrolledTrainings = <String>[];
-                for (final training in adminProvider.trainings) {
-                  for (final schedule in training.schedules) {
-                    if (schedule.enrolledStudents.any(
-                      (s) => s.id == student.uid,
-                    )) {
-                      enrolledTrainings.add(training.title);
-                      break; // Only add training once even if student has multiple schedules
-                    }
-                  }
+                for (final enrolledCourseId in student.enrolledCourses) {
+                  final training = adminProvider.trainings.firstWhere(
+                    (t) =>
+                        t.id == enrolledCourseId || t.title == enrolledCourseId,
+                    orElse:
+                        () => Training(
+                          id: '',
+                          title: enrolledCourseId,
+                          description: '',
+                          price: 0,
+                          createdAt: DateTime.now(),
+                        ),
+                  );
+                  enrolledTrainings.add(training.title);
                 }
 
                 return DataRow(
@@ -487,15 +492,22 @@ class _StudentsScreenState extends State<StudentsScreen>
   ) {
     final theme = context.theme;
 
-    // Find all schedules this student is enrolled in
-    final enrollments = <MapEntry<String, TrainingSchedule>>[];
+    // Find all trainings this student is enrolled in
+    final enrollments = <Training>[];
 
-    for (final training in adminProvider.trainings) {
-      for (final schedule in training.schedules) {
-        if (schedule.enrolledStudents.any((s) => s.id == student.uid)) {
-          enrollments.add(MapEntry(training.title, schedule));
-        }
-      }
+    for (final enrolledCourseId in student.enrolledCourses) {
+      final training = adminProvider.trainings.firstWhere(
+        (t) => t.id == enrolledCourseId || t.title == enrolledCourseId,
+        orElse:
+            () => Training(
+              id: enrolledCourseId,
+              title: enrolledCourseId,
+              description: 'Details not found',
+              price: 0,
+              createdAt: DateTime.now(),
+            ),
+      );
+      enrollments.add(training);
     }
 
     showModalBottomSheet(
@@ -685,8 +697,8 @@ class _StudentsScreenState extends State<StudentsScreen>
                               // Enrollments Section
                               _buildInfoSection(
                                 enrollments.isNotEmpty
-                                    ? 'Enrolled in ${enrollments.length} schedule(s)'
-                                    : 'Not enrolled in any training schedules',
+                                    ? 'Enrolled in ${enrollments.length} course(s)'
+                                    : 'Not enrolled in any courses',
                                 enrollments.isNotEmpty
                                     ? enrollments
                                         .map(
@@ -823,10 +835,7 @@ class _StudentsScreenState extends State<StudentsScreen>
     );
   }
 
-  Widget _buildEnrollmentTile(
-    BuildContext context,
-    MapEntry<String, TrainingSchedule> enrollment,
-  ) {
+  Widget _buildEnrollmentTile(BuildContext context, Training training) {
     final theme = context.theme;
 
     return Container(
@@ -853,31 +862,12 @@ class _StudentsScreenState extends State<StudentsScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  enrollment.key,
+                  training.title,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                     color: theme.colors.foreground,
                   ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Icon(
-                Icons.schedule,
-                color: theme.colors.mutedForeground,
-                size: 14,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                '${_formatDate(enrollment.value.startDate)} - ${_formatDate(enrollment.value.endDate)}',
-                style: TextStyle(
-                  color: theme.colors.mutedForeground,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

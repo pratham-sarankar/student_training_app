@@ -257,13 +257,15 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFF0097A7,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(
                                 "Practice Set (Free)",
                                 style: TextStyle(
-                                  color: Colors.green,
+                                  color: Color(0xFF0097A7),
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -278,15 +280,13 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: theme.colors.primary.withValues(
-                                  alpha: 0.1,
-                                ),
+                                color: Colors.amber.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(
                                 "Premium",
                                 style: TextStyle(
-                                  color: Colors.blue,
+                                  color: Colors.amber,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -511,43 +511,47 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            "${assessment.questions.length} Questions",
+                            style: TextStyle(
+                              color: theme.colors.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "${assessment.timeLimitMinutes} mins",
+                          style: TextStyle(
+                            color: theme.colors.mutedForeground,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        "${assessment.questions.length} Questions",
-                        style: TextStyle(
-                          color: theme.colors.primary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "${assessment.timeLimitMinutes} mins",
-                      style: TextStyle(
-                        color: theme.colors.mutedForeground,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
                         color:
                             assessment.isFree
-                                ? Colors.green.withValues(alpha: 0.1)
-                                : Colors.orange.withValues(alpha: 0.1),
+                                ? const Color(0xFF0097A7).withValues(alpha: 0.1)
+                                : Colors.amber.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -556,7 +560,9 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                             : "₹${assessment.price.toStringAsFixed(0)}",
                         style: TextStyle(
                           color:
-                              assessment.isFree ? Colors.green : Colors.orange,
+                              assessment.isFree
+                                  ? const Color(0xFF0097A7)
+                                  : Colors.amber,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                         ),

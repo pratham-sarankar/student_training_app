@@ -137,7 +137,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: theme.colors.primary,
                           ),
                         ),
-                        const SizedBox(height: 12),
                         Text(
                           _userName,
                           style: theme.typography.lg.copyWith(

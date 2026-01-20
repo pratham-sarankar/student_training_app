@@ -94,12 +94,6 @@ class HelpSupportScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildFAQItem(
               context,
-              'Can I access courses offline?',
-              'Currently, an active internet connection is required to stream course content and take assessments. Offline access is coming soon!',
-            ),
-            const SizedBox(height: 12),
-            _buildFAQItem(
-              context,
               'How can I update my profile?',
               'Go to the Profile tab and tap on "Edit Profile" to update your photo, contact details, and educational background.',
             ),
