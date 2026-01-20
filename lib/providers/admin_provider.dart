@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learn_work/models/traning.dart';
+import 'package:learn_work/models/course.dart';
 import 'package:learn_work/models/job.dart';
 import 'package:learn_work/models/user.dart';
 import 'package:learn_work/models/assessment_model.dart';
@@ -86,6 +87,7 @@ class AdminProvider extends ChangeNotifier {
 
   List<Job> _jobs = [];
   List<Training> _trainings = [];
+  List<Course> _courses = [];
   List<AssessmentModel> _assessments = [];
   List<UserModel> _adminUsers = [];
   List<UserModel> _allStudents = [];
@@ -100,6 +102,7 @@ class AdminProvider extends ChangeNotifier {
   // Getters
   List<Job> get jobs => _jobs;
   List<Training> get trainings => _trainings;
+  List<Course> get courses => _courses;
   List<AssessmentModel> get assessments => _assessments;
   List<UserModel> get adminUsers => _adminUsers;
   List<UserModel> get allStudents => _allStudents;
@@ -230,39 +233,84 @@ class AdminProvider extends ChangeNotifier {
       // Get a one-time snapshot instead of using a stream
       final snapshot = await _firestore.collection('courses').get();
 
-      final trainings =
-          snapshot.docs.map((doc) {
-            try {
-              final data = doc.data();
-              data['id'] = doc.id; // Add the document ID to the data
-              return Training.fromJson(data);
-            } catch (parseError) {
-              print('Error parsing training document ${doc.id}: $parseError');
-              print('Document data: ${doc.data()}');
-              // Return a default training object for corrupted documents
-              return Training(
-                id: doc.id,
-                title: 'Error Loading Course',
-                description: 'This course could not be loaded properly',
-                price: 0.0,
-                schedules: [],
-                createdAt: DateTime.now(),
-              );
-            }
-          }).toList();
+      final trainingsList = <Training>[];
+      final coursesList = <Course>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          data['id'] = doc.id;
+
+          // Map to Training for legacy support
+          trainingsList.add(Training.fromJson(data));
+
+          // Map to Course for modern UI
+          coursesList.add(Course.fromMap(data, doc.id));
+        } catch (parseError) {
+          print('Error parsing document ${doc.id}: $parseError');
+        }
+      }
 
       if (!_disposed) {
-        _trainings = trainings;
-        // Sort by creation date (newest first)
+        _trainings = trainingsList;
+        _courses = coursesList;
+
+        // Sort both
         _trainings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        print('AdminProvider: Loaded ${_trainings.length} trainings');
+        _courses.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
         notifyListeners();
       }
     } catch (e) {
-      print('AdminProvider: Error loading trainings: $e');
+      print('Error loading trainings: $e');
       _errorMessage = 'Failed to load trainings: $e';
       if (!_disposed) {
         notifyListeners();
+      }
+    }
+  }
+
+  Future<int> addCourses(List<Course> newCourses) async {
+    try {
+      setState(isLoading: true, errorMessage: null);
+
+      // Get existing course titles to skip duplicates
+      final snapshot = await _firestore.collection('courses').get();
+      final existingTitles =
+          snapshot.docs
+              .map((doc) => doc.data()['title'].toString().toLowerCase().trim())
+              .toSet();
+
+      final batch = _firestore.batch();
+      int addedCount = 0;
+
+      for (final course in newCourses) {
+        final normalizedTitle = course.title.toLowerCase().trim();
+        if (!existingTitles.contains(normalizedTitle)) {
+          final docRef = _firestore.collection('courses').doc();
+          batch.set(docRef, course.toMap());
+          existingTitles.add(
+            normalizedTitle,
+          ); // Avoid duplicates within the same batch
+          addedCount++;
+        }
+      }
+
+      if (addedCount > 0) {
+        await batch.commit();
+        await loadTrainings(); // Refresh both lists
+      }
+      return addedCount;
+    } catch (e) {
+      print('Error adding courses batch: $e');
+      _errorMessage = 'Failed to add courses batch: $e';
+      if (!_disposed) {
+        notifyListeners();
+      }
+      rethrow;
+    } finally {
+      if (!_disposed) {
+        setState(isLoading: false);
       }
     }
   }
@@ -529,116 +577,21 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addTraining(Training training) async {
-    try {
-      print('Adding training: ${training.id}');
-      print('Training data: ${training.toJson()}');
-
-      // Add to Firestore
-      final docRef = await _firestore
-          .collection('courses')
-          .add(training.toJson());
-      print('Successfully added training to Firestore with ID: ${docRef.id}');
-
-      // Update local state with the new training (including the generated ID)
-      final newTraining = training.copyWith(id: docRef.id);
-      _trainings.add(newTraining);
-      print('Added training to local state');
-
-      if (!_disposed) {
-        notifyListeners();
-        print('Notified listeners of training addition');
-      }
-    } catch (e) {
-      print('Error adding training: $e');
-      _errorMessage = 'Failed to add training: $e';
-      if (!_disposed) {
-        notifyListeners();
-      }
-      rethrow; // Re-throw to let the UI handle the error
-    }
-  }
-
-  Future<void> updateTraining(Training training) async {
-    try {
-      print('Updating training: ${training.id}');
-      print('Training data: ${training.toJson()}');
-
-      // Update in Firestore
-      await _firestore
-          .collection('courses')
-          .doc(training.id)
-          .update(training.toJson());
-      print('Successfully updated training in Firestore');
-
-      // Update local state
-      final index = _trainings.indexWhere((t) => t.id == training.id);
-      if (index != -1) {
-        _trainings[index] = training;
-        print('Updated training in local state at index: $index');
-      } else {
-        print('Warning: Training not found in local state, adding it');
-        _trainings.add(training);
-      }
-
-      if (!_disposed) {
-        notifyListeners();
-        print('Notified listeners of training update');
-      }
-    } catch (e) {
-      print('Error updating training: $e');
-      _errorMessage = 'Failed to update training: $e';
-      if (!_disposed) {
-        notifyListeners();
-      }
-      rethrow; // Re-throw to let the UI handle the error
-    }
-  }
-
   Future<void> deleteTraining(String trainingId) async {
     try {
       print(
         'AdminProvider: Starting training deletion - trainingId: $trainingId',
       );
-      print('AdminProvider: Current trainings count: ${_trainings.length}');
 
-      // Find the training index before deletion
-      final trainingIndex = _trainings.indexWhere((t) => t.id == trainingId);
-      print('AdminProvider: Found training at index: $trainingIndex');
+      // Delete from Firestore first
+      await _firestore.collection('courses').doc(trainingId).delete();
+      print('AdminProvider: Training deleted from Firestore successfully');
 
-      if (trainingIndex != -1) {
-        // Delete from Firestore first
-        await _firestore.collection('courses').doc(trainingId).delete();
-        print('AdminProvider: Training deleted from Firestore successfully');
+      // Refresh the list
+      await loadTrainings();
 
-        // Remove from local state
-        _trainings.removeAt(trainingIndex);
-        print(
-          'AdminProvider: Training removed from local state. New count: ${_trainings.length}',
-        );
-
-        // Notify listeners immediately
-        if (!_disposed) {
-          print('AdminProvider: Notifying listeners after deletion');
-          notifyListeners();
-
-          // Also verify that the training was actually removed
-          final remainingTraining = _trainings.any((t) => t.id == trainingId);
-          if (remainingTraining) {
-            print(
-              'AdminProvider: WARNING - Training still exists in local state after deletion!',
-            );
-          } else {
-            print(
-              'AdminProvider: Training successfully removed from local state',
-            );
-          }
-        }
-
-        print('AdminProvider: Training deletion completed successfully');
-      } else {
-        print('AdminProvider: Training not found with ID: $trainingId');
-        throw Exception('Training not found in local state');
+      if (!_disposed) {
+        notifyListeners();
       }
     } catch (e) {
       print('AdminProvider: Error deleting training: $e');
@@ -646,7 +599,7 @@ class AdminProvider extends ChangeNotifier {
       if (!_disposed) {
         notifyListeners();
       }
-      rethrow; // Re-throw the error so the calling code can handle it
+      rethrow;
     }
   }
 
@@ -710,84 +663,6 @@ class AdminProvider extends ChangeNotifier {
     // This would typically integrate with an email service
     // For now, we'll just show a success message
     print('Job notifications sent to all subscribed students');
-  }
-
-  Future<void> uploadNote(
-    String trainingId,
-    String scheduleId,
-    Note note,
-  ) async {
-    try {
-      final trainingIndex = _trainings.indexWhere((t) => t.id == trainingId);
-      if (trainingIndex != -1) {
-        final scheduleIndex = _trainings[trainingIndex].schedules.indexWhere(
-          (s) => s.id == scheduleId,
-        );
-        if (scheduleIndex != -1) {
-          // Add to local state first
-          _trainings[trainingIndex].schedules[scheduleIndex].notes.add(note);
-
-          // Update in Firestore
-          final updatedSchedules =
-              _trainings[trainingIndex].schedules
-                  .map((s) => s.toJson())
-                  .toList();
-          await _firestore.collection('courses').doc(trainingId).update({
-            'schedules': updatedSchedules,
-          });
-
-          if (!_disposed) {
-            notifyListeners();
-          }
-        }
-      }
-    } catch (e) {
-      print('Error uploading note: $e');
-      _errorMessage = 'Failed to upload note: $e';
-      if (!_disposed) {
-        notifyListeners();
-      }
-    }
-  }
-
-  Future<void> sendMessage(
-    String trainingId,
-    String scheduleId,
-    Message message,
-  ) async {
-    try {
-      final trainingIndex = _trainings.indexWhere((t) => t.id == trainingId);
-      if (trainingIndex != -1) {
-        final scheduleIndex = _trainings[trainingIndex].schedules.indexWhere(
-          (s) => s.id == scheduleId,
-        );
-        if (scheduleIndex != -1) {
-          // Add to local state first
-          _trainings[trainingIndex].schedules[scheduleIndex].messages.add(
-            message,
-          );
-
-          // Update in Firestore
-          final updatedSchedules =
-              _trainings[trainingIndex].schedules
-                  .map((s) => s.toJson())
-                  .toList();
-          await _firestore.collection('courses').doc(trainingId).update({
-            'schedules': updatedSchedules,
-          });
-
-          if (!_disposed) {
-            notifyListeners();
-          }
-        }
-      }
-    } catch (e) {
-      print('Error sending message: $e');
-      _errorMessage = 'Failed to send message: $e';
-      if (!_disposed) {
-        notifyListeners();
-      }
-    }
   }
 
   Future<void> deleteScheduleFromTraining(
@@ -856,18 +731,92 @@ class AdminProvider extends ChangeNotifier {
   }
 
   // Add assessment
-  Future<void> addAssessment(AssessmentModel assessment) async {
+  Future<bool> addAssessment(AssessmentModel assessment) async {
     try {
       setState(isLoading: true, errorMessage: null);
+
+      // Check for duplicate
+      final snapshot =
+          await _firestore
+              .collection('assessments')
+              .where('setName', isEqualTo: assessment.setName)
+              .where('title', isEqualTo: assessment.title)
+              .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return false; // Duplicate found
+      }
+
       await _assessmentService.addAssessment(assessment);
-      // Logic for local update if not using stream or for immediate feedback
-      // Stream will handle the update usually
+      return true;
     } catch (e) {
       print('Error adding assessment: $e');
       _errorMessage = 'Failed to add assessment: $e';
       if (!_disposed) notifyListeners();
+      return false;
     } finally {
       setState(isLoading: false);
+    }
+  }
+
+  Future<int> addAssessments(List<AssessmentModel> newAssessments) async {
+    try {
+      setState(isLoading: true, errorMessage: null);
+
+      // Get existing assessments for the sets being added to skip duplicates
+      final setNames = newAssessments.map((a) => a.setName).toSet();
+      final Map<String, Set<String>> existingBySet = {};
+
+      for (String setName in setNames) {
+        final snapshot =
+            await _firestore
+                .collection('assessments')
+                .where('setName', isEqualTo: setName)
+                .get();
+
+        existingBySet[setName] =
+            snapshot.docs
+                .map(
+                  (doc) => doc.data()['title'].toString().toLowerCase().trim(),
+                )
+                .toSet();
+      }
+
+      final batch = _firestore.batch();
+      int addedCount = 0;
+
+      for (final assessment in newAssessments) {
+        final normalizedTitle = assessment.title.toLowerCase().trim();
+        final setName = assessment.setName;
+
+        if (!(existingBySet[setName]?.contains(normalizedTitle) ?? false)) {
+          final docRef = _firestore.collection('assessments').doc();
+          batch.set(docRef, assessment.toMap());
+
+          // Track within the batch to avoid duplicates in the same file
+          if (!existingBySet.containsKey(setName)) {
+            existingBySet[setName] = {};
+          }
+          existingBySet[setName]!.add(normalizedTitle);
+          addedCount++;
+        }
+      }
+
+      if (addedCount > 0) {
+        await batch.commit();
+      }
+      return addedCount;
+    } catch (e) {
+      print('Error adding assessments batch: $e');
+      _errorMessage = 'Failed to add assessments batch: $e';
+      if (!_disposed) {
+        notifyListeners();
+      }
+      rethrow;
+    } finally {
+      if (!_disposed) {
+        setState(isLoading: false);
+      }
     }
   }
 

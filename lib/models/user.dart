@@ -28,6 +28,10 @@ class UserModel {
   final List<String> savedJobs;
   final List<String> appliedJobs;
 
+  // Enrollment and Purchases
+  final List<String> enrolledCourses;
+  final List<String> purchasedAssessments;
+
   // Education-related
   final String? educationId;
 
@@ -53,6 +57,8 @@ class UserModel {
     this.preferredLocations = const [],
     this.savedJobs = const [],
     this.appliedJobs = const [],
+    this.enrolledCourses = const [],
+    this.purchasedAssessments = const [],
     this.educationId,
   });
 
@@ -103,6 +109,8 @@ class UserModel {
       preferredLocations: preferredLocations ?? [],
       savedJobs: savedJobs ?? [],
       appliedJobs: appliedJobs ?? [],
+      enrolledCourses: const [],
+      purchasedAssessments: const [],
     );
   }
 
@@ -135,6 +143,10 @@ class UserModel {
       preferredLocations: List<String>.from(map['preferredLocations'] ?? []),
       savedJobs: List<String>.from(map['savedJobs'] ?? []),
       appliedJobs: List<String>.from(map['appliedJobs'] ?? []),
+      enrolledCourses: List<String>.from(map['enrolledCourses'] ?? []),
+      purchasedAssessments: List<String>.from(
+        map['purchasedAssessments'] ?? [],
+      ),
       educationId: map['educationId'],
     );
   }
@@ -163,6 +175,8 @@ class UserModel {
       'preferredLocations': preferredLocations,
       'savedJobs': savedJobs,
       'appliedJobs': appliedJobs,
+      'enrolledCourses': enrolledCourses,
+      'purchasedAssessments': purchasedAssessments,
       'educationId': educationId,
     };
   }
@@ -187,6 +201,8 @@ class UserModel {
     List<String>? preferredLocations,
     List<String>? savedJobs,
     List<String>? appliedJobs,
+    List<String>? enrolledCourses,
+    List<String>? purchasedAssessments,
     String? educationId,
   }) {
     return UserModel(
@@ -211,6 +227,8 @@ class UserModel {
       preferredLocations: preferredLocations ?? this.preferredLocations,
       savedJobs: savedJobs ?? this.savedJobs,
       appliedJobs: appliedJobs ?? this.appliedJobs,
+      enrolledCourses: enrolledCourses ?? this.enrolledCourses,
+      purchasedAssessments: purchasedAssessments ?? this.purchasedAssessments,
       educationId: educationId ?? this.educationId,
     );
   }

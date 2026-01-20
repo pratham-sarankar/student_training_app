@@ -285,6 +285,49 @@ class UserService {
     }
   }
 
+  // Enroll in course
+  Future<void> enrollInCourse(String courseId) async {
+    final user = currentUser;
+    if (user == null) throw Exception('User not authenticated');
+
+    try {
+      final currentUserModel = await getUserById(user.uid);
+      if (currentUserModel != null) {
+        if (!currentUserModel.enrolledCourses.contains(courseId)) {
+          final updatedUser = currentUserModel.copyWith(
+            enrolledCourses: [...currentUserModel.enrolledCourses, courseId],
+          );
+          await createOrUpdateUser(updatedUser);
+        }
+      }
+    } catch (e) {
+      throw Exception('Failed to enroll in course: $e');
+    }
+  }
+
+  // Purchase assessment
+  Future<void> purchaseAssessment(String assessmentId) async {
+    final user = currentUser;
+    if (user == null) throw Exception('User not authenticated');
+
+    try {
+      final currentUserModel = await getUserById(user.uid);
+      if (currentUserModel != null) {
+        if (!currentUserModel.purchasedAssessments.contains(assessmentId)) {
+          final updatedUser = currentUserModel.copyWith(
+            purchasedAssessments: [
+              ...currentUserModel.purchasedAssessments,
+              assessmentId,
+            ],
+          );
+          await createOrUpdateUser(updatedUser);
+        }
+      }
+    } catch (e) {
+      throw Exception('Failed to purchase assessment: $e');
+    }
+  }
+
   // Search users by name or email
   Future<List<UserModel>> searchUsers(String query) async {
     try {

@@ -18,6 +18,14 @@ class AddAssessmentScreen extends StatefulWidget {
 class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
   bool _isLoading = false;
   String _selectedType = 'Technical';
+  bool _isFree = true;
+  final TextEditingController _priceController = TextEditingController();
+
+  @override
+  void dispose() {
+    _priceController.dispose();
+    super.dispose();
+  }
 
   Future<void> _importCSV() async {
     try {
@@ -147,38 +155,53 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
           }
 
           final provider = context.read<AdminProvider>();
-          int addedCount = 0;
+          List<AssessmentModel> assessmentsToImport = [];
 
           for (var entry in subtitleGroups.entries) {
             final subtitle = entry.key;
             final questions = entry.value;
 
-            final assessment = AssessmentModel(
-              id: '',
-              title: subtitle,
-              setName: setName,
-              description: subtitleDescriptions[subtitle] ?? '',
-              type: _selectedType,
-              questions: questions,
-              timeLimitMinutes: 15,
-              passingMarks: 9,
-              createdAt: DateTime.now(),
+            assessmentsToImport.add(
+              AssessmentModel(
+                id: '',
+                title: subtitle,
+                setName: setName,
+                description: subtitleDescriptions[subtitle] ?? '',
+                type: _selectedType,
+                isFree: _isFree,
+                price: double.tryParse(_priceController.text) ?? 0.0,
+                questions: questions,
+                timeLimitMinutes: 15,
+                passingMarks: 9,
+                createdAt: DateTime.now(),
+              ),
             );
-
-            await provider.addAssessment(assessment);
-            addedCount++;
           }
+
+          final addedCount = await provider.addAssessments(assessmentsToImport);
 
           if (mounted) {
             Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Successfully imported $addedCount sub-tests for Set: $setName',
+            if (addedCount > 0) {
+              final skippedCount = assessmentsToImport.length - addedCount;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Successfully imported $addedCount sub-tests for Set: $setName.${skippedCount > 0 ? ' ($skippedCount duplicates skipped)' : ''}',
+                  ),
+                  backgroundColor: Colors.green,
                 ),
-                backgroundColor: Colors.green,
-              ),
-            );
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'No new tests were added. All tests in "$setName" already exist.',
+                  ),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
           }
         }
       }
@@ -225,87 +248,162 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: theme.colors.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.upload_file,
-                  size: 64,
-                  color: theme.colors.primary,
-                ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: theme.colors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Import Set Questions',
-                style: TextStyle(
-                  color: theme.colors.foreground,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Icon(
+                Icons.upload_file,
+                size: 64,
+                color: theme.colors.primary,
               ),
-              const SizedBox(height: 24),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Import Set Questions',
+              style: TextStyle(
+                color: theme.colors.foreground,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
 
-              // Type Selector
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: theme.colors.muted,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedType,
-                    isExpanded: true,
-                    items:
-                        ['Technical', 'Non-Technical'].map((type) {
-                          return DropdownMenuItem(
-                            value: type,
-                            child: Text(type),
-                          );
-                        }).toList(),
-                    onChanged: (val) => setState(() => _selectedType = val!),
-                  ),
+            // Type Selector
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: theme.colors.muted,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedType,
+                  isExpanded: true,
+                  items:
+                      ['Technical', 'Non-Technical'].map((type) {
+                        return DropdownMenuItem(value: type, child: Text(type));
+                      }).toList(),
+                  onChanged: (val) => setState(() => _selectedType = val!),
                 ),
               ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: theme.colors.muted,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _isFree = true),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _isFree ? Colors.green : Colors.transparent,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Free',
+                            style: theme.typography.sm.copyWith(
+                              color:
+                                  _isFree
+                                      ? Colors.white
+                                      : theme.colors.mutedForeground,
+                              fontWeight:
+                                  _isFree ? FontWeight.w700 : FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _isFree = false),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: !_isFree ? Colors.orange : Colors.transparent,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Paid',
+                            style: theme.typography.sm.copyWith(
+                              color:
+                                  !_isFree
+                                      ? Colors.white
+                                      : theme.colors.mutedForeground,
+                              fontWeight:
+                                  !_isFree ? FontWeight.w700 : FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (!_isFree) ...[
               const SizedBox(height: 12),
-
-              Text(
-                'File name will be used as the Set Name.\nEach row should start with the Subtitle.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: theme.colors.mutedForeground,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              const Text(
-                'Format: Subtitle, Description, Question, Opt1, Opt2, Opt3, Opt4, Correct',
-                style: TextStyle(fontSize: 12, fontFamily: 'monospace'),
-              ),
-              const SizedBox(height: 32),
-
-              if (_isLoading)
-                CircularProgressIndicator(color: theme.colors.primary)
-              else
-                SizedBox(
-                  width: double.infinity,
-                  child: FButton(
-                    onPress: _importCSV,
-                    child: const Text('Pick CSV File'),
+              TextFormField(
+                controller: _priceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Price (₹)',
+                  hintText: 'Enter assessment price',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: theme.colors.primary),
                   ),
                 ),
+              ),
             ],
-          ),
+            const SizedBox(height: 12),
+
+            Text(
+              'File name will be used as the Set Name.\nEach row should start with the Subtitle.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: theme.colors.mutedForeground,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            const Text(
+              'Format: Subtitle, Description, Question, Opt1, Opt2, Opt3, Opt4, Correct',
+              style: TextStyle(fontSize: 12, fontFamily: 'monospace'),
+            ),
+            const SizedBox(height: 32),
+
+            if (_isLoading)
+              CircularProgressIndicator(color: theme.colors.primary)
+            else
+              SizedBox(
+                width: double.infinity,
+                child: FButton(
+                  onPress: _importCSV,
+                  child: const Text('Pick CSV File'),
+                ),
+              ),
+          ],
         ),
       ),
     );

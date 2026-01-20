@@ -349,17 +349,6 @@ class ShimmerLoading {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Course Image placeholder
-                Container(
-                  width: 80,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                const SizedBox(width: 12),
-
                 // Course Info placeholders
                 Expanded(
                   child: Column(

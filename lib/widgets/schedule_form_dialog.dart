@@ -8,7 +8,7 @@ class ScheduleFormDialog extends StatefulWidget {
   final TrainingSchedule? schedule; // Add optional schedule for editing
 
   const ScheduleFormDialog({
-    super.key, 
+    super.key,
     required this.trainingId,
     this.schedule, // Add this parameter
   });
@@ -59,7 +59,7 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
             icon: Icons.calendar_today_outlined,
           ),
           const SizedBox(height: 16),
-          
+
           _buildDateField(
             context: context,
             label: 'End Date',
@@ -69,14 +69,14 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
             isEnabled: _startDate != null,
           ),
           const SizedBox(height: 16),
-          
+
           _buildTimeField(context),
           const SizedBox(height: 16),
-          
+
           _buildCapacityField(context),
-          
+
           const Spacer(),
-          
+
           // Action buttons
           Row(
             children: [
@@ -164,19 +164,24 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
               children: [
                 Icon(
                   icon,
-                  color: isEnabled ? Theme.of(context).colorScheme.primary : Colors.grey[400],
+                  color:
+                      isEnabled
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey[400],
                   size: 18,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    value != null 
-                      ? '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}'
-                      : 'Select ${label.toLowerCase()}',
+                    value != null
+                        ? '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}'
+                        : 'Select ${label.toLowerCase()}',
                     style: TextStyle(
-                      color: value != null ? Colors.grey[800] : Colors.grey[500],
+                      color:
+                          value != null ? Colors.grey[800] : Colors.grey[500],
                       fontSize: 15,
-                      fontWeight: value != null ? FontWeight.w500 : FontWeight.w400,
+                      fontWeight:
+                          value != null ? FontWeight.w500 : FontWeight.w400,
                     ),
                   ),
                 ),
@@ -214,10 +219,7 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(
-                color: Colors.grey[300]!,
-                width: 1.5,
-              ),
+              border: Border.all(color: Colors.grey[300]!, width: 1.5),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
@@ -230,21 +232,17 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    _time != null 
-                      ? _time!.format(context)
-                      : 'Select time',
+                    _time != null ? _time!.format(context) : 'Select time',
                     style: TextStyle(
-                      color: _time != null ? Colors.grey[800] : Colors.grey[500],
+                      color:
+                          _time != null ? Colors.grey[800] : Colors.grey[500],
                       fontSize: 15,
-                      fontWeight: _time != null ? FontWeight.w500 : FontWeight.w400,
+                      fontWeight:
+                          _time != null ? FontWeight.w500 : FontWeight.w400,
                     ),
                   ),
                 ),
-                Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey[600],
-                  size: 20,
-                ),
+                Icon(Icons.arrow_drop_down, color: Colors.grey[600], size: 20),
               ],
             ),
           ),
@@ -270,10 +268,7 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
           controller: _capacityController,
           decoration: InputDecoration(
             hintText: 'Enter maximum number of students',
-            hintStyle: TextStyle(
-              color: Colors.grey[500],
-              fontSize: 15,
-            ),
+            hintStyle: TextStyle(color: Colors.grey[500], fontSize: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
@@ -297,10 +292,7 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
             ),
           ),
           keyboardType: TextInputType.number,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please enter capacity';
@@ -404,7 +396,6 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
         _startDate != null &&
         _endDate != null &&
         _time != null) {
-      
       if (_endDate!.isBefore(_startDate!)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -416,25 +407,31 @@ class _ScheduleFormDialogState extends State<ScheduleFormDialog> {
       }
 
       final schedule = TrainingSchedule(
-        id: widget.schedule?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        id:
+            widget.schedule?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
         startDate: _startDate!,
         endDate: _endDate!,
         time: _time!,
         capacity: int.parse(_capacityController.text.trim()),
         enrolledStudents: widget.schedule?.enrolledStudents ?? [],
-        notes: widget.schedule?.notes ?? [],
-        messages: widget.schedule?.messages ?? [],
       );
 
       if (widget.schedule != null) {
         // Update existing schedule
-        context.read<AdminProvider>().updateScheduleInTraining(widget.trainingId, schedule);
+        context.read<AdminProvider>().updateScheduleInTraining(
+          widget.trainingId,
+          schedule,
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Schedule updated successfully')),
         );
       } else {
         // Add new schedule
-        context.read<AdminProvider>().addScheduleToTraining(widget.trainingId, schedule);
+        context.read<AdminProvider>().addScheduleToTraining(
+          widget.trainingId,
+          schedule,
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Schedule added successfully')),
         );

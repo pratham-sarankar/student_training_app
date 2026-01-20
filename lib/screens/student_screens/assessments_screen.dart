@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:provider/provider.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../../services/assessment_service.dart';
 import '../../models/assessment_model.dart';
+import '../../models/user.dart';
 import '../../services/assessment_results_service.dart';
+import '../../services/user_service.dart';
 import 'test_screen.dart';
 
 class AssessmentsScreen extends StatefulWidget {
@@ -245,6 +247,54 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
                           fontSize: 14,
                         ),
                       ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          if (tests.any((t) => t.isFree))
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                "Practice Set (Free)",
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          if (tests.any((t) => !t.isFree)) ...[
+                            if (tests.any((t) => t.isFree))
+                              const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.colors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                "Premium",
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -275,6 +325,107 @@ class SetDetailsScreen extends StatefulWidget {
 }
 
 class _SetDetailsScreenState extends State<SetDetailsScreen> {
+  late Razorpay _razorpay;
+  final UserService _userService = UserService();
+  UserModel? _currentUser;
+  late AssessmentModel _pendingAssessment;
+
+  @override
+  void initState() {
+    super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await _userService.getCurrentUserData();
+    if (mounted) {
+      setState(() => _currentUser = user);
+    }
+  }
+
+  @override
+  void dispose() {
+    _razorpay.clear();
+    super.dispose();
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    await _userService.purchaseAssessment(_pendingAssessment.id);
+    await _loadUser();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Purchase successful! You can now take the test.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Payment Failed: ${response.message}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {}
+
+  void _processAssessmentPurchase(AssessmentModel assessment) async {
+    _pendingAssessment = assessment;
+    final options = {
+      'key': 'rzp_test_YOUR_KEY_HERE',
+      'amount': assessment.price * 100,
+      'name': 'Gradspark Assessment',
+      'description': assessment.title,
+      'prefill': {
+        'contact': _currentUser?.phoneNumber ?? '',
+        'email': _currentUser?.email ?? '',
+      },
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  void _showEnrolmentDialog(AssessmentModel assessment) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => FDialog(
+            title: Text('Premium Assessment'),
+            body: Text(
+              'This is a premium assessment. You need to pay ₹${assessment.price.toStringAsFixed(0)} to unlock it.',
+            ),
+            actions: [
+              FButton(
+                onPress: () => Navigator.pop(context),
+                style: FButtonStyle.ghost,
+                child: Text('Cancel'),
+              ),
+              FButton(
+                onPress: () {
+                  Navigator.pop(context);
+                  _processAssessmentPurchase(assessment);
+                },
+                child: Text('Pay Now'),
+              ),
+            ],
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
@@ -331,6 +482,16 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () async {
+            if (!assessment.isFree) {
+              final isPurchased =
+                  _currentUser?.purchasedAssessments.contains(assessment.id) ??
+                  false;
+              if (!isPurchased) {
+                _showEnrolmentDialog(assessment);
+                return;
+              }
+            }
+
             await Navigator.push(
               context,
               MaterialPageRoute(
@@ -338,7 +499,9 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                     (context) => TestScreen(assessmentData: assessment.toMap()),
               ),
             );
-            setState(() {}); // Refresh results
+            if (mounted) {
+              setState(() {}); // Refresh results
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -372,6 +535,31 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                         color: theme.colors.mutedForeground,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            assessment.isFree
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Colors.orange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        assessment.isFree
+                            ? "Practice Set"
+                            : "₹${assessment.price.toStringAsFixed(0)}",
+                        style: TextStyle(
+                          color:
+                              assessment.isFree ? Colors.green : Colors.orange,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],

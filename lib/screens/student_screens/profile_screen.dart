@@ -48,10 +48,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       final currentUser = _authService.currentUser;
       if (currentUser == null) {
-        setState(() {
-          _courseCount = 0;
-          _isLoadingCourseCount = false;
-        });
+        if (mounted) {
+          setState(() {
+            _courseCount = 0;
+            _isLoadingCourseCount = false;
+          });
+        }
         return;
       }
 
@@ -61,10 +63,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           await firestore.collection('users').doc(currentUser.uid).get();
 
       if (!userDoc.exists) {
-        setState(() {
-          _courseCount = 0;
-          _isLoadingCourseCount = false;
-        });
+        if (mounted) {
+          setState(() {
+            _courseCount = 0;
+            _isLoadingCourseCount = false;
+          });
+        }
         return;
       }
 
@@ -73,15 +77,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         userData['purchasedCourses'] ?? [],
       );
 
-      setState(() {
-        _courseCount = purchasedCourseIds.length;
-        _isLoadingCourseCount = false;
-      });
+      if (mounted) {
+        setState(() {
+          _courseCount = purchasedCourseIds.length;
+          _isLoadingCourseCount = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _courseCount = 0;
-        _isLoadingCourseCount = false;
-      });
+      if (mounted) {
+        setState(() {
+          _courseCount = 0;
+          _isLoadingCourseCount = false;
+        });
+      }
       print('Error loading course count: $e');
     }
   }

@@ -8,10 +8,10 @@ class Course {
   final double cost;
   final String duration;
   final String level;
-  final String image;
-  final List<Map<String, dynamic>> schedules;
+  final String tentativeStartDate;
   final DateTime createdAt;
   final bool isActive;
+  final double enrollmentFee;
   final String instructor;
   final List<String> topics;
   final String requirements;
@@ -23,10 +23,10 @@ class Course {
     required this.category,
     required this.description,
     required this.cost,
+    required this.enrollmentFee,
     required this.duration,
     required this.level,
-    required this.image,
-    required this.schedules,
+    required this.tentativeStartDate,
     required this.createdAt,
     required this.isActive,
     required this.instructor,
@@ -42,10 +42,10 @@ class Course {
       category: map['category'] ?? '',
       description: map['description'] ?? '',
       cost: (map['cost'] ?? 0.0).toDouble(),
+      enrollmentFee: (map['enrollmentFee'] ?? 0.0).toDouble(),
       duration: map['duration'] ?? '',
       level: map['level'] ?? '',
-      image: map['image'] ?? '',
-      schedules: List<Map<String, dynamic>>.from(map['schedules'] ?? []),
+      tentativeStartDate: map['tentativeStartDate'] ?? '',
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
       instructor: map['instructor'] ?? '',
@@ -61,10 +61,10 @@ class Course {
       'category': category,
       'description': description,
       'cost': cost,
+      'enrollmentFee': enrollmentFee,
       'duration': duration,
       'level': level,
-      'image': image,
-      'schedules': schedules,
+      'tentativeStartDate': tentativeStartDate,
       'createdAt': createdAt,
       'isActive': isActive,
       'instructor': instructor,
@@ -80,10 +80,10 @@ class Course {
     String? category,
     String? description,
     double? cost,
+    double? enrollmentFee,
     String? duration,
     String? level,
-    String? image,
-    List<Map<String, dynamic>>? schedules,
+    String? tentativeStartDate,
     DateTime? createdAt,
     bool? isActive,
     String? instructor,
@@ -97,10 +97,10 @@ class Course {
       category: category ?? this.category,
       description: description ?? this.description,
       cost: cost ?? this.cost,
+      enrollmentFee: enrollmentFee ?? this.enrollmentFee,
       duration: duration ?? this.duration,
       level: level ?? this.level,
-      image: image ?? this.image,
-      schedules: schedules ?? this.schedules,
+      tentativeStartDate: tentativeStartDate ?? this.tentativeStartDate,
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
       instructor: instructor ?? this.instructor,

@@ -38,6 +38,8 @@ class AssessmentModel {
   final String setName; // The CSV file name / Set name
   final String description; // Description for the sub-test
   final String type; // 'technical' or 'non_technical'
+  final bool isFree;
+  final double price;
   final List<Question> questions;
   final int timeLimitMinutes;
   final int passingMarks;
@@ -49,6 +51,8 @@ class AssessmentModel {
     required this.setName,
     required this.description,
     required this.type,
+    this.isFree = true,
+    this.price = 0.0,
     required this.questions,
     this.timeLimitMinutes = 15,
     this.passingMarks = 9,
@@ -61,6 +65,8 @@ class AssessmentModel {
       'setName': setName,
       'description': description,
       'type': type,
+      'isFree': isFree,
+      'price': price,
       'questions': questions.map((q) => q.toMap()).toList(),
       'timeLimitMinutes': timeLimitMinutes,
       'passingMarks': passingMarks,
@@ -75,6 +81,8 @@ class AssessmentModel {
       setName: map['setName'] ?? 'General',
       description: map['description'] ?? '',
       type: map['type'] ?? 'technical',
+      isFree: map['isFree'] ?? true,
+      price: (map['price'] ?? 0.0).toDouble(),
       questions:
           (map['questions'] as List<dynamic>? ?? [])
               .map((q) => Question.fromMap(q as Map<String, dynamic>))
@@ -91,6 +99,8 @@ class AssessmentModel {
     String? setName,
     String? description,
     String? type,
+    bool? isFree,
+    double? price,
     List<Question>? questions,
     int? timeLimitMinutes,
     int? passingMarks,
@@ -102,6 +112,8 @@ class AssessmentModel {
       setName: setName ?? this.setName,
       description: description ?? this.description,
       type: type ?? this.type,
+      isFree: isFree ?? this.isFree,
+      price: price ?? this.price,
       questions: questions ?? this.questions,
       timeLimitMinutes: timeLimitMinutes ?? this.timeLimitMinutes,
       passingMarks: passingMarks ?? this.passingMarks,
