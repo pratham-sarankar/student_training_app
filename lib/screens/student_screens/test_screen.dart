@@ -25,7 +25,8 @@ class _TestScreenState extends State<TestScreen> {
     super.initState();
     _questions = widget.assessmentData['questions'] ?? [];
     if (_questions.isNotEmpty) {
-      int durationMinutes = widget.assessmentData['duration_minutes'] ?? 0;
+      // Use timeLimitMinutes from dynamic map
+      int durationMinutes = widget.assessmentData['timeLimitMinutes'] ?? 15;
       _remainingSeconds = durationMinutes * 60;
       _startTimer();
     }
@@ -34,9 +35,11 @@ class _TestScreenState extends State<TestScreen> {
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
-        setState(() {
-          _remainingSeconds--;
-        });
+        if (mounted) {
+          setState(() {
+            _remainingSeconds--;
+          });
+        }
       } else {
         _timer?.cancel();
         _submitTest();
@@ -52,13 +55,16 @@ class _TestScreenState extends State<TestScreen> {
 
   void _submitTest() {
     _timer?.cancel();
-    setState(() {
-      _isSubmitted = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isSubmitted = true;
+      });
+    }
+
     // Calculate score
     int score = 0;
     for (int i = 0; i < _questions.length; i++) {
-      if (_selectedAnswers[i] == _questions[i]['correct_option_index']) {
+      if (_selectedAnswers[i] == _questions[i]['correctOptionIndex']) {
         score++;
       }
     }
@@ -72,17 +78,44 @@ class _TestScreenState extends State<TestScreen> {
       );
     }
 
-    // Show result dialog or navigate to result screen
+    final passingMarks = widget.assessmentData['passingMarks'] ?? 9;
+    final isPassed = score >= passingMarks;
+
+    // Show result dialog
     showDialog(
       context: context,
       barrierDismissible: false,
       builder:
-          (context) => AlertDialog(
-            title: const Text('Assessment Completed'),
-            content: Text('You scored $score out of ${_questions.length}'),
+          (context) => FDialog(
+            title: Text(isPassed ? 'Congratulations!' : 'Try Again'),
+            body: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isPassed ? Icons.check_circle : Icons.cancel,
+                  size: 48,
+                  color: isPassed ? Colors.green : Colors.red,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'You scored $score out of ${_questions.length}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  isPassed
+                      ? 'You passed the assessment.'
+                      : 'You did not reach the passing score of $passingMarks.',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
             actions: [
-              TextButton(
-                onPressed: () {
+              FButton(
+                onPress: () {
                   Navigator.pop(context); // Close dialog
                   Navigator.pop(context); // Go back to assessments screen
                 },
@@ -124,30 +157,33 @@ class _TestScreenState extends State<TestScreen> {
     }
 
     final currentQuestion = _questions[_currentQuestionIndex];
+    final bool isLastQuestion = _currentQuestionIndex == _questions.length - 1;
 
     return Scaffold(
       backgroundColor: theme.colors.background,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: theme.colors.background,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.close, color: theme.colors.foreground),
           onPressed: () {
-            // Confirm exit
             showDialog(
               context: context,
               builder:
-                  (context) => AlertDialog(
+                  (context) => FDialog(
                     title: const Text('Quit Assessment?'),
-                    content: const Text('Your progress will be lost.'),
+                    body: const Text('Your progress will be lost.'),
                     actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
+                      FButton(
+                        style: FButtonStyle.outline,
+                        onPress: () => Navigator.pop(context),
                         child: const Text('Cancel'),
                       ),
-                      TextButton(
-                        onPressed: () {
+                      FButton(
+                        style: FButtonStyle.destructive,
+                        onPress: () {
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },
@@ -161,171 +197,175 @@ class _TestScreenState extends State<TestScreen> {
         title: Text(
           _formatTime(_remainingSeconds),
           style: TextStyle(
-            color: theme.colors.primary,
+            color: const Color(0xFF004D61),
+            fontSize: 24,
             fontWeight: FontWeight.bold,
             fontFamily: 'monospace',
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Progress Bar
-            LinearProgressIndicator(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Progress Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: LinearProgressIndicator(
               value: (_currentQuestionIndex + 1) / _questions.length,
               backgroundColor: theme.colors.muted.withValues(alpha: 0.2),
-              color: theme.colors.primary,
-              minHeight: 6,
-              borderRadius: BorderRadius.circular(3),
+              color: const Color(0xFF004D61),
+              minHeight: 4,
             ),
-            const SizedBox(height: 16),
+          ),
 
-            // Question Counter
-            Text(
-              'Question ${_currentQuestionIndex + 1}/${_questions.length}',
-              style: TextStyle(
-                color: theme.colors.mutedForeground,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 16),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Question Counter
+                  Text(
+                    'Question ${_currentQuestionIndex + 1}/${_questions.length}',
+                    style: TextStyle(
+                      color: theme.colors.mutedForeground,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
-            // Question Text
-            Text(
-              currentQuestion['question'],
-              style: TextStyle(
-                color: theme.colors.foreground,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
+                  // Question Text
+                  Text(
+                    currentQuestion['questionText'],
+                    style: TextStyle(
+                      color: theme.colors.foreground,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
 
-            // Options
-            Expanded(
-              child: ListView.builder(
-                itemCount: (currentQuestion['options'] as List).length,
-                itemBuilder: (context, index) {
-                  final option = currentQuestion['options'][index];
-                  final isSelected =
-                      _selectedAnswers[_currentQuestionIndex] == index;
+                  // Options
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: (currentQuestion['options'] as List).length,
+                      itemBuilder: (context, index) {
+                        final option = currentQuestion['options'][index];
+                        final isSelected =
+                            _selectedAnswers[_currentQuestionIndex] == index;
 
-                  return GestureDetector(
-                    onTap:
-                        _isSubmitted
-                            ? null
-                            : () {
-                              setState(() {
-                                _selectedAnswers[_currentQuestionIndex] = index;
-                              });
-                            },
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color:
-                            isSelected
-                                ? theme.colors.primary.withValues(alpha: 0.1)
-                                : theme.colors.background,
-                        border: Border.all(
-                          color:
-                              isSelected
-                                  ? theme.colors.primary
-                                  : theme.colors.border,
-                          width: isSelected ? 2 : 1,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 24,
+                        return GestureDetector(
+                          onTap:
+                              _isSubmitted
+                                  ? null
+                                  : () {
+                                    if (mounted) {
+                                      setState(() {
+                                        _selectedAnswers[_currentQuestionIndex] =
+                                            index;
+                                      });
+                                    }
+                                  },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
+                              color: theme.colors.background,
                               border: Border.all(
                                 color:
                                     isSelected
-                                        ? theme.colors.primary
-                                        : theme.colors.mutedForeground,
-                                width: 2,
+                                        ? const Color(0xFF004D61)
+                                        : const Color(0xFFE0E0E0),
+                                width: isSelected ? 1.5 : 1,
                               ),
-                              color: isSelected ? theme.colors.primary : null,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child:
-                                isSelected
-                                    ? const Icon(
-                                      Icons.check,
-                                      size: 16,
-                                      color: Colors.white,
-                                    )
-                                    : null,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              option,
-                              style: TextStyle(
-                                color:
-                                    isSelected
-                                        ? theme.colors.primary
-                                        : theme.colors.foreground,
-                                fontWeight:
-                                    isSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.normal,
-                              ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 22,
+                                  height: 22,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color:
+                                          isSelected
+                                              ? const Color(0xFF004D61)
+                                              : const Color(0xFFBDBDBD),
+                                      width: isSelected ? 6 : 1.5,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    option,
+                                    style: TextStyle(
+                                      color: theme.colors.foreground,
+                                      fontSize: 16,
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
             ),
+          ),
 
-            // Navigation Buttons
-            const SizedBox(height: 16),
-            Row(
+          // Bottom Buttons
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
               children: [
-                if (_currentQuestionIndex > 0)
+                if (isLastQuestion && _currentQuestionIndex > 0) ...[
                   Expanded(
                     child: FButton(
                       style: FButtonStyle.outline,
                       onPress: () {
-                        setState(() {
-                          _currentQuestionIndex--;
-                        });
+                        if (mounted) setState(() => _currentQuestionIndex--);
                       },
                       child: const Text('Previous'),
                     ),
                   ),
-                if (_currentQuestionIndex > 0) const SizedBox(width: 16),
+                  const SizedBox(width: 16),
+                ],
                 Expanded(
                   child: FButton(
                     onPress: () {
-                      if (_currentQuestionIndex < _questions.length - 1) {
-                        setState(() {
-                          _currentQuestionIndex++;
-                        });
+                      if (!isLastQuestion) {
+                        if (mounted) setState(() => _currentQuestionIndex++);
                       } else {
                         _submitTest();
                       }
                     },
                     child: Text(
-                      _currentQuestionIndex < _questions.length - 1
-                          ? 'Next'
-                          : 'Submit',
+                      isLastQuestion ? 'Submit' : 'Next',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

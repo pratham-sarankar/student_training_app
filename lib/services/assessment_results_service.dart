@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../models/assessment_model.dart';
 
 class AssessmentResult {
   final int score;
@@ -48,10 +49,18 @@ class AssessmentResultsService {
     List<String> average = [];
 
     for (var assessment in assessments) {
-      if (assessment is! Map<String, dynamic>) continue;
+      String id;
+      String title;
 
-      String id = assessment['id'];
-      String title = assessment['title'];
+      if (assessment is Map<String, dynamic>) {
+        id = assessment['id'];
+        title = assessment['title'];
+      } else if (assessment is AssessmentModel) {
+        id = assessment.id;
+        title = assessment.title;
+      } else {
+        continue;
+      }
 
       if (_results.containsKey(id)) {
         double percentage = _results[id]!.percentage;
@@ -70,8 +79,14 @@ class AssessmentResultsService {
 
   bool hasTakenAny(List<dynamic> assessments) {
     for (var assessment in assessments) {
-      if (assessment is Map<String, dynamic> &&
-          _results.containsKey(assessment['id'])) {
+      String? id;
+      if (assessment is Map<String, dynamic>) {
+        id = assessment['id'];
+      } else if (assessment is AssessmentModel) {
+        id = assessment.id;
+      }
+
+      if (id != null && _results.containsKey(id)) {
         return true;
       }
     }
@@ -83,9 +98,15 @@ class AssessmentResultsService {
     int totalQuestions = 0;
 
     for (var assessment in assessments) {
-      if (assessment is Map<String, dynamic> &&
-          _results.containsKey(assessment['id'])) {
-        var result = _results[assessment['id']]!;
+      String? id;
+      if (assessment is Map<String, dynamic>) {
+        id = assessment['id'];
+      } else if (assessment is AssessmentModel) {
+        id = assessment.id;
+      }
+
+      if (id != null && _results.containsKey(id)) {
+        var result = _results[id]!;
         totalScore += result.score;
         totalQuestions += result.total;
       }

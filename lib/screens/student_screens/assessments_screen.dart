@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'assessment_list_screen.dart';
+import 'package:provider/provider.dart';
+import '../../services/assessment_service.dart';
+import '../../models/assessment_model.dart';
 import '../../services/assessment_results_service.dart';
+import 'test_screen.dart';
 
 class AssessmentsScreen extends StatefulWidget {
   const AssessmentsScreen({super.key});
@@ -13,34 +14,9 @@ class AssessmentsScreen extends StatefulWidget {
 }
 
 class _AssessmentsScreenState extends State<AssessmentsScreen> {
-  Map<String, dynamic> _data = {};
-  bool _isLoading = true;
   String _selectedCategory = 'Technical';
   final List<String> _categories = ['Technical', 'Non-Technical'];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    try {
-      final String response = await rootBundle.loadString(
-        'assets/data/assessments.json',
-      );
-      final data = json.decode(response);
-      setState(() {
-        _data = data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      debugPrint("Error loading data: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+  final AssessmentService _assessmentService = AssessmentService();
 
   @override
   Widget build(BuildContext context) {
@@ -62,143 +38,179 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
           ),
         ),
       ),
-      body:
-          _isLoading
-              ? Center(
-                child: CircularProgressIndicator(color: theme.colors.primary),
-              )
-              : Column(
-                children: [
-                  // Custom Tabs (Chips)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      children:
-                          _categories.asMap().entries.map((entry) {
-                            int idx = entry.key;
-                            String category = entry.value;
-                            bool isSelected = _selectedCategory == category;
+      body: StreamBuilder<List<AssessmentModel>>(
+        stream: _assessmentService.getAssessments(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(color: theme.colors.primary),
+            );
+          }
 
-                            // Define custom colors
-                            Color activeColor =
-                                category == 'Technical'
-                                    ? const Color(0xFF0097A7)
-                                    : Colors.amber;
-                            Color activeTextColor = Colors.white;
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
 
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedCategory = category;
-                                  });
-                                },
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  margin:
-                                      idx == 0
-                                          ? const EdgeInsets.only(right: 8)
-                                          : const EdgeInsets.only(left: 8),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
+          final allAssessments = snapshot.data ?? [];
+          final filteredAssessments =
+              allAssessments
+                  .where(
+                    (a) =>
+                        a.type.toLowerCase() == _selectedCategory.toLowerCase(),
+                  )
+                  .toList();
+
+          // Group by Set Name
+          final Map<String, List<AssessmentModel>> sets = {};
+          for (var a in filteredAssessments) {
+            if (!sets.containsKey(a.setName)) {
+              sets[a.setName] = [];
+            }
+            sets[a.setName]!.add(a);
+          }
+
+          final setNames = sets.keys.toList()..sort();
+
+          return Column(
+            children: [
+              // Custom Tabs
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children:
+                      _categories.asMap().entries.map((entry) {
+                        int idx = entry.key;
+                        String category = entry.value;
+                        bool isSelected = _selectedCategory == category;
+                        Color activeColor =
+                            category == 'Technical'
+                                ? const Color(0xFF0097A7)
+                                : Colors.amber;
+
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap:
+                                () => setState(
+                                  () => _selectedCategory = category,
+                                ),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin:
+                                  idx == 0
+                                      ? const EdgeInsets.only(right: 8)
+                                      : const EdgeInsets.only(left: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color:
+                                    isSelected
+                                        ? activeColor
+                                        : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color:
+                                      isSelected
+                                          ? activeColor
+                                          : theme.colors.border,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  category,
+                                  style: theme.typography.sm.copyWith(
+                                    fontWeight: FontWeight.w700,
                                     color:
                                         isSelected
-                                            ? activeColor
-                                            : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color:
-                                          isSelected
-                                              ? activeColor
-                                              : theme.colors.border,
-                                    ),
-                                    boxShadow:
-                                        isSelected
-                                            ? [
-                                              BoxShadow(
-                                                color: activeColor.withValues(
-                                                  alpha: 0.3,
-                                                ),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ]
-                                            : null,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '$category',
-                                      style: theme.typography.sm.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color:
-                                            isSelected
-                                                ? activeTextColor
-                                                : theme.colors.mutedForeground,
-                                      ),
-                                    ),
+                                            ? Colors.white
+                                            : theme.colors.mutedForeground,
                                   ),
                                 ),
                               ),
-                            );
-                          }).toList(),
-                    ),
-                  ),
-
-                  // Content
-                  Expanded(child: _buildSetList(theme)),
-                ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                ),
               ),
+
+              // Sets List
+              Expanded(
+                child:
+                    setNames.isEmpty
+                        ? Center(
+                          child: Text(
+                            'No $_selectedCategory assessments available.',
+                            style: TextStyle(
+                              color: theme.colors.mutedForeground,
+                            ),
+                          ),
+                        )
+                        : ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: setNames.length,
+                          itemBuilder: (context, index) {
+                            final setName = setNames[index];
+                            final testCount = sets[setName]!.length;
+                            return _buildSetCard(
+                              context,
+                              setName,
+                              testCount,
+                              sets[setName]!,
+                            );
+                          },
+                        ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildSetList(FThemeData theme) {
-    // Currently acting as if multiple sets might exist, but hardcoding "Set 1" as per request
-    final count =
-        _selectedCategory == 'Technical'
-            ? (_data['technical'] as List? ?? []).length
-            : (_data['non_technical'] as List? ?? []).length;
+  Widget _buildSetCard(
+    BuildContext context,
+    String setName,
+    int testCount,
+    List<AssessmentModel> tests,
+  ) {
+    final theme = context.theme;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        GestureDetector(
-          onTap: () async {
-            // Navigate to the list screen
-            await Navigator.push(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: theme.colors.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (context) => AssessmentListScreen(
-                      title: '$_selectedCategory - PracticeSet 1',
-                      assessments:
-                          _selectedCategory == 'Technical'
-                              ? (_data['technical'] ?? [])
-                              : (_data['non_technical'] ?? []),
+                    (context) => SetDetailsScreen(
+                      setName: setName,
+                      category: _selectedCategory,
+                      tests: tests,
                     ),
               ),
             );
-            // Refresh to show any progress updates
-            setState(() {});
           },
-          child: Container(
+          child: Padding(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: theme.colors.background,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: theme.colors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
             child: Row(
               children: [
                 Container(
@@ -208,9 +220,9 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    Icons.folder_copy_outlined,
+                    Icons.folder_open,
                     color: theme.colors.primary,
-                    size: 28,
+                    size: 24,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -219,72 +231,239 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Practice Set 1',
+                        setName,
                         style: TextStyle(
                           color: theme.colors.foreground,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 4),
                       Text(
-                        '$count Tests',
+                        '$testCount Tests',
                         style: TextStyle(
                           color: theme.colors.mutedForeground,
                           fontSize: 14,
                         ),
                       ),
-                      if (AssessmentResultsService().hasTakenAny(
-                        _selectedCategory == 'Technical'
-                            ? (_data['technical'] ?? [])
-                            : (_data['non_technical'] ?? []),
-                      )) ...[
-                        const SizedBox(height: 8),
-                        _buildSetStats(
-                          theme,
-                          _selectedCategory == 'Technical'
-                              ? (_data['technical'] ?? [])
-                              : (_data['non_technical'] ?? []),
-                        ),
-                      ],
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: theme.colors.mutedForeground,
+                Icon(Icons.chevron_right, color: theme.colors.mutedForeground),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SetDetailsScreen extends StatefulWidget {
+  final String setName;
+  final String category;
+  final List<AssessmentModel> tests;
+
+  const SetDetailsScreen({
+    super.key,
+    required this.setName,
+    required this.category,
+    required this.tests,
+  });
+
+  @override
+  State<SetDetailsScreen> createState() => _SetDetailsScreenState();
+}
+
+class _SetDetailsScreenState extends State<SetDetailsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+
+    return Scaffold(
+      backgroundColor: theme.colors.background,
+      appBar: AppBar(
+        backgroundColor: theme.colors.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.colors.foreground),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          '${widget.category} - ${widget.setName}',
+          style: TextStyle(
+            color: theme.colors.foreground,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: widget.tests.length,
+        itemBuilder: (context, index) {
+          return _buildTestCard(context, widget.tests[index]);
+        },
+      ),
+    );
+  }
+
+  Widget _buildTestCard(BuildContext context, AssessmentModel assessment) {
+    final theme = context.theme;
+    final result = AssessmentResultsService().getResult(assessment.id);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: theme.colors.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => TestScreen(assessmentData: assessment.toMap()),
+              ),
+            );
+            setState(() {}); // Refresh results
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        "${assessment.questions.length} Questions",
+                        style: TextStyle(
+                          color: theme.colors.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "${assessment.timeLimitMinutes} mins",
+                      style: TextStyle(
+                        color: theme.colors.mutedForeground,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  assessment.title,
+                  style: TextStyle(
+                    color: theme.colors.foreground,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (assessment.description.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    assessment.description,
+                    style: TextStyle(
+                      color: theme.colors.mutedForeground,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline,
+                          size: 16,
+                          color: theme.colors.mutedForeground,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Pass: ${assessment.passingMarks} marks",
+                          style: TextStyle(
+                            color: theme.colors.mutedForeground,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    if (result != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              (result.score >= assessment.passingMarks)
+                                  ? Colors.green.withValues(alpha: 0.1)
+                                  : Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          (result.score >= assessment.passingMarks)
+                              ? 'Passed'
+                              : 'Failed',
+                          style: TextStyle(
+                            color:
+                                (result.score >= assessment.passingMarks)
+                                    ? Colors.green
+                                    : Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.colors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildSetStats(FThemeData theme, List<dynamic> assessments) {
-    final service = AssessmentResultsService();
-    final avg = service.getAverageScore(assessments);
-
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: theme.colors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            'Avg Score: ${avg.toStringAsFixed(1)}%',
-            style: TextStyle(
-              color: theme.colors.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

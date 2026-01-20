@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:learn_work/models/traning.dart';
 import 'package:learn_work/models/job.dart';
 import 'package:learn_work/models/user.dart';
+import 'package:learn_work/models/assessment_model.dart';
 import 'package:learn_work/services/admin_service.dart';
+import 'package:learn_work/services/assessment_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -11,6 +13,7 @@ import 'package:learn_work/services/notification_service.dart';
 class AdminProvider extends ChangeNotifier {
   final AdminService _adminService = AdminService();
   final NotificationService _notificationService = NotificationService();
+  final AssessmentService _assessmentService = AssessmentService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // ... existing code ...
@@ -83,6 +86,7 @@ class AdminProvider extends ChangeNotifier {
 
   List<Job> _jobs = [];
   List<Training> _trainings = [];
+  List<AssessmentModel> _assessments = [];
   List<UserModel> _adminUsers = [];
   List<UserModel> _allStudents = [];
   int _selectedIndex = 0;
@@ -96,6 +100,7 @@ class AdminProvider extends ChangeNotifier {
   // Getters
   List<Job> get jobs => _jobs;
   List<Training> get trainings => _trainings;
+  List<AssessmentModel> get assessments => _assessments;
   List<UserModel> get adminUsers => _adminUsers;
   List<UserModel> get allStudents => _allStudents;
   int get selectedIndex => _selectedIndex;
@@ -152,6 +157,7 @@ class AdminProvider extends ChangeNotifier {
       // Load jobs and trainings from Firestore
       await loadJobs();
       await loadTrainings();
+      await loadAssessments();
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -803,45 +809,76 @@ class AdminProvider extends ChangeNotifier {
           'AdminProvider: Training has ${training.schedules.length} schedules before deletion',
         );
 
-        // Remove from local state first
-        final initialCount = training.schedules.length;
-        training.schedules.removeWhere((s) => s.id == scheduleId);
-        final finalCount = training.schedules.length;
-        print(
-          'AdminProvider: Removed ${initialCount - finalCount} schedules from local state',
+        // Remove from local state
+        final scheduleIndex = training.schedules.indexWhere(
+          (s) => s.id == scheduleId,
         );
-        print(
-          'AdminProvider: Training now has ${training.schedules.length} schedules',
-        );
+        if (scheduleIndex != -1) {
+          training.schedules.removeAt(scheduleIndex);
+          print('AdminProvider: Removed schedule from local state');
 
-        // Update in Firestore
-        final updatedSchedules =
-            training.schedules.map((s) => s.toJson()).toList();
-        print(
-          'AdminProvider: Updating Firestore with ${updatedSchedules.length} schedules',
-        );
+          // Update in Firestore
+          final updatedSchedules =
+              training.schedules.map((s) => s.toJson()).toList();
+          await _firestore.collection('courses').doc(trainingId).update({
+            'schedules': updatedSchedules,
+          });
+          print('AdminProvider: Firestore updated successfully');
 
-        await _firestore.collection('courses').doc(trainingId).update({
-          'schedules': updatedSchedules,
-        });
-
-        print('AdminProvider: Firestore updated successfully');
-
-        if (!_disposed) {
-          print('AdminProvider: Notifying listeners');
-          notifyListeners();
+          if (!_disposed) {
+            notifyListeners();
+          }
         }
-
-        print('AdminProvider: Schedule deletion completed successfully');
-      } else {
-        print('AdminProvider: Training not found with ID: $trainingId');
       }
     } catch (e) {
-      print('AdminProvider: Error deleting schedule: $e');
+      print('Error deleting schedule: $e');
       _errorMessage = 'Failed to delete schedule: $e';
       if (!_disposed) {
         notifyListeners();
       }
+    }
+  }
+
+  // Load assessments
+  Future<void> loadAssessments() async {
+    try {
+      _assessmentService.getAssessments().listen((assessments) {
+        if (!_disposed) {
+          _assessments = assessments;
+          notifyListeners();
+        }
+      });
+    } catch (e) {
+      print('Error loading assessments: $e');
+      _errorMessage = 'Failed to load assessments: $e';
+      if (!_disposed) notifyListeners();
+    }
+  }
+
+  // Add assessment
+  Future<void> addAssessment(AssessmentModel assessment) async {
+    try {
+      setState(isLoading: true, errorMessage: null);
+      await _assessmentService.addAssessment(assessment);
+      // Logic for local update if not using stream or for immediate feedback
+      // Stream will handle the update usually
+    } catch (e) {
+      print('Error adding assessment: $e');
+      _errorMessage = 'Failed to add assessment: $e';
+      if (!_disposed) notifyListeners();
+    } finally {
+      setState(isLoading: false);
+    }
+  }
+
+  // Delete assessment
+  Future<void> deleteAssessment(String assessmentId) async {
+    try {
+      await _assessmentService.deleteAssessment(assessmentId);
+    } catch (e) {
+      print('Error deleting assessment: $e');
+      _errorMessage = 'Failed to delete assessment: $e';
+      if (!_disposed) notifyListeners();
     }
   }
 

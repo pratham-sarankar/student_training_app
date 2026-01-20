@@ -5,13 +5,13 @@ import 'package:learn_work/models/user.dart';
 class AdminService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   // Get current admin user
   User? get currentAdminUser => _auth.currentUser;
-  
+
   // Stream of admin auth state changes
   Stream<User?> get adminAuthStateChanges => _auth.authStateChanges();
-  
+
   // Check if current user is admin
   Future<bool> isCurrentUserAdmin() async {
     try {
@@ -20,9 +20,9 @@ class AdminService {
         print('🔐 AdminService: No current user found');
         return false;
       }
-      
+
       print('🔐 AdminService: Checking admin status for user: ${user.uid}');
-      
+
       final userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         final userData = userDoc.data();
@@ -38,7 +38,7 @@ class AdminService {
       return false;
     }
   }
-  
+
   // Sign in admin with email and password
   Future<UserCredential> signInAdminWithEmailAndPassword(
     String email,
@@ -46,47 +46,51 @@ class AdminService {
   ) async {
     try {
       print('🔐 AdminService: Attempting to sign in with email: $email');
-      
+
       final result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      
-      print('🔐 AdminService: Firebase Auth sign in successful for user: ${result.user?.uid}');
-      
+
+      print(
+        '🔐 AdminService: Firebase Auth sign in successful for user: ${result.user?.uid}',
+      );
+
       // Verify the user is actually an admin
       if (result.user != null) {
         print('🔐 AdminService: Checking if user has admin role...');
         final isAdmin = await isCurrentUserAdmin();
         print('🔐 AdminService: Admin role check result: $isAdmin');
-        
+
         if (!isAdmin) {
-          print('🔐 AdminService: User does not have admin role, signing out...');
+          print(
+            '🔐 AdminService: User does not have admin role, signing out...',
+          );
           // Sign out the user if they're not an admin
           await _auth.signOut();
           throw 'Access denied. This account is not authorized for admin access.';
         }
-        
+
         print('🔐 AdminService: Admin authentication successful!');
       }
-      
+
       return result;
     } catch (e) {
       print('🔐 AdminService: Error during admin sign in: $e');
-      
+
       // Don't automatically sign out on authentication errors during login
       // Let the calling code handle the error appropriately
       if (e.toString().contains('Access denied')) {
         // For role verification errors, throw the error as is
         throw e;
       }
-      
+
       // For authentication errors, just throw the error without signing out
       // This prevents the user from being signed out when they're just trying to log in
       throw _handleAuthError(e);
     }
   }
-  
+
   // Create admin user (this should only be used by super admins)
   Future<UserCredential> createAdminUser(
     String email,
@@ -100,18 +104,19 @@ class AdminService {
       if (currentUser == null) {
         throw 'Authentication required to create admin users.';
       }
-      
-      final currentUserDoc = await _firestore.collection('users').doc(currentUser.uid).get();
+
+      final currentUserDoc =
+          await _firestore.collection('users').doc(currentUser.uid).get();
       if (!currentUserDoc.exists || currentUserDoc.data()?['role'] != 'Admin') {
         throw 'Insufficient permissions. Only admins can create admin users.';
       }
-      
+
       // Create the user in Firebase Auth
       final result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      
+
       // Create admin user document in Firestore
       if (result.user != null) {
         final adminUser = UserModel(
@@ -124,19 +129,22 @@ class AdminService {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
-        
-        await _firestore.collection('users').doc(result.user!.uid).set(adminUser.toMap());
-        
+
+        await _firestore
+            .collection('users')
+            .doc(result.user!.uid)
+            .set(adminUser.toMap());
+
         // Update display name in Firebase Auth
         await result.user!.updateDisplayName('$firstName $lastName');
       }
-      
+
       return result;
     } catch (e) {
       throw _handleAuthError(e);
     }
   }
-  
+
   // Update admin user profile
   Future<void> updateAdminProfile({
     String? firstName,
@@ -147,7 +155,7 @@ class AdminService {
     try {
       final user = _auth.currentUser;
       if (user == null) throw 'No authenticated user found.';
-      
+
       // Update display name in Firebase Auth
       if (firstName != null || lastName != null) {
         final newDisplayName = '${firstName ?? ''} ${lastName ?? ''}'.trim();
@@ -155,95 +163,69 @@ class AdminService {
           await user.updateDisplayName(newDisplayName);
         }
       }
-      
+
       // Update user document in Firestore
       final updateData = <String, dynamic>{
         'updatedAt': Timestamp.fromDate(DateTime.now()),
       };
-      
+
       if (firstName != null) updateData['firstName'] = firstName;
       if (lastName != null) updateData['lastName'] = lastName;
       if (photoUrl != null) updateData['photoUrl'] = photoUrl;
       if (bio != null) updateData['bio'] = bio;
-      
+
       await _firestore.collection('users').doc(user.uid).update(updateData);
     } catch (e) {
       throw _handleAuthError(e);
     }
   }
-  
+
   // Get all admin users
   Future<List<UserModel>> getAllAdminUsers() async {
     try {
-      // First try with the complex query (requires index)
-      try {
-        final querySnapshot = await _firestore
-            .collection('users')
-            .where('role', isEqualTo: 'Admin')
-            .orderBy('createdAt', descending: true)
-            .get();
-        
-        return querySnapshot.docs.map((doc) {
-          return UserModel.fromMap(doc.data(), doc.id);
-        }).toList();
-      } catch (indexError) {
-        // If index error occurs, fall back to simpler query
-        print('Index not available, using fallback query: $indexError');
-        final querySnapshot = await _firestore
-            .collection('users')
-            .where('role', isEqualTo: 'Admin')
-            .get();
-        
-        final users = querySnapshot.docs.map((doc) {
-          return UserModel.fromMap(doc.data(), doc.id);
-        }).toList();
-        
-        // Sort manually in Dart
-        users.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        return users;
-      }
+      final querySnapshot =
+          await _firestore
+              .collection('users')
+              .where('role', isEqualTo: 'Admin')
+              .get();
+
+      final users =
+          querySnapshot.docs.map((doc) {
+            return UserModel.fromMap(doc.data(), doc.id);
+          }).toList();
+
+      // Sort manually in Dart to avoid requiring a composite index
+      users.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return users;
     } catch (e) {
       print('Error fetching admin users: $e');
       return [];
     }
   }
-  
+
   // Get all students
   Future<List<UserModel>> getAllStudents() async {
     try {
-      // First try with the complex query (requires index)
-      try {
-        final querySnapshot = await _firestore
-            .collection('users')
-            .where('role', isEqualTo: 'Student')
-            .orderBy('createdAt', descending: true)
-            .get();
-        
-        return querySnapshot.docs.map((doc) {
-          return UserModel.fromMap(doc.data(), doc.id);
-        }).toList();
-      } catch (indexError) {
-        // If index error occurs, fall back to simpler query
-        print('Index not available, using fallback query: $indexError');
-        final querySnapshot = await _firestore
-            .collection('users')
-            .where('role', isEqualTo: 'Student')
-            .get();
-        
-        final users = querySnapshot.docs.map((doc) {
-          return UserModel.fromMap(doc.data(), doc.id);
-        }).toList();
-        
-        // Sort manually in Dart
-        users.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        return users;
-      }
+      final querySnapshot =
+          await _firestore
+              .collection('users')
+              .where('role', isEqualTo: 'Student')
+              .get();
+
+      final users =
+          querySnapshot.docs.map((doc) {
+            return UserModel.fromMap(doc.data(), doc.id);
+          }).toList();
+
+      // Sort manually in Dart to avoid requiring a composite index
+      users.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return users;
     } catch (e) {
       print('Error fetching students: $e');
       return [];
     }
   }
-  
+
   // Update user job alerts
   Future<void> updateUserJobAlerts(String userId, bool jobAlerts) async {
     try {
@@ -255,7 +237,7 @@ class AdminService {
       throw 'Failed to update user job alerts: $e';
     }
   }
-  
+
   // Get admin user by ID
   Future<UserModel?> getAdminUserById(String uid) async {
     try {
@@ -269,7 +251,7 @@ class AdminService {
       return null;
     }
   }
-  
+
   // Change admin user role (only super admins can do this)
   Future<void> changeUserRole(String userId, String newRole) async {
     try {
@@ -277,17 +259,18 @@ class AdminService {
       if (currentUser == null) {
         throw 'Authentication required to change user roles.';
       }
-      
-      final currentUserDoc = await _firestore.collection('users').doc(currentUser.uid).get();
+
+      final currentUserDoc =
+          await _firestore.collection('users').doc(currentUser.uid).get();
       if (!currentUserDoc.exists || currentUserDoc.data()?['role'] != 'Admin') {
         throw 'Insufficient permissions. Only admins can change user roles.';
       }
-      
+
       // Validate role
       if (!['Student', 'Admin'].contains(newRole)) {
         throw 'Invalid role. Must be Student or Admin.';
       }
-      
+
       await _firestore.collection('users').doc(userId).update({
         'role': newRole,
         'updatedAt': Timestamp.fromDate(DateTime.now()),
@@ -296,7 +279,7 @@ class AdminService {
       throw _handleAuthError(e);
     }
   }
-  
+
   // Delete admin user (only super admins can do this)
   Future<void> deleteAdminUser(String userId) async {
     try {
@@ -304,27 +287,30 @@ class AdminService {
       if (currentUser == null) {
         throw 'Authentication required to delete users.';
       }
-      
+
       if (currentUser.uid == userId) {
         throw 'Cannot delete your own account.';
       }
-      
-      final currentUserDoc = await _firestore.collection('users').doc(currentUser.uid).get();
+
+      final currentUserDoc =
+          await _firestore.collection('users').doc(currentUser.uid).get();
       if (!currentUserDoc.exists || currentUserDoc.data()?['role'] != 'Admin') {
         throw 'Insufficient permissions. Only admins can delete users.';
       }
-      
+
       // Delete user document from Firestore
       await _firestore.collection('users').doc(userId).delete();
-      
+
       // Note: Deleting the Firebase Auth user requires admin SDK on the backend
       // For now, we'll just delete the Firestore document
-      print('User document deleted. Firebase Auth user deletion requires backend implementation.');
+      print(
+        'User document deleted. Firebase Auth user deletion requires backend implementation.',
+      );
     } catch (e) {
       throw _handleAuthError(e);
     }
   }
-  
+
   // Sign out admin
   Future<void> signOutAdmin() async {
     try {
@@ -333,7 +319,7 @@ class AdminService {
       throw _handleAuthError(e);
     }
   }
-  
+
   // Reset admin password
   Future<void> resetAdminPassword(String email) async {
     try {
@@ -342,7 +328,7 @@ class AdminService {
       throw _handleAuthError(e);
     }
   }
-  
+
   // Handle Firebase Auth errors
   String _handleAuthError(dynamic error) {
     if (error is FirebaseAuthException) {
