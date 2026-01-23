@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:learn_work/services/education_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:learn_work/widgets/shimmer_loading.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -579,11 +581,40 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                                 if (_resumeFileName == null)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8),
-                                    child: Text(
-                                      'Supported formats: PDF, DOC, DOCX',
-                                      style: theme.typography.xs.copyWith(
-                                        color: theme.colors.mutedForeground,
-                                      ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'Supported formats: PDF, DOC, DOCX',
+                                          style: theme.typography.xs.copyWith(
+                                            color: theme.colors.mutedForeground,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final url = Uri.parse(
+                                              'https://cvmaker.com/',
+                                            );
+                                            if (await canLaunchUrl(url)) {
+                                              await launchUrl(
+                                                url,
+                                                mode:
+                                                    LaunchMode
+                                                        .externalApplication,
+                                              );
+                                            }
+                                          },
+                                          child: Text(
+                                            'Don\'t have a resume? Create one free with CV Maker',
+                                            style: theme.typography.xs.copyWith(
+                                              color: theme.colors.primary,
+                                              fontWeight: FontWeight.w600,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                               ],

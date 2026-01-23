@@ -11,6 +11,7 @@ import 'package:learn_work/utils/service_locator.dart';
 import 'my_courses_screen.dart';
 import 'help_support_screen.dart';
 import 'about_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -353,6 +354,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   //   },
                   // ),
                   // const SizedBox(height: 8),
+                  _buildProfileOption(
+                    context,
+                    icon: Icons.description_outlined,
+                    title: 'Create Free CV',
+                    subtitle: 'Build your professional CV with CV Maker',
+                    onTap: () async {
+                      final url = Uri.parse('https://cvmaker.com/');
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Could not launch CV Maker'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 8),
+
                   _buildProfileOption(
                     context,
                     icon: Icons.help_outline,
