@@ -250,10 +250,13 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
                     children: [
                       Text(
                         setName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: theme.colors.foreground,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          height: 1.1,
                         ),
                       ),
                       Text(
@@ -580,10 +583,13 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                 const SizedBox(height: 16),
                 Text(
                   assessment.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: theme.colors.foreground,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
+                    height: 1.1,
                   ),
                 ),
                 if (assessment.description.isNotEmpty) ...[

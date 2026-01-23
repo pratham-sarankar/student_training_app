@@ -566,9 +566,12 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     children: [
                       Text(
                         job.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: theme.typography.lg.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colors.foreground,
+                          height: 1.1,
                         ),
                       ),
                       const SizedBox(height: 4),

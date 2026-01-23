@@ -169,9 +169,12 @@ class _TraningCourseDetailsScreenState
                                 children: [
                                   Text(
                                     widget.course['title'],
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     style: theme.typography.xl.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color: theme.colors.foreground,
+                                      height: 1.1,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
