@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../../services/assessment_service.dart';
 import '../../models/assessment_model.dart';
 import '../../models/user.dart';
 import '../../services/assessment_results_service.dart';
+import '../../models/assessment_result.dart';
 import '../../services/user_service.dart';
 import 'test_screen.dart';
+import 'assessment_analysis_screen.dart';
 
 class AssessmentsScreen extends StatefulWidget {
   const AssessmentsScreen({super.key});
@@ -19,10 +20,13 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
   String _selectedCategory = 'Technical';
   final List<String> _categories = ['Technical', 'Non-Technical'];
   final AssessmentService _assessmentService = AssessmentService();
+  final AssessmentResultsService _resultsService = AssessmentResultsService();
+  final UserService _userService = UserService();
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final userId = _userService.currentUser?.uid;
 
     return Scaffold(
       backgroundColor: theme.colors.background,
@@ -42,129 +46,141 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
       ),
       body: StreamBuilder<List<AssessmentModel>>(
         stream: _assessmentService.getAssessments(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        builder: (context, assessmentSnapshot) {
+          if (assessmentSnapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(color: theme.colors.primary),
             );
           }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+          if (assessmentSnapshot.hasError) {
+            return Center(child: Text('Error: ${assessmentSnapshot.error}'));
           }
 
-          final allAssessments = snapshot.data ?? [];
-          final filteredAssessments =
-              allAssessments
-                  .where(
-                    (a) =>
-                        a.type.toLowerCase() == _selectedCategory.toLowerCase(),
-                  )
-                  .toList();
+          final allAssessments = assessmentSnapshot.data ?? [];
 
-          // Group by Set Name
-          final Map<String, List<AssessmentModel>> sets = {};
-          for (var a in filteredAssessments) {
-            if (!sets.containsKey(a.setName)) {
-              sets[a.setName] = [];
-            }
-            sets[a.setName]!.add(a);
-          }
+          return StreamBuilder<List<AssessmentResult>>(
+            stream:
+                userId != null
+                    ? _resultsService.getUserResults(userId)
+                    : Stream.value([]),
+            builder: (context, resultSnapshot) {
+              final filteredAssessments =
+                  allAssessments
+                      .where(
+                        (a) =>
+                            a.type.toLowerCase() ==
+                            _selectedCategory.toLowerCase(),
+                      )
+                      .toList();
 
-          final setNames = sets.keys.toList()..sort();
+              // Group by Set Name
+              final Map<String, List<AssessmentModel>> sets = {};
+              for (var a in filteredAssessments) {
+                if (!sets.containsKey(a.setName)) {
+                  sets[a.setName] = [];
+                }
+                sets[a.setName]!.add(a);
+              }
 
-          return Column(
-            children: [
-              // Custom Tabs
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children:
-                      _categories.asMap().entries.map((entry) {
-                        int idx = entry.key;
-                        String category = entry.value;
-                        bool isSelected = _selectedCategory == category;
-                        Color activeColor =
-                            category == 'Technical'
-                                ? const Color(0xFF0097A7)
-                                : Colors.amber;
+              final setNames = sets.keys.toList()..sort();
 
-                        return Expanded(
-                          child: GestureDetector(
-                            onTap:
-                                () => setState(
-                                  () => _selectedCategory = category,
-                                ),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              margin:
-                                  idx == 0
-                                      ? const EdgeInsets.only(right: 8)
-                                      : const EdgeInsets.only(left: 8),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color:
-                                    isSelected
-                                        ? activeColor
-                                        : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color:
-                                      isSelected
-                                          ? activeColor
-                                          : theme.colors.border,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  category,
-                                  style: theme.typography.sm.copyWith(
-                                    fontWeight: FontWeight.w700,
+              return Column(
+                children: [
+                  // Custom Tabs
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children:
+                          _categories.asMap().entries.map((entry) {
+                            int idx = entry.key;
+                            String category = entry.value;
+                            bool isSelected = _selectedCategory == category;
+                            Color activeColor =
+                                category == 'Technical'
+                                    ? const Color(0xFF0097A7)
+                                    : Colors.amber;
+
+                            return Expanded(
+                              child: GestureDetector(
+                                onTap:
+                                    () => setState(
+                                      () => _selectedCategory = category,
+                                    ),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  margin:
+                                      idx == 0
+                                          ? const EdgeInsets.only(right: 8)
+                                          : const EdgeInsets.only(left: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
                                     color:
                                         isSelected
-                                            ? Colors.white
-                                            : theme.colors.mutedForeground,
+                                            ? activeColor
+                                            : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color:
+                                          isSelected
+                                              ? activeColor
+                                              : theme.colors.border,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      category,
+                                      style: theme.typography.sm.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color:
+                                            isSelected
+                                                ? Colors.white
+                                                : theme.colors.mutedForeground,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                ),
-              ),
-
-              // Sets List
-              Expanded(
-                child:
-                    setNames.isEmpty
-                        ? Center(
-                          child: Text(
-                            'No $_selectedCategory assessments available.',
-                            style: TextStyle(
-                              color: theme.colors.mutedForeground,
-                            ),
-                          ),
-                        )
-                        : ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: setNames.length,
-                          itemBuilder: (context, index) {
-                            final setName = setNames[index];
-                            final testCount = sets[setName]!.length;
-                            return _buildSetCard(
-                              context,
-                              setName,
-                              testCount,
-                              sets[setName]!,
                             );
-                          },
-                        ),
-              ),
-            ],
+                          }).toList(),
+                    ),
+                  ),
+
+                  // Sets List
+                  Expanded(
+                    child:
+                        setNames.isEmpty
+                            ? Center(
+                              child: Text(
+                                'No $_selectedCategory assessments available.',
+                                style: TextStyle(
+                                  color: theme.colors.mutedForeground,
+                                ),
+                              ),
+                            )
+                            : ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: setNames.length,
+                              itemBuilder: (context, index) {
+                                final setName = setNames[index];
+                                final testCount = sets[setName]!.length;
+                                return _buildSetCard(
+                                  context,
+                                  setName,
+                                  testCount,
+                                  sets[setName]!,
+                                );
+                              },
+                            ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),
@@ -325,18 +341,13 @@ class SetDetailsScreen extends StatefulWidget {
 }
 
 class _SetDetailsScreenState extends State<SetDetailsScreen> {
-  late Razorpay _razorpay;
   final UserService _userService = UserService();
+  final AssessmentResultsService _resultsService = AssessmentResultsService();
   UserModel? _currentUser;
-  late AssessmentModel _pendingAssessment;
 
   @override
   void initState() {
     super.initState();
-    _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     _loadUser();
   }
 
@@ -349,53 +360,20 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
 
   @override
   void dispose() {
-    _razorpay.clear();
     super.dispose();
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    await _userService.purchaseAssessment(_pendingAssessment.id);
+  void _processAssessmentPurchase(AssessmentModel assessment) async {
+    // Directly simulate successful purchase for now
+    await _userService.purchaseAssessment(assessment.id);
     await _loadUser();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Purchase successful! You can now take the test.'),
+          content: Text('"${assessment.title}" has been unlocked!'),
           backgroundColor: Colors.green,
         ),
       );
-    }
-  }
-
-  void _handlePaymentError(PaymentFailureResponse response) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Payment Failed: ${response.message}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  void _handleExternalWallet(ExternalWalletResponse response) {}
-
-  void _processAssessmentPurchase(AssessmentModel assessment) async {
-    _pendingAssessment = assessment;
-    final options = {
-      'key': 'rzp_test_YOUR_KEY_HERE',
-      'amount': assessment.price * 100,
-      'name': 'Gradspark Assessment',
-      'description': assessment.title,
-      'prefill': {
-        'contact': _currentUser?.phoneNumber ?? '',
-        'email': _currentUser?.email ?? '',
-      },
-    };
-
-    try {
-      _razorpay.open(options);
-    } catch (e) {
-      debugPrint('Error: $e');
     }
   }
 
@@ -404,22 +382,22 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
       context: context,
       builder:
           (context) => FDialog(
-            title: Text('Premium Assessment'),
+            title: const Text('Unlock Premium Assessment'),
             body: Text(
-              'This is a premium assessment. You need to pay ₹${assessment.price.toStringAsFixed(0)} to unlock it.',
+              'This is a premium assessment (₹${assessment.price.toStringAsFixed(0)}). Would you like to unlock it and start the test?',
             ),
             actions: [
               FButton(
                 onPress: () => Navigator.pop(context),
                 style: FButtonStyle.ghost,
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
               FButton(
                 onPress: () {
                   Navigator.pop(context);
                   _processAssessmentPurchase(assessment);
                 },
-                child: Text('Pay Now'),
+                child: const Text('Unlock Now'),
               ),
             ],
           ),
@@ -429,38 +407,55 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
+    final userId = _userService.currentUser?.uid;
 
-    return Scaffold(
-      backgroundColor: theme.colors.background,
-      appBar: AppBar(
-        backgroundColor: theme.colors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.colors.foreground),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          '${widget.category} - ${widget.setName}',
-          style: TextStyle(
-            color: theme.colors.foreground,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return StreamBuilder<List<AssessmentResult>>(
+      stream:
+          userId != null
+              ? _resultsService.getUserResults(userId)
+              : Stream.value([]),
+      builder: (context, snapshot) {
+        final results = snapshot.data ?? [];
+        final resultsMap = {for (var r in results) r.assessmentId: r};
+
+        return Scaffold(
+          backgroundColor: theme.colors.background,
+          appBar: AppBar(
+            backgroundColor: theme.colors.background,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: theme.colors.foreground),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              '${widget.category} - ${widget.setName}',
+              style: TextStyle(
+                color: theme.colors.foreground,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: widget.tests.length,
-        itemBuilder: (context, index) {
-          return _buildTestCard(context, widget.tests[index]);
-        },
-      ),
+          body: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: widget.tests.length,
+            itemBuilder: (context, index) {
+              final assessment = widget.tests[index];
+              final result = resultsMap[assessment.id];
+              return _buildTestCard(context, assessment, result);
+            },
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildTestCard(BuildContext context, AssessmentModel assessment) {
+  Widget _buildTestCard(
+    BuildContext context,
+    AssessmentModel assessment,
+    AssessmentResult? result,
+  ) {
     final theme = context.theme;
-    final result = AssessmentResultsService().getResult(assessment.id);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -482,6 +477,21 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () async {
+            if (result != null) {
+              // Show Analysis
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => AssessmentAnalysisScreen(
+                        assessment: assessment,
+                        result: result,
+                      ),
+                ),
+              );
+              return;
+            }
+
             if (!assessment.isFree) {
               final isPurchased =
                   _currentUser?.purchasedAssessments.contains(assessment.id) ??
@@ -499,9 +509,6 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                     (context) => TestScreen(assessmentData: assessment.toMap()),
               ),
             );
-            if (mounted) {
-              setState(() {}); // Refresh results
-            }
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -618,24 +625,30 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color:
-                              (result.score >= assessment.passingMarks)
-                                  ? Colors.green.withValues(alpha: 0.1)
-                                  : Colors.red.withValues(alpha: 0.1),
+                          color: theme.colors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          (result.score >= assessment.passingMarks)
-                              ? 'Passed'
-                              : 'Failed',
-                          style: TextStyle(
-                            color:
-                                (result.score >= assessment.passingMarks)
-                                    ? Colors.green
-                                    : Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                          border: Border.all(
+                            color: theme.colors.primary.withValues(alpha: 0.2),
                           ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              size: 14,
+                              color: theme.colors.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Completed',
+                              style: TextStyle(
+                                color: theme.colors.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       )
                     else

@@ -231,7 +231,7 @@ class _StudentsScreenState extends State<StudentsScreen>
             ),
             DataColumn(
               label: Text(
-                'Profile Status',
+                'Location',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
@@ -242,7 +242,7 @@ class _StudentsScreenState extends State<StudentsScreen>
             ),
             DataColumn(
               label: Text(
-                'Job Notifications',
+                'Profile Status',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
@@ -251,6 +251,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                 ),
               ),
             ),
+
             DataColumn(
               label: Text(
                 'Training Status',
@@ -320,6 +321,12 @@ class _StudentsScreenState extends State<StudentsScreen>
                       ),
                     ),
                     DataCell(
+                      Text(
+                        student.location ?? 'N/A',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    DataCell(
                       Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -353,38 +360,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                         ),
                       ),
                     ),
-                    DataCell(
-                      Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                student.jobAlerts
-                                    ? theme.colors.primary.withValues(
-                                      alpha: 0.1,
-                                    )
-                                    : theme.colors.destructive.withValues(
-                                      alpha: 0.1,
-                                    ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            student.jobAlerts ? 'Subscribed' : 'Not Subscribed',
-                            style: TextStyle(
-                              color:
-                                  student.jobAlerts
-                                      ? theme.colors.primary
-                                      : theme.colors.destructive,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+
                     DataCell(
                       Text(
                         enrolledTrainings.isNotEmpty
@@ -418,12 +394,6 @@ class _StudentsScreenState extends State<StudentsScreen>
                                 student,
                                 adminProvider,
                               );
-                            } else if (value == 'toggle') {
-                              _toggleSubscription(
-                                context,
-                                student,
-                                adminProvider,
-                              );
                             }
                           },
                           itemBuilder:
@@ -440,30 +410,6 @@ class _StudentsScreenState extends State<StudentsScreen>
                                       const SizedBox(width: 8),
                                       const Text(
                                         'View Details',
-                                        style: TextStyle(fontSize: 13),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<String>(
-                                  value: 'toggle',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        student.jobAlerts
-                                            ? Icons.notifications_off
-                                            : Icons.notifications_active,
-                                        color:
-                                            student.jobAlerts
-                                                ? theme.colors.mutedForeground
-                                                : theme.colors.primary,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        student.jobAlerts
-                                            ? 'Unsubscribe'
-                                            : 'Subscribe',
                                         style: TextStyle(fontSize: 13),
                                       ),
                                     ],
@@ -612,6 +558,12 @@ class _StudentsScreenState extends State<StudentsScreen>
                                     theme.colors.primary,
                                   ),
                                 _buildInfoTile(
+                                  Icons.location_on,
+                                  'Location',
+                                  student.location ?? 'N/A',
+                                  theme.colors.primary,
+                                ),
+                                _buildInfoTile(
                                   Icons.calendar_today,
                                   'Registration Date',
                                   _formatDate(student.createdAt),
@@ -624,18 +576,7 @@ class _StudentsScreenState extends State<StudentsScreen>
                                     student.formattedDateOfBirth ?? 'N/A',
                                     theme.colors.primary,
                                   ),
-                                _buildInfoTile(
-                                  student.jobAlerts
-                                      ? Icons.notifications_active
-                                      : Icons.notifications_off,
-                                  'Job Notifications',
-                                  student.jobAlerts
-                                      ? 'Subscribed'
-                                      : 'Not Subscribed',
-                                  student.jobAlerts
-                                      ? theme.colors.primary
-                                      : theme.colors.destructive,
-                                ),
+
                                 _buildInfoTile(
                                   student.hasCompletedProfile
                                       ? Icons.check_circle
@@ -875,38 +816,5 @@ class _StudentsScreenState extends State<StudentsScreen>
         ],
       ),
     );
-  }
-
-  void _toggleSubscription(
-    BuildContext context,
-    UserModel student,
-    AdminProvider adminProvider,
-  ) async {
-    final theme = context.theme;
-
-    try {
-      await adminProvider.updateUserJobAlerts(student.uid, !student.jobAlerts);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            !student.jobAlerts
-                ? '${student.fullName} subscribed to job notifications'
-                : '${student.fullName} unsubscribed from job notifications',
-          ),
-          backgroundColor:
-              !student.jobAlerts
-                  ? theme.colors.primary
-                  : theme.colors.mutedForeground,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update job notifications: $e'),
-          backgroundColor: theme.colors.destructive,
-        ),
-      );
-    }
   }
 }

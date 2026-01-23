@@ -65,7 +65,31 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child:
-                              widget.job.logo.isNotEmpty &&
+                              widget.job.company.toLowerCase() == 'deloitte'
+                                  ? Image.asset(
+                                    'assets/images/Deloitte.png',
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.contain,
+                                  )
+                                  : (widget.job.company.toLowerCase() ==
+                                          'tcs' ||
+                                      widget.job.company.toLowerCase() ==
+                                          'tata consultancy services')
+                                  ? Image.asset(
+                                    'assets/images/TCS.png',
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.contain,
+                                  )
+                                  : widget.job.company.toLowerCase() == 'wipro'
+                                  ? Image.asset(
+                                    'assets/images/wipro.png',
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.contain,
+                                  )
+                                  : widget.job.logo.isNotEmpty &&
                                       widget.job.logo.startsWith('http')
                                   ? Image.network(
                                     widget.job.logo,

@@ -471,7 +471,39 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child:
-                      job.logo.isNotEmpty && job.logo.startsWith('http')
+                      job.company.toLowerCase() == 'deloitte'
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/images/Deloitte.png',
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                          : (job.company.toLowerCase() == 'tcs' ||
+                              job.company.toLowerCase() ==
+                                  'tata consultancy services')
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/images/TCS.png',
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                          : job.company.toLowerCase() == 'wipro'
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/images/wipro.png',
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                          : job.logo.isNotEmpty && job.logo.startsWith('http')
                           ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.network(

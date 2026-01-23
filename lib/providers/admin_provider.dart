@@ -9,11 +9,8 @@ import 'package:learn_work/services/assessment_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:learn_work/services/notification_service.dart';
-
 class AdminProvider extends ChangeNotifier {
   final AdminService _adminService = AdminService();
-  final NotificationService _notificationService = NotificationService();
   final AssessmentService _assessmentService = AssessmentService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -32,14 +29,6 @@ class AdminProvider extends ChangeNotifier {
 
       // Refresh the jobs list to ensure consistency
       await loadJobs();
-
-      // Send notifications to subscribed students
-      // We do this asynchronously and don't await/block the UI success for it
-      _notificationService.sendJobNotificationToSubscribers(
-        jobTitle: job.title,
-        companyName: job.company,
-        jobId: docRef.id,
-      );
     } catch (e) {
       print('Error adding job: $e');
       _errorMessage = 'Failed to add job: $e';
@@ -363,21 +352,6 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
-  // Update user job alerts
-  Future<void> updateUserJobAlerts(String userId, bool jobAlerts) async {
-    try {
-      await _adminService.updateUserJobAlerts(userId, jobAlerts);
-      // Refresh the students list to get updated data
-      await loadAllStudents();
-    } catch (e) {
-      print('Error updating user job alerts: $e');
-      _errorMessage = 'Failed to update user job alerts: $e';
-      if (!_disposed) {
-        notifyListeners();
-      }
-    }
-  }
-
   // Sign in admin
   Future<bool> signInAdmin(String email, String password) async {
     setState(isLoading: true, errorMessage: null);
@@ -601,12 +575,6 @@ class AdminProvider extends ChangeNotifier {
       }
       rethrow;
     }
-  }
-
-  void sendJobNotifications() {
-    // This would typically integrate with an email service
-    // For now, we'll just show a success message
-    print('Job notifications sent to all subscribed students');
   }
 
   // Load assessments

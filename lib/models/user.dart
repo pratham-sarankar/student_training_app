@@ -16,11 +16,12 @@ class UserModel {
   final bool isPhoneVerified;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? location;
 
   // Preferences and settings
   final bool emailNotifications;
   final bool pushNotifications;
-  final bool jobAlerts;
+
   final List<String> jobCategories;
   final List<String> preferredLocations;
 
@@ -52,7 +53,7 @@ class UserModel {
     required this.updatedAt,
     this.emailNotifications = true,
     this.pushNotifications = true,
-    this.jobAlerts = true,
+
     this.jobCategories = const [],
     this.preferredLocations = const [],
     this.savedJobs = const [],
@@ -60,6 +61,7 @@ class UserModel {
     this.enrolledCourses = const [],
     this.purchasedAssessments = const [],
     this.educationId,
+    this.location,
   });
 
   // Getter for full name
@@ -138,7 +140,7 @@ class UserModel {
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       emailNotifications: map['emailNotifications'] ?? true,
       pushNotifications: map['pushNotifications'] ?? true,
-      jobAlerts: map['jobAlerts'] ?? true,
+
       jobCategories: List<String>.from(map['jobCategories'] ?? []),
       preferredLocations: List<String>.from(map['preferredLocations'] ?? []),
       savedJobs: List<String>.from(map['savedJobs'] ?? []),
@@ -148,6 +150,7 @@ class UserModel {
         map['purchasedAssessments'] ?? [],
       ),
       educationId: map['educationId'],
+      location: map['location'],
     );
   }
 
@@ -170,7 +173,7 @@ class UserModel {
       'updatedAt': Timestamp.fromDate(updatedAt),
       'emailNotifications': emailNotifications,
       'pushNotifications': pushNotifications,
-      'jobAlerts': jobAlerts,
+
       'jobCategories': jobCategories,
       'preferredLocations': preferredLocations,
       'savedJobs': savedJobs,
@@ -178,6 +181,7 @@ class UserModel {
       'enrolledCourses': enrolledCourses,
       'purchasedAssessments': purchasedAssessments,
       'educationId': educationId,
+      'location': location,
     };
   }
 
@@ -196,7 +200,7 @@ class UserModel {
     bool? isPhoneVerified,
     bool? emailNotifications,
     bool? pushNotifications,
-    bool? jobAlerts,
+
     List<String>? jobCategories,
     List<String>? preferredLocations,
     List<String>? savedJobs,
@@ -204,6 +208,7 @@ class UserModel {
     List<String>? enrolledCourses,
     List<String>? purchasedAssessments,
     String? educationId,
+    String? location,
   }) {
     return UserModel(
       uid: uid,
@@ -222,7 +227,7 @@ class UserModel {
       updatedAt: DateTime.now(),
       emailNotifications: emailNotifications ?? this.emailNotifications,
       pushNotifications: pushNotifications ?? this.pushNotifications,
-      jobAlerts: jobAlerts ?? this.jobAlerts,
+
       jobCategories: jobCategories ?? this.jobCategories,
       preferredLocations: preferredLocations ?? this.preferredLocations,
       savedJobs: savedJobs ?? this.savedJobs,
@@ -230,6 +235,7 @@ class UserModel {
       enrolledCourses: enrolledCourses ?? this.enrolledCourses,
       purchasedAssessments: purchasedAssessments ?? this.purchasedAssessments,
       educationId: educationId ?? this.educationId,
+      location: location ?? this.location,
     );
   }
 

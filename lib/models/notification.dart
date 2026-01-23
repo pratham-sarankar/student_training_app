@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum NotificationType { job, course, promotional, system }
+enum NotificationType { course, promotional, system }
 
 class NotificationModel {
   final String id;

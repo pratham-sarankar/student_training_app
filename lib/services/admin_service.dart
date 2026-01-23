@@ -226,18 +226,6 @@ class AdminService {
     }
   }
 
-  // Update user job alerts
-  Future<void> updateUserJobAlerts(String userId, bool jobAlerts) async {
-    try {
-      await _firestore.collection('users').doc(userId).update({
-        'jobAlerts': jobAlerts,
-        'updatedAt': Timestamp.fromDate(DateTime.now()),
-      });
-    } catch (e) {
-      throw 'Failed to update user job alerts: $e';
-    }
-  }
-
   // Get admin user by ID
   Future<UserModel?> getAdminUserById(String uid) async {
     try {

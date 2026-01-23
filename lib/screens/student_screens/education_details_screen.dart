@@ -62,26 +62,35 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   ];
 
   static const List<String> _collegeOptions = [
-    'IIT Bombay',
-    'IIT Delhi',
-    'IIT Madras',
-    'IIT Kanpur',
-    'IIT Kharagpur',
-    'IIT Roorkee',
-    'IIT Guwahati',
-    'NIT Trichy',
-    'NIT Warangal',
-    'NIT Surathkal',
-    'BITS Pilani',
-    'VIT Vellore',
-    'Anna University',
-    'Jadavpur University',
-    'Delhi University',
-    'Mumbai University',
-    'Pune University',
-    'Bangalore University',
-    'Calcutta University',
-    'Osmania University',
+    'B.R.A. Bihar University, Muzaffarpur',
+    'B.N. Mandal University, Madhepura',
+    'Jai Prakash University, Chapra',
+    'Purnea University, Purnea',
+    'Munger University, Munger',
+    'Patliputra University, Patna',
+    'Aryabhatta Knowledge University, Patna',
+    'Veer Kunwar Singh University, Ara',
+    'T.M. Bhagalpur University, Bhagalpur',
+    'Patna University, Patna',
+    'Magadh University, Bodh Gaya',
+    'L.N. Mithila University, Darbhanga',
+    'B.N. College, Patna',
+    'Magadh Mahila College, Patna',
+    'Patna College, Patna',
+    'Patna Science College, Patna',
+    'Patna Women\'s College, Patna',
+    'J D Women\'s College, Patna',
+    'Gaya College, Gaya',
+    'A N College, Patna',
+    'T P S College, Patna',
+    'L.S. College, Muzaffarpur',
+    'M.D.D.M College, Muzaffarpur',
+    'M.P.S. Science College, Muzaffarpur',
+    'L.N. Mishra College of Business Management, Muzaffarpur',
+    'L N Mishra Institute of Economic Development and Social Change, Patna',
+    'Indian Institute of Business Management, Patna',
+    'CIMAGE, Patna',
+    'IMPACT College, Patna',
     'Others',
   ];
 
@@ -709,6 +718,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     final theme = context.theme;
 
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       value: value,
       items:
           items.map((String item) {
@@ -716,6 +726,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
               value: item,
               child: Text(
                 item,
+                overflow: TextOverflow.ellipsis,
                 style: theme.typography.sm.copyWith(
                   color: theme.colors.foreground,
                 ),

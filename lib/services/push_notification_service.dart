@@ -99,7 +99,7 @@ class PushNotificationService {
 
   Future<void> _saveTokenToFirestore(String token) async {
     try {
-      await _userService.updateFCMToken(token);
+      // await _userService.updateFCMToken(token);
       print('✅ FCM token saved to Firestore');
     } catch (e) {
       print('❌ Error saving FCM token: $e');

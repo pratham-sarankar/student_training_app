@@ -29,6 +29,7 @@ class UserService {
     required String email,
     String? photoUrl,
     String? phoneNumber,
+    String? location,
   }) async {
     try {
       final userModel = UserModel(
@@ -40,6 +41,7 @@ class UserService {
         phoneNumber: phoneNumber,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        location: location,
       );
 
       await createOrUpdateUser(userModel);
@@ -118,7 +120,7 @@ class UserService {
     DateTime? dateOfBirth,
     bool? emailNotifications,
     bool? pushNotifications,
-    bool? jobAlerts,
+
     List<String>? jobCategories,
     List<String>? preferredLocations,
   }) async {
@@ -141,7 +143,7 @@ class UserService {
           dateOfBirth: dateOfBirth,
           emailNotifications: emailNotifications,
           pushNotifications: pushNotifications,
-          jobAlerts: jobAlerts,
+
           jobCategories: jobCategories,
           preferredLocations: preferredLocations,
         );
@@ -164,7 +166,7 @@ class UserService {
           updatedAt: DateTime.now(),
           emailNotifications: emailNotifications ?? true,
           pushNotifications: pushNotifications ?? true,
-          jobAlerts: jobAlerts ?? true,
+
           jobCategories: jobCategories ?? [],
           preferredLocations: preferredLocations ?? [],
         );
@@ -203,22 +205,6 @@ class UserService {
       }
     } catch (e) {
       throw Exception('Failed to update verification status: $e');
-    }
-  }
-
-  // Update FCM Token
-  Future<void> updateFCMToken(String token) async {
-    final user = currentUser;
-    if (user == null) return;
-
-    try {
-      await _firestore.collection('users').doc(user.uid).update({
-        'fcmToken': token,
-        'lastActive': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      print('Error updating FCM token: $e');
-      // Non-critical, so we don't throw
     }
   }
 

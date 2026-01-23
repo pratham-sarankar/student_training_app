@@ -48,7 +48,7 @@ class JobsScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Manage job postings and notifications',
+                                  'Manage job postings',
                                   style: theme.typography.sm.copyWith(
                                     color: theme.colors.mutedForeground,
                                     fontSize: 11,
@@ -688,13 +688,8 @@ class JobsScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               _buildDeleteWarningItem(
-                                icon: Icons.notifications,
-                                text: 'Job notifications and alerts',
-                              ),
-                              const SizedBox(height: 8),
-                              _buildDeleteWarningItem(
                                 icon: Icons.people,
-                                text: 'Student applications and subscriptions',
+                                text: 'Student applications',
                               ),
                               const SizedBox(height: 24),
                               Row(

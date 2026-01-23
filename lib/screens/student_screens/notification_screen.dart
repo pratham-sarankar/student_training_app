@@ -246,8 +246,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Color _getNotificationColor(NotificationType type) {
     switch (type) {
-      case NotificationType.job:
-        return Colors.blue;
       case NotificationType.course:
         return Colors.green;
       case NotificationType.promotional:
@@ -259,8 +257,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   IconData _getNotificationIcon(NotificationType type) {
     switch (type) {
-      case NotificationType.job:
-        return Icons.work;
       case NotificationType.course:
         return Icons.school;
       case NotificationType.promotional:

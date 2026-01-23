@@ -5,6 +5,7 @@ import 'package:learn_work/models/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:io' show Platform;
+import 'package:learn_work/services/location_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -100,6 +101,8 @@ class AuthService {
 
       // Create or update user document in Firestore
       if (result.user != null) {
+        print('🔵 Fetching user location...');
+        final location = await LocationService.getCurrentLocation();
         print('🔵 Creating/updating user in Firestore...');
         final userModel = UserModel(
           uid: result.user!.uid,
@@ -111,6 +114,7 @@ class AuthService {
           isEmailVerified: result.user!.emailVerified,
           createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
           updatedAt: DateTime.now(),
+          location: location,
         );
 
         await _userService.createOrUpdateUser(userModel);
@@ -166,6 +170,8 @@ class AuthService {
           lastName = appleCredential.familyName!;
         }
 
+        final location = await LocationService.getCurrentLocation();
+
         final userModel = UserModel(
           uid: result.user!.uid,
           firstName: firstName,
@@ -175,6 +181,7 @@ class AuthService {
           isEmailVerified: result.user!.emailVerified,
           createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
           updatedAt: DateTime.now(),
+          location: location,
         );
 
         await _userService.createOrUpdateUser(userModel);
@@ -380,6 +387,7 @@ class AuthService {
 
       // Create user document in Firestore
       if (result.user != null) {
+        final location = await LocationService.getCurrentLocation();
         final userModel = UserModel(
           uid: result.user!.uid,
           firstName: result.user!.displayName?.split(' ').first ?? '',
@@ -390,6 +398,7 @@ class AuthService {
           isEmailVerified: result.user!.emailVerified,
           createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
           updatedAt: DateTime.now(),
+          location: location,
         );
 
         await _userService.createOrUpdateUser(userModel);
@@ -473,7 +482,7 @@ class AuthService {
     DateTime? dateOfBirth,
     bool? emailNotifications,
     bool? pushNotifications,
-    bool? jobAlerts,
+
     List<String>? jobCategories,
     List<String>? preferredLocations,
   }) async {
@@ -497,7 +506,7 @@ class AuthService {
         dateOfBirth: dateOfBirth,
         emailNotifications: emailNotifications,
         pushNotifications: pushNotifications,
-        jobAlerts: jobAlerts,
+
         jobCategories: jobCategories,
         preferredLocations: preferredLocations,
       );
