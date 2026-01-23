@@ -176,14 +176,17 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Expanded(
-                        child: _buildDetailCard(
-                          Icons.attach_money,
-                          'Salary',
-                          widget.job.salary,
+                      if (widget.job.salary.trim().isNotEmpty &&
+                          widget.job.salary.toLowerCase() != 'n/a') ...[
+                        Expanded(
+                          child: _buildDetailCard(
+                            Icons.attach_money,
+                            'Salary',
+                            widget.job.salary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
+                        const SizedBox(width: 8),
+                      ],
                       Expanded(
                         child: _buildDetailCard(
                           Icons.category,

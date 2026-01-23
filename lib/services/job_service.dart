@@ -9,17 +9,9 @@ class JobService {
   Stream<List<Job>> getJobs() {
     return _firestore.collection(_collection).snapshots().map((snapshot) {
       final jobs =
-          snapshot.docs
-              .map((doc) {
-                return Job.fromMap(doc.data(), doc.id);
-              })
-              .where((job) {
-                final isExpired =
-                    job.deadline != null &&
-                    job.deadline!.isBefore(DateTime.now());
-                return job.isActive && !isExpired;
-              })
-              .toList();
+          snapshot.docs.map((doc) {
+            return Job.fromMap(doc.data(), doc.id);
+          }).toList();
 
       // Sort locally to avoid Firestore index requirements
       jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -35,17 +27,9 @@ class JobService {
         .snapshots()
         .map((snapshot) {
           final jobs =
-              snapshot.docs
-                  .map((doc) {
-                    return Job.fromMap(doc.data(), doc.id);
-                  })
-                  .where((job) {
-                    final isExpired =
-                        job.deadline != null &&
-                        job.deadline!.isBefore(DateTime.now());
-                    return job.isActive && !isExpired;
-                  })
-                  .toList();
+              snapshot.docs.map((doc) {
+                return Job.fromMap(doc.data(), doc.id);
+              }).toList();
 
           // Sort locally to avoid Firestore index requirements
           jobs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -61,10 +45,6 @@ class JobService {
             return Job.fromMap(doc.data(), doc.id);
           })
           .where((job) {
-            final isExpired =
-                job.deadline != null && job.deadline!.isBefore(DateTime.now());
-            if (!job.isActive || isExpired) return false;
-
             return job.title.toLowerCase().contains(query.toLowerCase()) ||
                 job.company.toLowerCase().contains(query.toLowerCase()) ||
                 job.location.toLowerCase().contains(query.toLowerCase()) ||

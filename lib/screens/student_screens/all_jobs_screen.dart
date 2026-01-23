@@ -566,24 +566,28 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
                 // ],
               ],
             ),
-            const SizedBox(height: 12),
-
-            // Salary
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: theme.colors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                job.salary,
-                style: TextStyle(
-                  color: theme.colors.primary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+            if (job.salary.trim().isNotEmpty &&
+                job.salary.toLowerCase() != 'n/a') ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  job.salary,
+                  style: TextStyle(
+                    color: theme.colors.primary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),
