@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:gradspark/widgets/shimmer_loading.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:gradspark/services/storage_service.dart';
+import 'dart:io';
 
 class EducationDetailsScreen extends StatefulWidget {
   const EducationDetailsScreen({super.key});
@@ -16,6 +18,7 @@ class EducationDetailsScreen extends StatefulWidget {
 
 class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   final _educationService = EducationService();
+  final _storageService = StorageService();
   final _formKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
@@ -31,6 +34,22 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   String? _selectedMedium;
   final List<String> _selectedCareerGoals = [];
   String? _resumeFileName;
+  String? _resumeUrl;
+  File? _selectedResumeFile;
+  bool _isUploadingResume = false;
+
+  // Controllers for "Other" options
+  final _otherDegreeController = TextEditingController();
+  final _otherSpecializationController = TextEditingController();
+  final _otherCollegeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _otherDegreeController.dispose();
+    _otherSpecializationController.dispose();
+    _otherCollegeController.dispose();
+    super.dispose();
+  }
 
   // Dropdown options
   static const List<String> _highestEducationOptions = [
@@ -111,9 +130,11 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
   }
 
   Future<void> _loadCurrentEducation() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
       final education = await _educationService.getCurrentUserEducation();
@@ -121,9 +142,39 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
         setState(() {
           _isCurrentlyPursuing = education.isCurrentlyPursuing;
           _selectedHighestEducation = education.highestEducation;
-          _selectedDegree = education.degree;
-          _selectedSpecialization = education.specialization;
-          _collegeName = education.collegeName;
+
+          // Degree
+          if (_degreeOptions.contains(education.degree)) {
+            _selectedDegree = education.degree;
+          } else if (education.degree != null && education.degree!.isNotEmpty) {
+            _selectedDegree = 'Others';
+            _otherDegreeController.text = education.degree!;
+          } else {
+            _selectedDegree = education.degree;
+          }
+
+          // Specialization
+          if (_specializationOptions.contains(education.specialization)) {
+            _selectedSpecialization = education.specialization;
+          } else if (education.specialization != null &&
+              education.specialization!.isNotEmpty) {
+            _selectedSpecialization = 'Others';
+            _otherSpecializationController.text = education.specialization!;
+          } else {
+            _selectedSpecialization = education.specialization;
+          }
+
+          // College Name
+          if (_collegeOptions.contains(education.collegeName)) {
+            _collegeName = education.collegeName;
+          } else if (education.collegeName != null &&
+              education.collegeName!.isNotEmpty) {
+            _collegeName = 'Others';
+            _otherCollegeController.text = education.collegeName!;
+          } else {
+            _collegeName = education.collegeName;
+          }
+
           _completionDate =
               education.completionYear != null
                   ? DateTime(education.completionYear!, 1, 1)
@@ -132,6 +183,7 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
           _selectedCareerGoals.clear();
           _selectedCareerGoals.addAll(education.careerGoals);
           _resumeFileName = education.resumeFileName;
+          _resumeUrl = education.resumeUrl;
         });
       }
     } catch (e) {
@@ -144,9 +196,11 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
         );
       }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -157,13 +211,20 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
         allowedExtensions: ['pdf', 'doc', 'docx'],
       );
 
-      if (result != null) {
-        // Since we are not uploading to Firebase, we just store the file name
-        // In a real app without cloud storage, you might copy the file to app directory
-        // but for this requirement, we'll just track the name.
+      if (result != null && result.files.single.path != null) {
         setState(() {
+          _selectedResumeFile = File(result.files.single.path!);
           _resumeFileName = result.files.single.name;
         });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Resume selected: $_resumeFileName'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -187,16 +248,69 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
     });
 
     try {
+      String? uploadedResumeUrl = _resumeUrl;
+
+      // Upload new resume if selected
+      if (_selectedResumeFile != null) {
+        setState(() {
+          _isUploadingResume = true;
+        });
+
+        try {
+          // Delete old resume if exists
+          if (_resumeUrl != null) {
+            await _storageService.deleteFile(_resumeUrl!);
+          }
+
+          // Upload new resume
+          uploadedResumeUrl = await _storageService.uploadResume(
+            _selectedResumeFile!,
+            _resumeFileName!,
+          );
+        } catch (e) {
+          print('Error uploading resume: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to upload resume: $e'),
+                backgroundColor: context.theme.colors.destructive,
+              ),
+            );
+          }
+          // Continue saving other details even if resume fails?
+          // Probably better to stop if they specifically tried to upload a resume.
+          setState(() {
+            _isUploadingResume = false;
+            _isSaving = false;
+          });
+          return;
+        } finally {
+          setState(() {
+            _isUploadingResume = false;
+          });
+        }
+      }
+
       await _educationService.updateEducation(
         isCurrentlyPursuing: _isCurrentlyPursuing,
         highestEducation: _selectedHighestEducation,
-        degree: _selectedDegree,
-        specialization: _selectedSpecialization,
-        collegeName: _collegeName,
+        degree:
+            _selectedDegree == 'Others'
+                ? _otherDegreeController.text.trim()
+                : _selectedDegree,
+        specialization:
+            _selectedSpecialization == 'Others'
+                ? _otherSpecializationController.text.trim()
+                : _selectedSpecialization,
+        collegeName:
+            _collegeName == 'Others'
+                ? _otherCollegeController.text.trim()
+                : _collegeName,
         completionYear: _completionDate?.year,
         medium: _selectedMedium,
         careerGoals: _selectedCareerGoals,
         resumeFileName: _resumeFileName,
+        resumeUrl: uploadedResumeUrl,
       );
 
       if (mounted) {
@@ -218,9 +332,11 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
         );
       }
     } finally {
-      setState(() {
-        _isSaving = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
   }
 
@@ -364,6 +480,9 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                             onChanged: (value) {
                               setState(() {
                                 _selectedDegree = value;
+                                if (value != 'Others') {
+                                  _otherDegreeController.clear();
+                                }
                               });
                             },
                             validator: (value) {
@@ -373,6 +492,20 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                               return null;
                             },
                           ),
+                          if (_selectedDegree == 'Others') ...[
+                            const SizedBox(height: 12),
+                            _buildTextField(
+                              controller: _otherDegreeController,
+                              hint: 'Enter your degree',
+                              validator: (value) {
+                                if (_selectedDegree == 'Others' &&
+                                    (value == null || value.isEmpty)) {
+                                  return 'Please enter your degree';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
                           const SizedBox(height: 24),
 
                           // Specialization
@@ -385,6 +518,9 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                             onChanged: (value) {
                               setState(() {
                                 _selectedSpecialization = value;
+                                if (value != 'Others') {
+                                  _otherSpecializationController.clear();
+                                }
                               });
                             },
                             validator: (value) {
@@ -394,6 +530,20 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                               return null;
                             },
                           ),
+                          if (_selectedSpecialization == 'Others') ...[
+                            const SizedBox(height: 12),
+                            _buildTextField(
+                              controller: _otherSpecializationController,
+                              hint: 'Enter your specialization',
+                              validator: (value) {
+                                if (_selectedSpecialization == 'Others' &&
+                                    (value == null || value.isEmpty)) {
+                                  return 'Please enter your specialization';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
                           const SizedBox(height: 24),
 
                           // College Name
@@ -406,6 +556,9 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                             onChanged: (value) {
                               setState(() {
                                 _collegeName = value;
+                                if (value != 'Others') {
+                                  _otherCollegeController.clear();
+                                }
                               });
                             },
                             validator: (value) {
@@ -415,6 +568,20 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                               return null;
                             },
                           ),
+                          if (_collegeName == 'Others') ...[
+                            const SizedBox(height: 12),
+                            _buildTextField(
+                              controller: _otherCollegeController,
+                              hint: 'Enter your college name',
+                              validator: (value) {
+                                if (_collegeName == 'Others' &&
+                                    (value == null || value.isEmpty)) {
+                                  return 'Please enter your college name';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
 
                           // const SizedBox(height: 24),
 
@@ -544,6 +711,8 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                                           onPressed: () {
                                             setState(() {
                                               _resumeFileName = null;
+                                              _resumeUrl = null;
+                                              _selectedResumeFile = null;
                                             });
                                           },
                                         ),
@@ -554,19 +723,34 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                                   width: double.infinity,
                                   child: FButton(
                                     style: FButtonStyle.outline,
-                                    onPress: _pickResume,
+                                    onPress:
+                                        _isUploadingResume ? null : _pickResume,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.upload_file,
-                                          size: 18,
-                                          color: theme.colors.primary,
-                                        ),
+                                        _isUploadingResume
+                                            ? SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(theme.colors.primary),
+                                              ),
+                                            )
+                                            : Icon(
+                                              Icons.upload_file,
+                                              size: 18,
+                                              color: theme.colors.primary,
+                                            ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          _resumeFileName != null
+                                          _isUploadingResume
+                                              ? 'Uploading...'
+                                              : _resumeFileName != null
                                               ? 'Change Resume'
                                               : 'Upload Resume',
                                           style: theme.typography.sm.copyWith(
@@ -628,9 +812,12 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
                             height: 48,
                             child: FButton(
                               style: FButtonStyle.primary,
-                              onPress: _isSaving ? null : _saveEducation,
+                              onPress:
+                                  _isSaving || _isUploadingResume
+                                      ? null
+                                      : _saveEducation,
                               child:
-                                  _isSaving
+                                  _isSaving || _isUploadingResume
                                       ? SizedBox(
                                         width: 20,
                                         height: 20,
@@ -982,5 +1169,51 @@ class _EducationDetailsScreenState extends State<EducationDetailsScreen> {
       'December',
     ];
     return months[month - 1];
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    final theme = context.theme;
+
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      style: theme.typography.sm.copyWith(color: theme.colors.foreground),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: theme.typography.sm.copyWith(
+          color: theme.colors.mutedForeground,
+        ),
+        filled: true,
+        fillColor: theme.colors.background,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: theme.colors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: theme.colors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: theme.colors.primary),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: theme.colors.destructive),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+      ),
+    );
   }
 }

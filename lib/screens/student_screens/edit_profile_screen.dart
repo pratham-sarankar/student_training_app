@@ -56,7 +56,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (userModel != null) {
           // Load data from Firestore
           setState(() {
-            _emailController.text = userModel.email;
+            _emailController.text =
+                userModel.email.isNotEmpty
+                    ? userModel.email
+                    : (user.email ?? '');
             _firstNameController.text = userModel.firstName;
             _lastNameController.text = userModel.lastName;
             _phoneController.text = userModel.phoneNumber ?? '';
@@ -181,70 +184,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           Center(
                             child: Column(
                               children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: theme.colors.primary.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        border: Border.all(
+                                GestureDetector(
+                                  onTap: _changeProfilePicture,
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
                                           color: theme.colors.primary
-                                              .withValues(alpha: 0.2),
-                                          width: 2,
+                                              .withValues(alpha: 0.1),
+                                          border: Border.all(
+                                            color: theme.colors.primary
+                                                .withValues(alpha: 0.2),
+                                            width: 2,
+                                          ),
+                                          image:
+                                              _selectedImageFile != null
+                                                  ? DecorationImage(
+                                                    image: FileImage(
+                                                      _selectedImageFile!,
+                                                    ),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                  : _profilePictureUrl != null
+                                                  ? DecorationImage(
+                                                    image: NetworkImage(
+                                                      _profilePictureUrl!,
+                                                    ),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                  : null,
                                         ),
-                                        image:
-                                            _selectedImageFile != null
-                                                ? DecorationImage(
-                                                  image: FileImage(
-                                                    _selectedImageFile!,
-                                                  ),
-                                                  fit: BoxFit.cover,
-                                                )
-                                                : _profilePictureUrl != null
-                                                ? DecorationImage(
-                                                  image: NetworkImage(
-                                                    _profilePictureUrl!,
-                                                  ),
-                                                  fit: BoxFit.cover,
+                                        child:
+                                            _selectedImageFile == null &&
+                                                    _profilePictureUrl == null
+                                                ? Icon(
+                                                  Icons.person,
+                                                  size: 50,
+                                                  color: theme.colors.primary,
                                                 )
                                                 : null,
                                       ),
-                                      child:
-                                          _selectedImageFile == null &&
-                                                  _profilePictureUrl == null
-                                              ? Icon(
-                                                Icons.person,
-                                                size: 50,
-                                                color: theme.colors.primary,
-                                              )
-                                              : null,
-                                    ),
-                                    Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      child: Container(
-                                        width: 32,
-                                        height: 32,
-                                        decoration: BoxDecoration(
-                                          color: theme.colors.primary,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: theme.colors.background,
-                                            width: 2,
+                                      Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child: Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: BoxDecoration(
+                                            color: theme.colors.primary,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: theme.colors.background,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.camera_alt,
+                                            size: 16,
+                                            color:
+                                                theme.colors.primaryForeground,
                                           ),
                                         ),
-                                        child: Icon(
-                                          Icons.camera_alt,
-                                          size: 16,
-                                          color: theme.colors.primaryForeground,
-                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 TextButton(

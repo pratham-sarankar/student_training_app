@@ -81,9 +81,11 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
       print('🔐 Attempting to verify code: ${_otpController.text}');
@@ -141,9 +143,11 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   Future<void> _resendCode() async {
     if (!_canResend || _isResending) return;
 
-    setState(() {
-      _isResending = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isResending = true;
+      });
+    }
 
     try {
       print('🔄 Attempting to resend code to: ${widget.phoneNumber}');

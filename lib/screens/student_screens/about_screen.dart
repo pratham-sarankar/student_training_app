@@ -49,7 +49,7 @@ class AboutScreen extends StatelessWidget {
                         height: 120,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('assets/images/appplogo.png'),
+                            image: AssetImage('assets/images/app_logo.png'),
                             fit: BoxFit.contain,
                           ),
                         ),

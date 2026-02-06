@@ -16,13 +16,6 @@ class HelpSupportScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _launchPhone() async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: '+919876543210');
-    if (await canLaunchUrl(phoneUri)) {
-      await launchUrl(phoneUri);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
@@ -114,15 +107,6 @@ class HelpSupportScreen extends StatelessWidget {
               subtitle: 'support@gradspark.com',
               onTap: _launchEmail,
               color: const Color(0xFF6366F1),
-            ),
-            const SizedBox(height: 12),
-            _buildContactOption(
-              context,
-              icon: Icons.phone_rounded,
-              title: 'Call Us',
-              subtitle: '+91 98765 43210',
-              onTap: _launchPhone,
-              color: const Color(0xFF10B981),
             ),
             const SizedBox(height: 40),
           ],

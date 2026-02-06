@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAVjVOriDE6vQrSz-yImZK2uIyl4PyrSV8',
-    appId: '1:755210924592:android:b7f7dee76a0767a3c1f3f5',
+    appId: '1:755210924592:android:62598f2e443c7486c1f3f5',
     messagingSenderId: '755210924592',
     projectId: 'learn-work-9bbf7',
     storageBucket: 'learn-work-9bbf7.firebasestorage.app',
@@ -63,11 +63,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA0Fq15mLci3FT2Y-pmHEW3mXDSA6jg9d4',
-    appId: '1:755210924592:ios:4193eb4e648596fac1f3f5',
+    appId: '1:755210924592:ios:6637b7b3e28ed895c1f3f5',
     messagingSenderId: '755210924592',
     projectId: 'learn-work-9bbf7',
     storageBucket: 'learn-work-9bbf7.firebasestorage.app',
-    iosBundleId: 'com.sarankar.student-app',
+    androidClientId: '755210924592-d7ohs9qetavdg15dmbeghesqup789enh.apps.googleusercontent.com',
+    iosClientId: '755210924592-brobjeb2ir2085786brdg6abovuerbr8.apps.googleusercontent.com',
+    iosBundleId: 'com.example.learnWork.RunnerTests',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

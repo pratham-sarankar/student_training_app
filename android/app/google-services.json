@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:755210924592:android:b7f7dee76a0767a3c1f3f5",
         "android_client_info": {
-          "package_name": "com.pratham.gradspark"
+          "package_name": "com.example.learn_work"
         }
       },
       "oauth_client": [
@@ -17,10 +17,46 @@
           "client_id": "755210924592-d7ohs9qetavdg15dmbeghesqup789enh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.pratham.gradspark",
+            "package_name": "com.example.learn_work",
             "certificate_hash": "1bad1756c92d7e88fae574cce1c983cb25f086dc"
           }
         },
+        {
+          "client_id": "755210924592-42dc5jp033apuvq4vavbf80vmkblelfa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVjVOriDE6vQrSz-yImZK2uIyl4PyrSV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "755210924592-42dc5jp033apuvq4vavbf80vmkblelfa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "755210924592-1qeevqjik5eljdjb8bkgud107ufgheu1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.learnWork"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:755210924592:android:62598f2e443c7486c1f3f5",
+        "android_client_info": {
+          "package_name": "com.gradspark.student"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "755210924592-42dc5jp033apuvq4vavbf80vmkblelfa.apps.googleusercontent.com",
           "client_type": 3

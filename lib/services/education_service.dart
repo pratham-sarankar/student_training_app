@@ -76,6 +76,7 @@ class EducationService {
     String? medium,
     List<String>? careerGoals,
     String? resumeFileName,
+    String? resumeUrl,
   }) async {
     try {
       final user = currentUser;
@@ -96,6 +97,7 @@ class EducationService {
           medium: medium,
           careerGoals: careerGoals,
           resumeFileName: resumeFileName,
+          resumeUrl: resumeUrl,
         );
 
         await createOrUpdateEducation(updatedEducation);
@@ -112,6 +114,7 @@ class EducationService {
           medium: medium,
           careerGoals: careerGoals ?? [],
           resumeFileName: resumeFileName,
+          resumeUrl: resumeUrl,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );

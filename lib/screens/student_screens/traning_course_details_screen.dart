@@ -6,6 +6,7 @@ import '../../widgets/course_avatar.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../models/user.dart';
 import '../../services/user_service.dart';
+import '../../utils/payment_config.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TraningCourseDetailsScreen extends StatefulWidget {
@@ -591,10 +592,11 @@ class _TraningCourseDetailsScreenState
     final userModel = await _userService.getUserById(user.uid);
 
     final options = {
-      'key': 'rzp_test_YOUR_KEY_HERE', // Replace with your actual key
+      'key': PaymentConfig.razorpayKey,
       'amount': (widget.course['enrollmentFee'] ?? 0) * 100, // Amount in paise
       'name': 'Gradspark Training',
       'description': 'Enrollment for ${course['title']}',
+      'merchant_id': PaymentConfig.merchantId,
       'prefill': {
         'contact': userModel?.phoneNumber ?? '',
         'email': userModel?.email ?? user.email ?? '',

@@ -35,10 +35,10 @@ class WelcomeScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 children: [
-                  // Logo with shadow
+                  // Logo
                   Image.asset(
-                    'assets/images/appplogo.png',
-                    width: size.width * 0.5,
+                    'assets/images/app_logo.png',
+                    width: size.width * 0.45,
                   ),
 
                   const SizedBox(height: 25),

@@ -12,6 +12,7 @@ class EducationModel {
   final String? medium;
   final List<String> careerGoals;
   final String? resumeFileName;
+  final String? resumeUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -27,6 +28,7 @@ class EducationModel {
     this.medium,
     this.careerGoals = const [],
     this.resumeFileName,
+    this.resumeUrl,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -45,6 +47,7 @@ class EducationModel {
       medium: map['medium'],
       careerGoals: List<String>.from(map['careerGoals'] ?? []),
       resumeFileName: map['resumeFileName'],
+      resumeUrl: map['resumeUrl'],
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -63,6 +66,7 @@ class EducationModel {
       'medium': medium,
       'careerGoals': careerGoals,
       'resumeFileName': resumeFileName,
+      'resumeUrl': resumeUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -81,6 +85,7 @@ class EducationModel {
     String? medium,
     List<String>? careerGoals,
     String? resumeFileName,
+    String? resumeUrl,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -96,6 +101,7 @@ class EducationModel {
       medium: medium ?? this.medium,
       careerGoals: careerGoals ?? this.careerGoals,
       resumeFileName: resumeFileName ?? this.resumeFileName,
+      resumeUrl: resumeUrl ?? this.resumeUrl,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );

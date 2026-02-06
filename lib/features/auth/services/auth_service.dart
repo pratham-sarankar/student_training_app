@@ -39,11 +39,33 @@ class AuthService {
         password: password,
       );
 
-      // Update user verification status in Firestore
+      // Update user verification status and ensure document exists in Firestore
       if (result.user != null) {
-        await _userService.updateVerificationStatus(
-          isEmailVerified: result.user!.emailVerified,
-        );
+        // Fetch current user model or create one if missing
+        final userModel = await _userService.getCurrentUserDataWithFallback();
+
+        // If still somehow null (unexpected), create a basic one
+        if (userModel == null) {
+          final location = await LocationService.getCurrentLocation();
+          final newUser = UserModel(
+            uid: result.user!.uid,
+            firstName: result.user!.displayName?.split(' ').first ?? '',
+            lastName:
+                result.user!.displayName?.split(' ').skip(1).join(' ') ?? '',
+            email: result.user!.email ?? '',
+            photoUrl: result.user!.photoURL,
+            isEmailVerified: result.user!.emailVerified,
+            createdAt: result.user!.metadata.creationTime ?? DateTime.now(),
+            updatedAt: DateTime.now(),
+            location: location,
+          );
+          await _userService.createOrUpdateUser(newUser);
+        } else {
+          // Document exists, just ensure verification status is updated
+          await _userService.updateVerificationStatus(
+            isEmailVerified: result.user!.emailVerified,
+          );
+        }
       }
 
       return result;

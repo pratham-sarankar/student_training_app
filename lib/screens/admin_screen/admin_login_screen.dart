@@ -130,7 +130,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   height: 80,
                   decoration: BoxDecoration(
                     image: const DecorationImage(
-                      image: AssetImage('assets/images/appplogo.png'),
+                      image: AssetImage('assets/images/app_logo.png'),
                       fit: BoxFit.contain,
                     ),
                     borderRadius: BorderRadius.circular(20),
@@ -209,9 +209,11 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           child: Center(
                             child: GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                }
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(8),

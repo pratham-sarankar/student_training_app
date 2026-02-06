@@ -4,6 +4,8 @@ import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gradspark/features/auth/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gradspark/models/user.dart';
+import 'package:gradspark/services/user_service.dart';
 import 'package:gradspark/widgets/auth_wrapper.dart';
 import 'package:gradspark/screens/student_screens/edit_profile_screen.dart';
 import 'package:gradspark/screens/student_screens/education_details_screen.dart';
@@ -22,10 +24,49 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _authService = getIt<AuthService>();
+  UserModel? _userModel;
+  bool _isLoadingProfile = true;
   int _courseCount = 0;
   bool _isLoadingCourseCount = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+    _loadCourseCount();
+  }
+
+  Future<void> _loadProfileData() async {
+    try {
+      if (mounted) {
+        setState(() {
+          _isLoadingProfile = true;
+        });
+      }
+
+      final userService = UserService();
+      final userModel = await userService.getCurrentUserDataWithFallback();
+
+      if (mounted) {
+        setState(() {
+          _userModel = userModel;
+          _isLoadingProfile = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingProfile = false;
+        });
+      }
+      print('Error loading profile data: $e');
+    }
+  }
+
   String get _userName {
+    if (_userModel != null) {
+      return _userModel!.fullName;
+    }
     final user = _authService.currentUser;
     final String? displayName = user?.displayName;
     if (displayName == null || displayName.trim().isEmpty) {
@@ -35,19 +76,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   String get _userEmail {
+    if (_userModel != null && _userModel!.email.isNotEmpty) {
+      return _userModel!.email;
+    }
     final user = _authService.currentUser;
-    return user?.email ?? 'user@email.com';
+    return user?.email ?? 'Not logged in';
   }
 
   String? get _userPhotoUrl {
+    if (_userModel != null) {
+      return _userModel!.photoUrl;
+    }
     final user = _authService.currentUser;
     return user?.photoURL;
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadCourseCount();
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> _loadCourseCount() async {
@@ -118,9 +164,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Scaffold(
         body: SafeArea(
           child: RefreshIndicator(
-            onRefresh: _loadCourseCount,
+            onRefresh: () async {
+              await _loadProfileData();
+              await _loadCourseCount();
+            },
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -157,20 +207,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   )
                                   : null,
                         ),
-                        Text(
-                          _userName,
-                          style: theme.typography.lg.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: theme.colors.foreground,
+                        const SizedBox(height: 12),
+                        if (_isLoadingProfile)
+                          Container(
+                            width: 100,
+                            height: 20,
+                            color: theme.colors.muted.withValues(alpha: 0.2),
+                          )
+                        else
+                          Text(
+                            _userName,
+                            style: theme.typography.lg.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: theme.colors.foreground,
+                            ),
                           ),
-                        ),
                         const SizedBox(height: 2),
-                        Text(
-                          _userEmail,
-                          style: theme.typography.sm.copyWith(
-                            color: theme.colors.mutedForeground,
+                        if (_isLoadingProfile)
+                          Container(
+                            width: 140,
+                            height: 16,
+                            margin: const EdgeInsets.only(top: 4),
+                            color: theme.colors.muted.withValues(alpha: 0.2),
+                          )
+                        else
+                          Text(
+                            _userEmail,
+                            style: theme.typography.sm.copyWith(
+                              color: theme.colors.mutedForeground,
+                            ),
                           ),
-                        ),
                         const SizedBox(height: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(

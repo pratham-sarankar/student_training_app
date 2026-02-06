@@ -1,4 +1,4 @@
-package com.pratham.gradspark
+package com.gradspark.student
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -21,16 +21,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     if (Firebase.apps.isEmpty) {
       return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Firebase not initialized'),
-            ],
-          ),
-        ),
+        backgroundColor: Colors.white,
+        body: Center(child: Text('Firebase not initialized')),
       );
     }
 
@@ -38,9 +30,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
         if (authSnapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const Scaffold(backgroundColor: Colors.white);
         }
 
         final user = authSnapshot.data;
@@ -49,9 +39,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (user?.uid != _currentUser?.uid) {
           _currentUser = user;
           if (user != null) {
-            print(
-              '🔐 AuthWrapper: User changed to ${user.uid}, fetching profile...',
-            );
             _userProfileFuture =
                 FirebaseFirestore.instance
                     .collection('users')
@@ -67,12 +54,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
             future: _userProfileFuture,
             builder: (context, userDocSnapshot) {
               if (userDocSnapshot.connectionState == ConnectionState.waiting) {
-                // Only show loading if we don't have data yet?
-                // Actually, for a *new* user login, we want to show loading.
-                // But this FutureBuilder will preserve its state if the Future instance is the same!
-                return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
+                return const Scaffold(backgroundColor: Colors.white);
               }
 
               if (userDocSnapshot.hasError) {

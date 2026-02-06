@@ -6,6 +6,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:gradspark/screens/student_screens/job_details_screen.dart';
 import 'package:gradspark/screens/student_screens/edit_profile_screen.dart';
+import 'package:gradspark/services/user_service.dart';
+import 'package:gradspark/models/user.dart';
 import '../../models/job.dart';
 import '../../services/job_service.dart';
 import '../../widgets/shimmer_loading.dart';
@@ -20,15 +22,31 @@ class AllJobsScreen extends StatefulWidget {
 
 class _AllJobsScreenState extends State<AllJobsScreen> {
   final JobService _jobService = JobService();
+  final UserService _userService = UserService();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _currentLocation = 'Getting location...';
   bool _isLoadingLocation = true;
+  UserModel? _userModel;
 
   @override
   void initState() {
     super.initState();
+    _loadUserData();
     _getCurrentLocation();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final userModel = await _userService.getCurrentUserDataWithFallback();
+      if (mounted) {
+        setState(() {
+          _userModel = userModel;
+        });
+      }
+    } catch (e) {
+      print('Error loading user data in AllJobsScreen: $e');
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -290,16 +308,35 @@ class _AllJobsScreenState extends State<AllJobsScreen> {
 
   Widget _buildUserAvatar(FThemeData theme) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const EditProfileScreen()),
         );
+        // Refresh user data when returning from EditProfileScreen
+        _loadUserData();
       },
-      child: CircleAvatar(
-        radius: 20,
-        backgroundColor: theme.colors.primary,
-        child: Icon(Icons.person, color: Colors.white, size: 20),
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: theme.colors.primary.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+        child: CircleAvatar(
+          radius: 18,
+          backgroundColor: theme.colors.primary.withValues(alpha: 0.1),
+          backgroundImage:
+              _userModel?.photoUrl != null && _userModel!.photoUrl!.isNotEmpty
+                  ? NetworkImage(_userModel!.photoUrl!)
+                  : null,
+          child:
+              _userModel?.photoUrl == null || _userModel!.photoUrl!.isEmpty
+                  ? Icon(Icons.person, color: theme.colors.primary, size: 18)
+                  : null,
+        ),
       ),
     );
   }
@@ -730,7 +767,7 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                         borderRadius: BorderRadius.circular(12),
                         child: Image.asset(
                           imagePath,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                           width: double.infinity,
                           height:
                               MediaQuery.of(context).size.width *

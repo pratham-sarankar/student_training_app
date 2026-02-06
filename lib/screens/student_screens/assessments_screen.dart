@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:provider/provider.dart';
+import '../../features/auth/providers/auth_provider.dart';
+import '../../utils/payment_config.dart';
 import '../../services/assessment_service.dart';
 import '../../models/assessment_model.dart';
 import '../../models/user.dart';
@@ -106,10 +110,13 @@ class _AssessmentsScreenState extends State<AssessmentsScreen> {
 
                             return Expanded(
                               child: GestureDetector(
-                                onTap:
-                                    () => setState(
+                                onTap: () {
+                                  if (mounted) {
+                                    setState(
                                       () => _selectedCategory = category,
-                                    ),
+                                    );
+                                  }
+                                },
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
                                   margin:
@@ -346,12 +353,61 @@ class SetDetailsScreen extends StatefulWidget {
 class _SetDetailsScreenState extends State<SetDetailsScreen> {
   final UserService _userService = UserService();
   final AssessmentResultsService _resultsService = AssessmentResultsService();
+  late Razorpay _razorpay;
   UserModel? _currentUser;
+  AssessmentModel? _pendingAssessment;
 
   @override
   void initState() {
     super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     _loadUser();
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    if (_pendingAssessment != null) {
+      await _userService.purchaseAssessment(_pendingAssessment!.id);
+      await _loadUser();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('"${_pendingAssessment!.title}" has been unlocked!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      setState(() {
+        _pendingAssessment = null;
+      });
+    }
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Payment Failed: ${response.message}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    setState(() {
+      _pendingAssessment = null;
+    });
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('External Wallet: ${response.walletName}'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    }
   }
 
   Future<void> _loadUser() async {
@@ -363,20 +419,45 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
 
   @override
   void dispose() {
+    _razorpay.clear();
     super.dispose();
   }
 
   void _processAssessmentPurchase(AssessmentModel assessment) async {
-    // Directly simulate successful purchase for now
-    await _userService.purchaseAssessment(assessment.id);
-    await _loadUser();
-    if (mounted) {
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.user;
+
+    if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('"${assessment.title}" has been unlocked!'),
-          backgroundColor: Colors.green,
-        ),
+        const SnackBar(content: Text('Please log in to purchase.')),
       );
+      return;
+    }
+
+    _pendingAssessment = assessment;
+
+    // Get more user details
+    final userModel = await _userService.getUserById(user.uid);
+
+    final options = {
+      'key': PaymentConfig.razorpayKey,
+      'amount': assessment.price * 100, // Amount in paise
+      'name': 'Gradspark Assessment',
+      'description': 'Unlock ${assessment.title}',
+      'merchant_id': PaymentConfig.merchantId,
+      'prefill': {
+        'contact': userModel?.phoneNumber ?? '',
+        'email': userModel?.email ?? user.email ?? '',
+      },
+      'external': {
+        'wallets': ['paytm'],
+      },
+    };
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      debugPrint('Error opening Razorpay: $e');
     }
   }
 
@@ -460,6 +541,10 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
   ) {
     final theme = context.theme;
 
+    final isPurchased =
+        assessment.isFree ||
+        (_currentUser?.purchasedAssessments.contains(assessment.id) ?? false);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -495,14 +580,9 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
               return;
             }
 
-            if (!assessment.isFree) {
-              final isPurchased =
-                  _currentUser?.purchasedAssessments.contains(assessment.id) ??
-                  false;
-              if (!isPurchased) {
-                _showEnrolmentDialog(assessment);
-                return;
-              }
+            if (!isPurchased) {
+              _showEnrolmentDialog(assessment);
+              return;
             }
 
             await Navigator.push(
@@ -559,23 +639,38 @@ class _SetDetailsScreenState extends State<SetDetailsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color:
-                            assessment.isFree
-                                ? const Color(0xFF0097A7).withValues(alpha: 0.1)
+                            isPurchased
+                                ? const Color(0xFF10B981).withValues(alpha: 0.1)
                                 : Colors.amber.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(
-                        assessment.isFree
-                            ? "Practice Set"
-                            : "₹${assessment.price.toStringAsFixed(0)}",
-                        style: TextStyle(
-                          color:
-                              assessment.isFree
-                                  ? const Color(0xFF0097A7)
-                                  : Colors.amber,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isPurchased && !assessment.isFree) ...[
+                            const Icon(
+                              Icons.lock_open_rounded,
+                              size: 12,
+                              color: Color(0xFF10B981),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
+                          Text(
+                            assessment.isFree
+                                ? "Practice Set"
+                                : isPurchased
+                                ? "Unlocked"
+                                : "₹${assessment.price.toStringAsFixed(0)}",
+                            style: TextStyle(
+                              color:
+                                  isPurchased
+                                      ? const Color(0xFF10B981)
+                                      : Colors.amber,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

@@ -337,9 +337,12 @@ class _TestScreenState extends State<TestScreen> {
                         child: InkWell(
                           onTap: () {
                             if (!_isSubmitted) {
-                              setState(() {
-                                _selectedAnswers[_currentQuestionIndex] = index;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  _selectedAnswers[_currentQuestionIndex] =
+                                      index;
+                                });
+                              }
                             }
                           },
                           borderRadius: BorderRadius.circular(16),
@@ -453,7 +456,11 @@ class _TestScreenState extends State<TestScreen> {
                   Expanded(
                     child: FButton(
                       style: FButtonStyle.outline,
-                      onPress: () => setState(() => _currentQuestionIndex--),
+                      onPress: () {
+                        if (mounted) {
+                          setState(() => _currentQuestionIndex--);
+                        }
+                      },
                       child: const Text('Back'),
                     ),
                   ),
@@ -464,7 +471,9 @@ class _TestScreenState extends State<TestScreen> {
                   child: FButton(
                     onPress: () {
                       if (!isLastQuestion) {
-                        setState(() => _currentQuestionIndex++);
+                        if (mounted) {
+                          setState(() => _currentQuestionIndex++);
+                        }
                       } else {
                         _submitTest();
                       }

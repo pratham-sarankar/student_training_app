@@ -338,15 +338,19 @@ class _AdminSetDetailsScreenState extends State<AdminSetDetailsScreen> {
               FButton(
                 style: FButtonStyle.destructive,
                 onPress: () async {
-                  Navigator.pop(context);
+                  final navigator = Navigator.of(context);
+                  navigator.pop(); // Close the dialog
+
                   await provider.deleteAssessment(assessment.id);
+
                   if (mounted) {
                     setState(() {
                       widget.tests.removeWhere((t) => t.id == assessment.id);
-                      if (widget.tests.isEmpty) {
-                        Navigator.pop(context);
-                      }
                     });
+
+                    if (widget.tests.isEmpty) {
+                      navigator.pop(); // Close the details screen
+                    }
                   }
                 },
                 child: const Text('Delete'),
