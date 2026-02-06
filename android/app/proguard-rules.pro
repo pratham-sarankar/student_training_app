@@ -83,3 +83,10 @@
 -dontwarn com.google.android.play.core.tasks.**
 -dontwarn com.google.android.play.core.splitinstall.**
 -dontwarn com.google.android.play.core.splitcompat.**
+
+# Razorpay Proguard Rules
+-keep class com.razorpay.** {*;}
+-dontwarn com.razorpay.**
+-keepattributes *Annotation*
+-keepattributes Signature
+

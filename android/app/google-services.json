@@ -51,12 +51,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:755210924592:android:62598f2e443c7486c1f3f5",
+        "mobilesdk_app_id": "1:755210924592:android:966fc3bc4d94bbe3c1f3f5",
         "android_client_info": {
           "package_name": "com.gradspark.student"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "755210924592-eaclvthge1fjkfilphcijnh0aust6r5f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gradspark.student",
+            "certificate_hash": "ccff7c53395699bbba75f603c771096d06daefd5"
+          }
+        },
         {
           "client_id": "755210924592-42dc5jp033apuvq4vavbf80vmkblelfa.apps.googleusercontent.com",
           "client_type": 3
