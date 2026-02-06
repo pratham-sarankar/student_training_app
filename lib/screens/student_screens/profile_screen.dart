@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:learn_work/features/auth/services/auth_service.dart';
+import 'package:gradspark/features/auth/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:learn_work/widgets/auth_wrapper.dart';
-import 'package:learn_work/screens/student_screens/edit_profile_screen.dart';
-import 'package:learn_work/screens/student_screens/education_details_screen.dart';
-import 'package:learn_work/utils/service_locator.dart';
+import 'package:gradspark/widgets/auth_wrapper.dart';
+import 'package:gradspark/screens/student_screens/edit_profile_screen.dart';
+import 'package:gradspark/screens/student_screens/education_details_screen.dart';
+import 'package:gradspark/utils/service_locator.dart';
 import 'my_courses_screen.dart';
 import 'help_support_screen.dart';
 import 'about_screen.dart';
@@ -37,6 +37,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String get _userEmail {
     final user = _authService.currentUser;
     return user?.email ?? 'user@email.com';
+  }
+
+  String? get _userPhotoUrl {
+    final user = _authService.currentUser;
+    return user?.photoURL;
   }
 
   @override
@@ -135,12 +140,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               width: 2,
                             ),
+                            image:
+                                _userPhotoUrl != null
+                                    ? DecorationImage(
+                                      image: NetworkImage(_userPhotoUrl!),
+                                      fit: BoxFit.cover,
+                                    )
+                                    : null,
                           ),
-                          child: Icon(
-                            Icons.person,
-                            size: 40,
-                            color: theme.colors.primary,
-                          ),
+                          child:
+                              _userPhotoUrl == null
+                                  ? Icon(
+                                    Icons.person,
+                                    size: 40,
+                                    color: theme.colors.primary,
+                                  )
+                                  : null,
                         ),
                         Text(
                           _userName,

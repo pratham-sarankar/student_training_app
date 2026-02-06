@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:learn_work/providers/admin_provider.dart';
+import 'package:gradspark/providers/admin_provider.dart';
 import 'package:provider/provider.dart';
 import 'jobs_screen.dart';
 import 'trainings_screen.dart';

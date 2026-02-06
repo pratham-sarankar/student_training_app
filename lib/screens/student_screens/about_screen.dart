@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
-
-  Future<void> _launchUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,14 +47,11 @@ class AboutScreen extends StatelessWidget {
                       Container(
                         width: 120,
                         height: 120,
-                        decoration: BoxDecoration(
-                          color: theme.colors.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.school_rounded,
-                          size: 60,
-                          color: theme.colors.primary,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/appplogo.png'),
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -83,31 +72,12 @@ class AboutScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 40),
                       Text(
-                        'Gradspark is your ultimate companion for career growth and learning. We provide top-notch training courses and job opportunities to help you succeed in your professional journey.',
+                        'Gradspark is your ultimate companion for finding student jobs, internships, and professional training. We provide top-notch upskilling courses and career assessments to help graduates and students succeed in their professional journey in 2026.',
                         textAlign: TextAlign.center,
                         style: theme.typography.base.copyWith(
                           color: theme.colors.mutedForeground,
                           height: 1.6,
                         ),
-                      ),
-                      const SizedBox(height: 48),
-                      _buildLinkItem(
-                        context,
-                        title: 'Privacy Policy',
-                        onTap:
-                            () => _launchUrl('https://gradspark.com/privacy'),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildLinkItem(
-                        context,
-                        title: 'Terms of Service',
-                        onTap: () => _launchUrl('https://gradspark.com/terms'),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildLinkItem(
-                        context,
-                        title: 'Official Website',
-                        onTap: () => _launchUrl('https://gradspark.com'),
                       ),
                     ],
                   ),
@@ -128,50 +98,6 @@ class AboutScreen extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildLinkItem(
-    BuildContext context, {
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    final theme = context.theme;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        decoration: BoxDecoration(
-          color: theme.colors.background,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: theme.typography.base.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colors.foreground,
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: theme.colors.mutedForeground,
-            ),
-          ],
-        ),
       ),
     );
   }

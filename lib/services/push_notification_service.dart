@@ -1,5 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:learn_work/services/user_service.dart';
+import 'package:gradspark/services/user_service.dart';
 
 // Top-level function to handle background messages
 // This must be a top-level or static function

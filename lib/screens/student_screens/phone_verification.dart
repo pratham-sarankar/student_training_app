@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
-import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/features/auth/services/auth_service.dart';
-import 'package:learn_work/utils/service_locator.dart';
+import 'package:gradspark/screens/student_screens/main_screen.dart';
+import 'package:gradspark/features/auth/services/auth_service.dart';
+import 'package:gradspark/utils/service_locator.dart';
 import 'dart:async';
 
 class PhoneVerificationScreen extends StatefulWidget {

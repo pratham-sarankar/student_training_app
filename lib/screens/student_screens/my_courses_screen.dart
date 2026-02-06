@@ -4,7 +4,7 @@ import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:learn_work/screens/student_screens/my_courses_details_screen.dart';
+import 'package:gradspark/screens/student_screens/my_courses_details_screen.dart';
 
 class MyCoursesScreen extends StatefulWidget {
   const MyCoursesScreen({super.key});

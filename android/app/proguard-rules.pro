@@ -76,3 +76,10 @@
 # Keep Google Play Services API classes
 -keep class * implements com.google.android.gms.common.api.GoogleApiClient$ConnectionCallbacks { *; }
 -keep class * implements com.google.android.gms.common.api.GoogleApiClient$OnConnectionFailedListener { *; }
+
+# Don't warn for missing classes
+-dontwarn com.google.android.gms.auth.api.credentials.**
+-dontwarn com.google.android.play.core.**
+-dontwarn com.google.android.play.core.tasks.**
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.splitcompat.**

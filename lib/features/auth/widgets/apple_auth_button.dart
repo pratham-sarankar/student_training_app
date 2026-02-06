@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:provider/provider.dart';
-import 'package:learn_work/features/auth/utils/auth_type.dart';
-import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/features/auth/providers/auth_provider.dart';
+import 'package:gradspark/features/auth/utils/auth_type.dart';
+import 'package:gradspark/screens/student_screens/main_screen.dart';
+import 'package:gradspark/features/auth/providers/auth_provider.dart';
 
 class AppleAuthButton extends StatelessWidget {
   const AppleAuthButton({super.key, this.type});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:learn_work/providers/admin_provider.dart';
-import 'package:learn_work/models/job.dart';
+import 'package:gradspark/providers/admin_provider.dart';
+import 'package:gradspark/models/job.dart';
 import 'package:forui/forui.dart';
 import 'add_job_screen.dart';
 

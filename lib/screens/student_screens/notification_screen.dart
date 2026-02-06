@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:learn_work/models/notification.dart';
-import 'package:learn_work/services/notification_service.dart';
-import 'package:learn_work/services/user_service.dart';
+import 'package:gradspark/models/notification.dart';
+import 'package:gradspark/services/notification_service.dart';
+import 'package:gradspark/services/user_service.dart';
 import 'package:intl/intl.dart';
 
 class NotificationScreen extends StatefulWidget {

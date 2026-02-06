@@ -4,14 +4,12 @@ import 'package:forui/forui.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:learn_work/screens/student_screens/job_details_screen.dart';
-import 'package:learn_work/screens/student_screens/edit_profile_screen.dart';
+import 'package:gradspark/screens/student_screens/job_details_screen.dart';
+import 'package:gradspark/screens/student_screens/edit_profile_screen.dart';
 import '../../models/job.dart';
 import '../../services/job_service.dart';
 import '../../widgets/shimmer_loading.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 
 class AllJobsScreen extends StatefulWidget {
   const AllJobsScreen({super.key});
@@ -686,11 +684,11 @@ class _CarouselWidget extends StatefulWidget {
 class _CarouselWidgetState extends State<_CarouselWidget> {
   int _currentCarouselIndex = 0;
 
-  // Random image URLs for the carousel
-  final List<String> randomImages = [
-    'https://tse3.mm.bing.net/th/id/OIP.E-8vX505ECdMwROR-dUXvAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3',
-    'https://thumbs.dreamstime.com/b/education-vector-trendy-banner-design-concept-modern-style-thin-line-art-icons-gradient-colors-background-93713303.jpg',
-    'https://i.pinimg.com/originals/a7/d9/66/a7d96663c07fc0c8bd0dc22b7f56b986.jpg',
+  // Background images for the carousel
+  final List<String> backgroundImages = [
+    'assets/images/bg2.webp',
+    'assets/images/bg1.jpg',
+    'assets/images/bg3.jpg',
   ];
 
   @override
@@ -714,13 +712,15 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
             enlargeFactor: 0.1,
             scrollDirection: Axis.horizontal,
             onPageChanged: (index, reason) {
-              setState(() {
-                _currentCarouselIndex = index;
-              });
+              if (mounted) {
+                setState(() {
+                  _currentCarouselIndex = index;
+                });
+              }
             },
           ),
           items:
-              randomImages.map((imageUrl) {
+              backgroundImages.map((imagePath) {
                 return Builder(
                   builder: (BuildContext context) {
                     return Container(
@@ -728,80 +728,14 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          imageUrl,
-                          fit: BoxFit.fill,
+                        child: Image.asset(
+                          imagePath,
+                          fit: BoxFit.cover,
                           width: double.infinity,
                           height:
                               MediaQuery.of(context).size.width *
                               0.85 *
                               (9 / 16),
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              width: double.infinity,
-                              height:
-                                  MediaQuery.of(context).size.width *
-                                  0.85 *
-                                  (9 / 16),
-                              decoration: BoxDecoration(
-                                color: widget.theme.colors.muted,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  value:
-                                      loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress
-                                                  .expectedTotalBytes!
-                                          : null,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    widget.theme.colors.primary,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: double.infinity,
-                              height:
-                                  MediaQuery.of(context).size.width *
-                                  0.85 *
-                                  (9 / 16),
-                              decoration: BoxDecoration(
-                                color: widget.theme.colors.muted,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.error_outline,
-                                      size: 48,
-                                      color:
-                                          widget.theme.colors.mutedForeground,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Failed to load image',
-                                      style: widget.theme.typography.sm
-                                          .copyWith(
-                                            color:
-                                                widget
-                                                    .theme
-                                                    .colors
-                                                    .mutedForeground,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
                         ),
                       ),
                     );
@@ -814,7 +748,7 @@ class _CarouselWidgetState extends State<_CarouselWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children:
-              randomImages.asMap().entries.map((entry) {
+              backgroundImages.asMap().entries.map((entry) {
                 return Container(
                   width: 8,
                   height: 8,

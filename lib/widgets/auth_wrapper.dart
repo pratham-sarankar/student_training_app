@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:learn_work/screens/student_screens/main_screen.dart';
-import 'package:learn_work/features/onboarding/welcome_screen.dart';
-import 'package:learn_work/screens/student_screens/email_verification_screen.dart';
-import 'package:learn_work/screens/admin_screen/dashboard_screen.dart';
-import 'package:learn_work/providers/admin_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:gradspark/screens/student_screens/main_screen.dart';
+import 'package:gradspark/features/onboarding/welcome_screen.dart';
+import 'package:gradspark/screens/admin_screen/dashboard_screen.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -94,11 +91,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 if (userRole == 'Admin') {
                   return const DashboardScreen();
                 } else if (userRole == 'Student') {
-                  if (user.emailVerified) {
-                    return const MainScreen();
-                  } else {
-                    return const EmailVerificationScreen();
-                  }
+                  return const MainScreen();
                 } else {
                   FirebaseAuth.instance.signOut();
                   return const WelcomeScreen();

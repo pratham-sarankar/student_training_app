@@ -48,58 +48,64 @@ class _TraningCourseDetailsScreenState
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    if (!mounted) return;
+
     final courseId =
         widget.course['id'] ??
         widget.course['title']; // Fallback to title if id missing
     await _userService.enrollInCourse(courseId);
+
+    if (!mounted) return;
     await _loadUser();
+
+    if (!mounted) return;
     _showSuccessFeedback();
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Payment Failed: ${response.message}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Payment Failed: ${response.message}'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('External Wallet: ${response.walletName}'),
-          backgroundColor: Colors.blue,
-        ),
-      );
-    }
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('External Wallet: ${response.walletName}'),
+        backgroundColor: Colors.blue,
+      ),
+    );
   }
 
   void _showSuccessFeedback() {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.check_circle, color: Colors.white, size: 16),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Successfully enrolled in ${widget.course['title']}',
-                  style: const TextStyle(fontSize: 13),
-                ),
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 16),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Successfully enrolled in ${widget.course['title']}',
+                style: const TextStyle(fontSize: 13),
               ),
-            ],
-          ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
+            ),
+          ],
         ),
-      );
-    }
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
 
     // Navigate back after a delay
     Future.delayed(const Duration(seconds: 2), () {

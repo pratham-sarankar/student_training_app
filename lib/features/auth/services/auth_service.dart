@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
-import 'package:learn_work/services/user_service.dart';
-import 'package:learn_work/models/user.dart';
+import 'package:gradspark/services/user_service.dart';
+import 'package:gradspark/models/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:io' show Platform;
-import 'package:learn_work/services/location_service.dart';
+import 'package:gradspark/services/location_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;

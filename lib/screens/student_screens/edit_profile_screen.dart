@@ -3,9 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:learn_work/services/user_service.dart';
+import 'package:gradspark/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:learn_work/widgets/shimmer_loading.dart';
+import 'package:gradspark/widgets/shimmer_loading.dart';
+import 'package:gradspark/services/storage_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -25,6 +28,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   DateTime? _selectedDate;
   bool _isLoading = false;
   bool _isDataLoading = true;
+  String? _profilePictureUrl;
+  File? _selectedImageFile;
+  bool _isUploadingImage = false;
+  final _storageService = StorageService();
 
   final List<String> _genderOptions = ['Male', 'Female'];
 
@@ -53,6 +60,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _firstNameController.text = userModel.firstName;
             _lastNameController.text = userModel.lastName;
             _phoneController.text = userModel.phoneNumber ?? '';
+            _profilePictureUrl = userModel.photoUrl;
 
             _selectedGender = userModel.gender ?? 'Male';
             _selectedDate = userModel.dateOfBirth;
@@ -188,12 +196,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               .withValues(alpha: 0.2),
                                           width: 2,
                                         ),
+                                        image:
+                                            _selectedImageFile != null
+                                                ? DecorationImage(
+                                                  image: FileImage(
+                                                    _selectedImageFile!,
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                )
+                                                : _profilePictureUrl != null
+                                                ? DecorationImage(
+                                                  image: NetworkImage(
+                                                    _profilePictureUrl!,
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                )
+                                                : null,
                                       ),
-                                      child: Icon(
-                                        Icons.person,
-                                        size: 50,
-                                        color: theme.colors.primary,
-                                      ),
+                                      child:
+                                          _selectedImageFile == null &&
+                                                  _profilePictureUrl == null
+                                              ? Icon(
+                                                Icons.person,
+                                                size: 50,
+                                                color: theme.colors.primary,
+                                              )
+                                              : null,
                                     ),
                                     Positioned(
                                       bottom: 0,
@@ -361,7 +389,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               style: FButtonStyle.primary,
                               onPress: _isLoading ? null : _saveProfile,
                               child:
-                                  _isLoading
+                                  _isLoading || _isUploadingImage
                                       ? SizedBox(
                                         width: 20,
                                         height: 20,
@@ -374,7 +402,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         ),
                                       )
                                       : Text(
-                                        'Save Changes',
+                                        _isUploadingImage
+                                            ? 'Uploading...'
+                                            : 'Save Changes',
                                         style: theme.typography.sm.copyWith(
                                           fontWeight: FontWeight.w600,
                                           color: theme.colors.primaryForeground,
@@ -577,13 +607,121 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  void _changeProfilePicture() {
-    // TODO: Implement image picker functionality
+  void _changeProfilePicture() async {
+    final theme = context.theme;
+
+    // Show bottom sheet to choose between camera and gallery
+    await showModalBottomSheet(
+      context: context,
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Choose Profile Picture',
+                  style: theme.typography.lg.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colors.foreground,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: Icon(Icons.camera_alt, color: theme.colors.primary),
+                  title: Text(
+                    'Take Photo',
+                    style: theme.typography.sm.copyWith(
+                      color: theme.colors.foreground,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAndUploadImage(ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.photo_library,
+                    color: theme.colors.primary,
+                  ),
+                  title: Text(
+                    'Choose from Gallery',
+                    style: theme.typography.sm.copyWith(
+                      color: theme.colors.foreground,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAndUploadImage(ImageSource.gallery);
+                  },
+                ),
+                if (_profilePictureUrl != null || _selectedImageFile != null)
+                  ListTile(
+                    leading: Icon(
+                      Icons.delete,
+                      color: theme.colors.destructive,
+                    ),
+                    title: Text(
+                      'Remove Photo',
+                      style: theme.typography.sm.copyWith(
+                        color: theme.colors.destructive,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _removeProfilePicture();
+                    },
+                  ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  void _pickAndUploadImage(ImageSource source) async {
+    try {
+      // Pick image
+      final XFile? image = await _storageService.pickImage(source: source);
+
+      if (image == null) return;
+
+      // Update UI with selected image
+      setState(() {
+        _selectedImageFile = File(image.path);
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Image selected. Click "Save Changes" to upload.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick image: $e'),
+            backgroundColor: context.theme.colors.destructive,
+          ),
+        );
+      }
+    }
+  }
+
+  void _removeProfilePicture() {
+    setState(() {
+      _selectedImageFile = null;
+      _profilePictureUrl = null;
+    });
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Image picker functionality coming soon'),
+        content: Text('Profile picture will be removed when you save changes'),
         backgroundColor: Colors.orange,
-        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -608,13 +746,51 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
+          String? uploadedPhotoUrl = _profilePictureUrl;
+
+          // Upload new profile picture if selected
+          if (_selectedImageFile != null) {
+            setState(() {
+              _isUploadingImage = true;
+            });
+
+            try {
+              // Delete old profile picture if exists
+              if (_profilePictureUrl != null) {
+                await _storageService.deleteProfilePicture(_profilePictureUrl!);
+              }
+
+              // Upload new profile picture
+              uploadedPhotoUrl = await _storageService.uploadProfilePicture(
+                _selectedImageFile!,
+              );
+
+              // Update Firebase Auth photo URL
+              await user.updatePhotoURL(uploadedPhotoUrl);
+            } catch (e) {
+              print('Error uploading profile picture: $e');
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to upload profile picture: $e'),
+                    backgroundColor: context.theme.colors.destructive,
+                  ),
+                );
+              }
+            } finally {
+              setState(() {
+                _isUploadingImage = false;
+              });
+            }
+          }
+
           // Update profile in Firestore using UserService
           final userService = UserService();
           await userService.updateUserProfile(
             firstName: _firstNameController.text.trim(),
             lastName: _lastNameController.text.trim(),
             phoneNumber: _phoneController.text.trim(),
-
+            photoUrl: uploadedPhotoUrl,
             gender: _selectedGender,
             dateOfBirth: _selectedDate,
           );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:learn_work/models/traning.dart';
-import 'package:learn_work/models/course.dart';
-import 'package:learn_work/models/job.dart';
-import 'package:learn_work/models/user.dart';
-import 'package:learn_work/models/assessment_model.dart';
-import 'package:learn_work/services/admin_service.dart';
-import 'package:learn_work/services/assessment_service.dart';
+import 'package:gradspark/models/traning.dart';
+import 'package:gradspark/models/course.dart';
+import 'package:gradspark/models/job.dart';
+import 'package:gradspark/models/user.dart';
+import 'package:gradspark/models/assessment_model.dart';
+import 'package:gradspark/services/admin_service.dart';
+import 'package:gradspark/services/assessment_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

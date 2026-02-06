@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:forui/forui.dart';
-import 'package:learn_work/providers/admin_provider.dart';
-import 'package:learn_work/models/traning.dart';
-import 'package:learn_work/models/user.dart';
+import 'package:gradspark/providers/admin_provider.dart';
+import 'package:gradspark/models/traning.dart';
+import 'package:gradspark/models/user.dart';
 
 class StudentsScreen extends StatefulWidget {
   const StudentsScreen({super.key});

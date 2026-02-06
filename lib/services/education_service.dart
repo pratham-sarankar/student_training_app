@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:learn_work/models/education.dart';
+import 'package:gradspark/models/education.dart';
 
 class EducationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

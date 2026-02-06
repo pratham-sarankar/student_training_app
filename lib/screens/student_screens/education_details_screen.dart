@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
-import 'package:learn_work/services/education_service.dart';
+import 'package:gradspark/services/education_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:learn_work/widgets/shimmer_loading.dart';
+import 'package:gradspark/widgets/shimmer_loading.dart';
 import 'package:file_picker/file_picker.dart';
 
 class EducationDetailsScreen extends StatefulWidget {
