@@ -262,120 +262,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
 
                   // My Courses Section
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.colors.primary.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: theme.colors.primary.withValues(alpha: 0.1),
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: theme.colors.primary,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.school,
-                                size: 20,
-                                color: theme.colors.primaryForeground,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'My Courses',
-                                    style: theme.typography.lg.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.colors.foreground,
-                                    ),
-                                  ),
-                                  Text(
-                                    'View all your purchased courses',
-                                    style: theme.typography.sm.copyWith(
-                                      color: theme.colors.mutedForeground,
-                                      fontSize: 11,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.colors.primary.withValues(
-                                  alpha: 0.1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child:
-                                  _isLoadingCourseCount
-                                      ? SizedBox(
-                                        width: 12,
-                                        height: 12,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 1.5,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                theme.colors.primary,
-                                              ),
-                                        ),
-                                      )
-                                      : Text(
-                                        '$_courseCount',
-                                        style: theme.typography.sm.copyWith(
-                                          color: theme.colors.primary,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 10,
-                                        ),
-                                      ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: FButton(
-                            style: FButtonStyle.primary,
-                            onPress: () async {
-                              final result = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const MyCoursesScreen(),
-                                ),
-                              );
-                              // Refresh course count when returning from MyCoursesScreen
-                              if (result == true) {
-                                _loadCourseCount();
-                              }
-                            },
-                            child: Text(
-                              'View My Courses',
-                              style: theme.typography.sm.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: theme.colors.primaryForeground,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  // Container(
+                  //   padding: const EdgeInsets.all(16),
+                  //   decoration: BoxDecoration(
+                  //     color: theme.colors.primary.withValues(alpha: 0.05),
+                  //     borderRadius: BorderRadius.circular(12),
+                  //     border: Border.all(
+                  //       color: theme.colors.primary.withValues(alpha: 0.1),
+                  //       width: 1,
+                  //     ),
+                  //   ),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Row(
+                  //         children: [
+                  //           Container(
+                  //             padding: const EdgeInsets.all(8),
+                  //             decoration: BoxDecoration(
+                  //               color: theme.colors.primary,
+                  //               borderRadius: BorderRadius.circular(8),
+                  //             ),
+                  //             child: Icon(
+                  //               Icons.school,
+                  //               size: 20,
+                  //               color: theme.colors.primaryForeground,
+                  //             ),
+                  //           ),
+                  //           const SizedBox(width: 12),
+                  //           Expanded(
+                  //             child: Column(
+                  //               crossAxisAlignment: CrossAxisAlignment.start,
+                  //               children: [
+                  //                 Text(
+                  //                   'My Courses',
+                  //                   style: theme.typography.lg.copyWith(
+                  //                     fontWeight: FontWeight.w600,
+                  //                     color: theme.colors.foreground,
+                  //                   ),
+                  //                 ),
+                  //                 Text(
+                  //                   'View all your purchased courses',
+                  //                   style: theme.typography.sm.copyWith(
+                  //                     color: theme.colors.mutedForeground,
+                  //                     fontSize: 11,
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //           Container(
+                  //             padding: const EdgeInsets.symmetric(
+                  //               horizontal: 8,
+                  //               vertical: 4,
+                  //             ),
+                  //             decoration: BoxDecoration(
+                  //               color: theme.colors.primary.withValues(
+                  //                 alpha: 0.1,
+                  //               ),
+                  //               borderRadius: BorderRadius.circular(12),
+                  //             ),
+                  //             child:
+                  //                 _isLoadingCourseCount
+                  //                     ? SizedBox(
+                  //                       width: 12,
+                  //                       height: 12,
+                  //                       child: CircularProgressIndicator(
+                  //                         strokeWidth: 1.5,
+                  //                         valueColor:
+                  //                             AlwaysStoppedAnimation<Color>(
+                  //                               theme.colors.primary,
+                  //                             ),
+                  //                       ),
+                  //                     )
+                  //                     : Text(
+                  //                       '$_courseCount',
+                  //                       style: theme.typography.sm.copyWith(
+                  //                         color: theme.colors.primary,
+                  //                         fontWeight: FontWeight.w600,
+                  //                         fontSize: 10,
+                  //                       ),
+                  //                     ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       const SizedBox(height: 12),
+                  //       SizedBox(
+                  //         width: double.infinity,
+                  //         height: 48,
+                  //         child: FButton(
+                  //           style: FButtonStyle.primary,
+                  //           onPress: () async {
+                  //             final result = await Navigator.of(context).push(
+                  //               MaterialPageRoute(
+                  //                 builder: (context) => const MyCoursesScreen(),
+                  //               ),
+                  //             );
+                  //             // Refresh course count when returning from MyCoursesScreen
+                  //             if (result == true) {
+                  //               _loadCourseCount();
+                  //             }
+                  //           },
+                  //           child: Text(
+                  //             'View My Courses',
+                  //             style: theme.typography.sm.copyWith(
+                  //               fontWeight: FontWeight.w600,
+                  //               color: theme.colors.primaryForeground,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 20),
 
                   // Profile Options
 
