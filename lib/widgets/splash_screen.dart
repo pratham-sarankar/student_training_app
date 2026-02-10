@@ -99,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: ScaleTransition(
                 scale: _logoScale,
                 child: Image.asset(
-                  'assets/images/app_logo.png',
+                  'assets/images/appplogo.png',
                   width: 140,
                   height: 140,
                   fit: BoxFit.contain,

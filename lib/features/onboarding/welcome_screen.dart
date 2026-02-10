@@ -37,7 +37,7 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   // Logo
                   Image.asset(
-                    'assets/images/app_logo.png',
+                    'assets/images/appplogo.png',
                     width: size.width * 0.45,
                   ),
 
