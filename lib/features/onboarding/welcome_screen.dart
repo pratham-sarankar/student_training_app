@@ -36,9 +36,12 @@ class WelcomeScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // Logo
-                  Image.asset(
-                    'assets/images/appplogo.png',
-                    width: size.width * 0.45,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      'assets/images/appplogo.png',
+                      width: size.width * 0.45,
+                    ),
                   ),
 
                   const SizedBox(height: 25),
