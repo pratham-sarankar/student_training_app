@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
     _logoScale = Tween<double>(begin: 0.7, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -98,13 +98,19 @@ class _SplashScreenState extends State<SplashScreen>
               opacity: _logoFade,
               child: ScaleTransition(
                 scale: _logoScale,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: ShapeDecoration(
+                    shape: ContinuousRectangleBorder(
+                      borderRadius: BorderRadius.circular(60),
+                    ),
+                  ),
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
                   child: Image.asset(
-                    'assets/images/appplogo.png',
-                    width: 140,
-                    height: 140,
+                    'assets/images/main_logo.png',
                     fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                   ),
                 ),
               ),
@@ -131,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'Ignite your career',
                       style: GoogleFonts.inter(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFF013F64).withValues(alpha: 0.6),
                         letterSpacing: 1.2,

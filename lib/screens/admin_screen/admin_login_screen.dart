@@ -128,12 +128,16 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/app_logo.png'),
-                      fit: BoxFit.contain,
+                  decoration: ShapeDecoration(
+                    shape: ContinuousRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: Image.asset(
+                    'assets/images/main_logo.png',
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                   ),
                 ),
                 const SizedBox(height: 20),

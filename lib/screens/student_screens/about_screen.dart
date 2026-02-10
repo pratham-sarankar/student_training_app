@@ -47,11 +47,16 @@ class AboutScreen extends StatelessWidget {
                       Container(
                         width: 120,
                         height: 120,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/app_logo.png'),
-                            fit: BoxFit.contain,
+                        decoration: ShapeDecoration(
+                          shape: ContinuousRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
                           ),
+                        ),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: Image.asset(
+                          'assets/images/main_logo.png',
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.high,
                         ),
                       ),
                       const SizedBox(height: 24),
