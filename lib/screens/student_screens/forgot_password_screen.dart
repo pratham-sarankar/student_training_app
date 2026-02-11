@@ -17,6 +17,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Reset the password reset sent status when entering the screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<AuthProvider>(
+          context,
+          listen: false,
+        ).clearPasswordResetSent();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     super.dispose();
@@ -315,7 +329,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
-                                              '1. Check your email inbox\n2. Click the reset link\n3. Create a new password\n4. Sign in with your new password',
+                                              '1. Check your email inbox\n2. Check your spam folder if you can\'t find it in your inbox\n3. Click the reset link\n4. Create a new password\n5. Sign in with your new password',
                                               style: theme.typography.sm
                                                   .copyWith(
                                                     color:

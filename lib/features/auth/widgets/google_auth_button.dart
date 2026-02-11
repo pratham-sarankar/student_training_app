@@ -56,8 +56,8 @@ class GoogleAuthButton extends StatelessWidget {
           icon: Brand(Brands.google, size: 20),
           label: Text(
             type == AuthType.signIn
-                ? 'Sign in with Google'
-                : 'Sign up with Google',
+                ? 'Continue with Google'
+                : 'Continue with Google',
             style: context.theme.typography.sm.copyWith(
               color: context.theme.colors.foreground,
               fontWeight: FontWeight.w500,

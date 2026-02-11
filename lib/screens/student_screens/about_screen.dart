@@ -54,7 +54,7 @@ class AboutScreen extends StatelessWidget {
                         ),
                         clipBehavior: Clip.antiAliasWithSaveLayer,
                         child: Image.asset(
-                          'assets/images/main_logo.png',
+                          'assets/images/appp_logo.png',
                           fit: BoxFit.contain,
                           filterQuality: FilterQuality.high,
                         ),
@@ -69,7 +69,7 @@ class AboutScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Version 1.0.2',
+                        'Version 1.0.3',
                         style: theme.typography.sm.copyWith(
                           color: theme.colors.mutedForeground,
                           letterSpacing: 1.2,

@@ -56,7 +56,7 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                       clipBehavior: Clip.antiAliasWithSaveLayer,
                       child: Image.asset(
-                        'assets/images/main_logo.png',
+                        'assets/images/appp_logo.png',
                         fit: BoxFit.contain,
                         filterQuality: FilterQuality.high,
                       ),
