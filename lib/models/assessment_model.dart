@@ -90,7 +90,12 @@ class AssessmentModel {
               .toList(),
       timeLimitMinutes: map['timeLimitMinutes'] ?? 15,
       passingMarks: map['passingMarks'] ?? 9,
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt:
+          map['createdAt'] is Timestamp
+              ? (map['createdAt'] as Timestamp).toDate()
+              : (map['createdAt'] is DateTime
+                  ? map['createdAt'] as DateTime
+                  : DateTime.now()),
     );
   }
 

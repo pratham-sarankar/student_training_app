@@ -6,7 +6,7 @@ import '../../models/course.dart';
 import '../../services/course_service.dart';
 import '../../widgets/shimmer_loading.dart';
 import '../../widgets/course_avatar.dart';
-import 'traning_course_details_screen.dart';
+import 'domain_courses_screen.dart';
 
 class TrainingCoursesScreen extends StatefulWidget {
   const TrainingCoursesScreen({super.key});
@@ -93,9 +93,9 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                               );
                             }
 
-                            final courses = snapshot.data ?? [];
+                            final allCourses = snapshot.data ?? [];
 
-                            if (courses.isEmpty) {
+                            if (allCourses.isEmpty) {
                               return Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -124,16 +124,46 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
                               );
                             }
 
+                            // Group courses by domain
+                            final Map<String, List<Course>> domainGroups = {};
+                            for (var course in allCourses) {
+                              if (!domainGroups.containsKey(course.domain)) {
+                                domainGroups[course.domain] = [];
+                              }
+                              domainGroups[course.domain]!.add(course);
+                            }
+
+                            final domains = domainGroups.keys.toList()..sort();
+
                             return ListView.builder(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                               ),
-                              itemCount: courses.length,
+                              itemCount: domains.length,
                               itemBuilder: (context, index) {
-                                final course = courses[index];
+                                final domain = domains[index];
+                                final coursesInDomain = domainGroups[domain]!;
+
+                                // Calculate total courses including sub-courses (split by comma/slash)
+                                int totalSubCourses = 0;
+                                for (var c in coursesInDomain) {
+                                  totalSubCourses +=
+                                      c.recommendedCourses
+                                          .split(
+                                            RegExp(r',|\s/\s|(?<=\s)/(?=\s)'),
+                                          )
+                                          .where((s) => s.trim().isNotEmpty)
+                                          .length;
+                                }
+
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 12),
-                                  child: _buildCourseCard(context, course),
+                                  child: _buildDomainCard(
+                                    context,
+                                    domain,
+                                    coursesInDomain,
+                                    totalSubCourses,
+                                  ),
                                 );
                               },
                             );
@@ -148,11 +178,24 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
     );
   }
 
-  Widget _buildCourseCard(BuildContext context, Course course) {
+  Widget _buildDomainCard(
+    BuildContext context,
+    String domain,
+    List<Course> courses,
+    int totalCount,
+  ) {
     final theme = context.theme;
 
     return GestureDetector(
-      onTap: () => _navigateToCourseDetails(course),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (context) =>
+                    DomainCoursesScreen(domain: domain, courses: courses),
+          ),
+        );
+      },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: AnimatedContainer(
@@ -171,124 +214,39 @@ class _TrainingCoursesScreenState extends State<TrainingCoursesScreen> {
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              // Course Content
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: CourseAvatar(title: course.title, size: 50),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          course.title,
-                          style: theme.typography.lg.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: theme.colors.foreground,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 4,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.colors.primary.withValues(
-                                  alpha: 0.1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                course.category,
-                                style: theme.typography.sm.copyWith(
-                                  color: theme.colors.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                course.level,
-                                style: theme.typography.sm.copyWith(
-                                  color: Colors.orange,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+              CourseAvatar(title: domain, size: 50),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      domain,
+                      style: theme.typography.lg.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.colors.foreground,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              // Course Description (shortened)
-              Text(
-                course.description,
-                style: theme.typography.sm.copyWith(
-                  color: theme.colors.mutedForeground,
+                    const SizedBox(height: 4),
+                    Text(
+                      '$totalCount ${totalCount == 1 ? 'Course' : 'Courses'} available',
+                      style: theme.typography.sm.copyWith(
+                        color: theme.colors.mutedForeground,
+                      ),
+                    ),
+                  ],
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-
-              const SizedBox(height: 8),
-              // View Details hint
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Tap to view details',
-                    style: theme.typography.sm.copyWith(
-                      color: theme.colors.primary.withValues(alpha: 0.7),
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 12,
-                    color: theme.colors.primary.withValues(alpha: 0.7),
-                  ),
-                ],
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: theme.colors.primary.withValues(alpha: 0.7),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _navigateToCourseDetails(Course course) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder:
-            (context) => TraningCourseDetailsScreen(course: course.toMap()),
       ),
     );
   }

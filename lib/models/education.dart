@@ -48,8 +48,18 @@ class EducationModel {
       careerGoals: List<String>.from(map['careerGoals'] ?? []),
       resumeFileName: map['resumeFileName'],
       resumeUrl: map['resumeUrl'],
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt:
+          map['createdAt'] is Timestamp
+              ? (map['createdAt'] as Timestamp).toDate()
+              : (map['createdAt'] is DateTime
+                  ? map['createdAt'] as DateTime
+                  : DateTime.now()),
+      updatedAt:
+          map['updatedAt'] is Timestamp
+              ? (map['updatedAt'] as Timestamp).toDate()
+              : (map['updatedAt'] is DateTime
+                  ? map['updatedAt'] as DateTime
+                  : DateTime.now()),
     );
   }
 

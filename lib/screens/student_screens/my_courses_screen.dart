@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gradspark/models/course.dart';
 import 'package:gradspark/screens/student_screens/my_courses_details_screen.dart';
 
 class MyCoursesScreen extends StatefulWidget {
@@ -81,18 +82,20 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
           if (courseDoc.exists) {
             final courseData = courseDoc.data() as Map<String, dynamic>;
+            final courseObj = Course.fromMap(courseData, courseId);
+
             courses.add({
               'id': courseId,
-              'title': courseData['title'] ?? 'Untitled Course',
-              'category': courseData['category'] ?? 'General',
-              'level': courseData['level'] ?? 'Beginner',
+              'title': courseObj.title,
+              'category': courseObj.category,
+
               'image':
                   courseData['image'] ??
                   'https://picsum.photos/300/200?random=1',
-              'duration': courseData['duration'] ?? '8 weeks',
-              'cost': courseData['cost']?.toString() ?? '0',
+              'duration': courseObj.duration,
+              'cost': courseObj.cost.toString(),
               'instructor': courseData['instructor'] ?? 'Unknown Instructor',
-              'description': courseData['description'] ?? '',
+              'description': courseObj.description,
               'lessons': courseData['lessons'] ?? [],
               'progress': userData['courseProgress']?[courseId] ?? 0,
               'lastAccessed': userData['courseLastAccessed']?[courseId],
@@ -101,7 +104,6 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
           }
         } catch (e) {
           print('Error fetching course $courseId: $e');
-          // Continue with other courses even if one fails
         }
       }
 
@@ -555,25 +557,6 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                           course['category'],
                           style: theme.typography.sm.copyWith(
                             color: theme.colors.primary,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 6),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colors.secondary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          course['level'],
-                          style: theme.typography.sm.copyWith(
-                            color: theme.colors.secondary,
                             fontWeight: FontWeight.w500,
                             fontSize: 10,
                           ),

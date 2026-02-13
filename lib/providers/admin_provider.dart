@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:gradspark/models/traning.dart';
 import 'package:gradspark/models/course.dart';
 import 'package:gradspark/models/job.dart';
 import 'package:gradspark/models/user.dart';
@@ -13,6 +13,10 @@ class AdminProvider extends ChangeNotifier {
   final AdminService _adminService = AdminService();
   final AssessmentService _assessmentService = AssessmentService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  StreamSubscription<User?>? _authSubscription;
+  StreamSubscription<List<Job>>? _jobsSubscription;
+  StreamSubscription<List<AssessmentModel>>? _assessmentsSubscription;
 
   // ... existing code ...
 
@@ -75,7 +79,6 @@ class AdminProvider extends ChangeNotifier {
   }
 
   List<Job> _jobs = [];
-  List<Training> _trainings = [];
   List<Course> _courses = [];
   List<AssessmentModel> _assessments = [];
   List<UserModel> _adminUsers = [];
@@ -90,7 +93,6 @@ class AdminProvider extends ChangeNotifier {
 
   // Getters
   List<Job> get jobs => _jobs;
-  List<Training> get trainings => _trainings;
   List<Course> get courses => _courses;
   List<AssessmentModel> get assessments => _assessments;
   List<UserModel> get adminUsers => _adminUsers;
@@ -109,7 +111,9 @@ class AdminProvider extends ChangeNotifier {
 
   // Initialize admin authentication state
   void _initializeAdminState() {
-    _adminService.adminAuthStateChanges.listen((User? user) {
+    _authSubscription = _adminService.adminAuthStateChanges.listen((
+      User? user,
+    ) {
       // Check if provider is still active before updating state
       if (!_disposed) {
         _currentAdminUser = user;
@@ -168,7 +172,8 @@ class AdminProvider extends ChangeNotifier {
         }).toList();
       });
 
-      jobsStream.listen((jobs) {
+      _jobsSubscription?.cancel();
+      _jobsSubscription = jobsStream.listen((jobs) {
         if (!_disposed) {
           _jobs = jobs;
 
@@ -176,21 +181,10 @@ class AdminProvider extends ChangeNotifier {
           final now = DateTime.now();
           for (final job in jobs) {
             if (job.isActive && job.deadline != null) {
-              // Check if the deadline has passed (is before now)
-              // We compare date parts to avoid issues with time of day if needed,
-              // but typically exact comparison is fine.
-              // If deadline is today (any time), it should probably still be active until the end of the day?
-              // Or if deadline is a specific time. Assuming deadline is just a date usually set to 00:00:00.
-              // If deadline is 14th Dec 00:00, and now is 14th Dec 08:00, it is passed.
-              // If the user meant "deadline is inclusive", we might need to check if now is after deadline + 1 day.
-              // Usually "deadline" means "due by". If passed, it's late.
-              // Let's assume strict comparison for now.
               if (job.deadline!.isBefore(now)) {
                 print(
                   'Auto-deactivating expired job: ${job.title} (${job.id})',
                 );
-                // We don't await this to avoid blocking the UI update
-                // The update will trigger a new snapshot
                 _firestore
                     .collection('jobs')
                     .doc(job.id)
@@ -219,21 +213,13 @@ class AdminProvider extends ChangeNotifier {
     try {
       print('AdminProvider: Starting loadTrainings');
 
-      // Get a one-time snapshot instead of using a stream
       final snapshot = await _firestore.collection('courses').get();
-
-      final trainingsList = <Training>[];
       final coursesList = <Course>[];
 
       for (var doc in snapshot.docs) {
         try {
           final data = doc.data();
           data['id'] = doc.id;
-
-          // Map to Training for legacy support
-          trainingsList.add(Training.fromJson(data));
-
-          // Map to Course for modern UI
           coursesList.add(Course.fromMap(data, doc.id));
         } catch (parseError) {
           print('Error parsing document ${doc.id}: $parseError');
@@ -241,13 +227,8 @@ class AdminProvider extends ChangeNotifier {
       }
 
       if (!_disposed) {
-        _trainings = trainingsList;
         _courses = coursesList;
-
-        // Sort both
-        _trainings.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         _courses.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
         notifyListeners();
       }
     } catch (e) {
@@ -309,7 +290,7 @@ class AdminProvider extends ChangeNotifier {
     _adminUsers.clear();
     _allStudents.clear();
     _jobs.clear();
-    _trainings.clear();
+    _courses.clear();
     _errorMessage = null;
     if (!_disposed) {
       notifyListeners();
@@ -577,10 +558,41 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteCoursesByDomain(String domain) async {
+    try {
+      setState(isLoading: true, errorMessage: null);
+
+      final snapshot =
+          await _firestore
+              .collection('courses')
+              .where('domain', isEqualTo: domain)
+              .get();
+
+      final batch = _firestore.batch();
+      for (var doc in snapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      await batch.commit();
+      await loadTrainings();
+    } catch (e) {
+      print('Error deleting domain: $e');
+      _errorMessage = 'Failed to delete domain: $e';
+      if (!_disposed) {
+        notifyListeners();
+      }
+    } finally {
+      setState(isLoading: false);
+    }
+  }
+
   // Load assessments
   Future<void> loadAssessments() async {
     try {
-      _assessmentService.getAssessments().listen((assessments) {
+      _assessmentsSubscription?.cancel();
+      _assessmentsSubscription = _assessmentService.getAssessments().listen((
+        assessments,
+      ) {
         if (!_disposed) {
           _assessments = assessments;
           notifyListeners();
@@ -705,6 +717,9 @@ class AdminProvider extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _authSubscription?.cancel();
+    _jobsSubscription?.cancel();
+    _assessmentsSubscription?.cancel();
     super.dispose();
   }
 }

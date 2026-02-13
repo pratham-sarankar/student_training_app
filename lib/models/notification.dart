@@ -30,7 +30,12 @@ class NotificationModel {
         (e) => e.toString() == 'NotificationType.${map['type']}',
         orElse: () => NotificationType.system,
       ),
-      createdAt: map['createdAt'] ?? Timestamp.now(),
+      createdAt:
+          map['createdAt'] is Timestamp
+              ? map['createdAt'] as Timestamp
+              : (map['createdAt'] is DateTime
+                  ? Timestamp.fromDate(map['createdAt'] as DateTime)
+                  : Timestamp.now()),
       isRead: map['isRead'] ?? false,
       relatedId: map['relatedId'],
     );

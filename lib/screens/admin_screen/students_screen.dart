@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:forui/forui.dart';
 import 'package:gradspark/providers/admin_provider.dart';
-import 'package:gradspark/models/traning.dart';
+import 'package:gradspark/models/course.dart';
 import 'package:gradspark/models/user.dart';
 
 class StudentsScreen extends StatefulWidget {
@@ -254,17 +254,6 @@ class _StudentsScreenState extends State<StudentsScreen>
 
             DataColumn(
               label: Text(
-                'Training Status',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: theme.colors.foreground,
-                  letterSpacing: 0.2,
-                ),
-              ),
-            ),
-            DataColumn(
-              label: Text(
                 'Actions',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -279,20 +268,40 @@ class _StudentsScreenState extends State<StudentsScreen>
               sortedStudents.map((student) {
                 // Find which trainings this student is enrolled in
                 final enrolledTrainings = <String>[];
-                for (final enrolledCourseId in student.enrolledCourses) {
-                  final training = adminProvider.trainings.firstWhere(
-                    (t) =>
-                        t.id == enrolledCourseId || t.title == enrolledCourseId,
+                for (final enrollmentKey in student.enrolledCourses) {
+                  // Handle both composite ID (id_recommendation) and legacy Domain keys
+                  final parts = enrollmentKey.split('_');
+                  final targetId = parts[0];
+                  final targetRec = parts.length > 1 ? parts[1] : null;
+
+                  final course = adminProvider.courses.firstWhere(
+                    (c) =>
+                        c.id == targetId ||
+                        c.domain == enrollmentKey ||
+                        c.id == enrollmentKey,
                     orElse:
-                        () => Training(
-                          id: '',
-                          title: enrolledCourseId,
-                          description: '',
-                          price: 0,
+                        () => Course(
+                          id: enrollmentKey,
+                          domain: targetId,
+                          recommendedCourses: targetRec ?? enrollmentKey,
+                          cost: 0,
+                          duration: '',
+                          mode: '',
+                          days: '',
+                          timing: '',
+                          type: '',
+                          enrollmentFee: 0,
+                          hasFreeDemo: false,
                           createdAt: DateTime.now(),
+                          isActive: true,
                         ),
                   );
-                  enrolledTrainings.add(training.title);
+                  // Use recommended courses if it's specific, otherwise domain
+                  enrolledTrainings.add(
+                    course.recommendedCourses.isNotEmpty
+                        ? course.recommendedCourses
+                        : course.domain,
+                  );
                 }
 
                 return DataRow(
@@ -362,21 +371,6 @@ class _StudentsScreenState extends State<StudentsScreen>
                     ),
 
                     DataCell(
-                      Text(
-                        enrolledTrainings.isNotEmpty
-                            ? enrolledTrainings.join(', ')
-                            : 'Not enrolled',
-                        style: TextStyle(
-                          color:
-                              enrolledTrainings.isNotEmpty
-                                  ? theme.colors.mutedForeground
-                                  : theme.colors.mutedForeground,
-                          fontSize: 11,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    DataCell(
                       Center(
                         child: PopupMenuButton<String>(
                           icon: const Icon(Icons.more_vert, size: 18),
@@ -438,22 +432,37 @@ class _StudentsScreenState extends State<StudentsScreen>
   ) {
     final theme = context.theme;
 
-    // Find all trainings this student is enrolled in
-    final enrollments = <Training>[];
+    // Find all courses this student is enrolled in
+    final enrollments = <Course>[];
 
-    for (final enrolledCourseId in student.enrolledCourses) {
-      final training = adminProvider.trainings.firstWhere(
-        (t) => t.id == enrolledCourseId || t.title == enrolledCourseId,
+    for (final enrollmentKey in student.enrolledCourses) {
+      final parts = enrollmentKey.split('_');
+      final targetId = parts[0];
+      final targetRec = parts.length > 1 ? parts[1] : null;
+
+      final course = adminProvider.courses.firstWhere(
+        (c) =>
+            c.id == targetId ||
+            c.domain == enrollmentKey ||
+            c.id == enrollmentKey,
         orElse:
-            () => Training(
-              id: enrolledCourseId,
-              title: enrolledCourseId,
-              description: 'Details not found',
-              price: 0,
+            () => Course(
+              id: enrollmentKey,
+              domain: targetId,
+              recommendedCourses: targetRec ?? enrollmentKey,
+              cost: 0,
+              duration: '',
+              mode: '',
+              days: '',
+              timing: '',
+              type: '',
+              enrollmentFee: 0,
+              hasFreeDemo: false,
               createdAt: DateTime.now(),
+              isActive: true,
             ),
       );
-      enrollments.add(training);
+      enrollments.add(course);
     }
 
     showModalBottomSheet(
@@ -776,7 +785,7 @@ class _StudentsScreenState extends State<StudentsScreen>
     );
   }
 
-  Widget _buildEnrollmentTile(BuildContext context, Training training) {
+  Widget _buildEnrollmentTile(BuildContext context, Course course) {
     final theme = context.theme;
 
     return Container(
@@ -786,13 +795,6 @@ class _StudentsScreenState extends State<StudentsScreen>
         color: theme.colors.background,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: theme.colors.border),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colors.border,
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -802,13 +804,28 @@ class _StudentsScreenState extends State<StudentsScreen>
               Icon(Icons.school, color: theme.colors.primary, size: 18),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  training.title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: theme.colors.foreground,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.recommendedCourses.isNotEmpty
+                          ? course.recommendedCourses
+                          : course.domain,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: theme.colors.foreground,
+                      ),
+                    ),
+                    if (course.recommendedCourses.isNotEmpty)
+                      Text(
+                        course.domain,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: theme.colors.mutedForeground,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ],

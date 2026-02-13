@@ -7,7 +7,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../models/user.dart';
 import '../../services/user_service.dart';
 import '../../utils/payment_config.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../models/course.dart';
 
 class TraningCourseDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> course;
@@ -24,6 +24,8 @@ class _TraningCourseDetailsScreenState
   late Razorpay _razorpay;
   final UserService _userService = UserService();
   UserModel? _currentUser;
+  bool _isLoadingUser = true;
+  late Course courseObj;
 
   @override
   void initState() {
@@ -33,13 +35,24 @@ class _TraningCourseDetailsScreenState
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     _loadUser();
+    courseObj = Course.fromMap(widget.course, widget.course['id'] ?? '');
   }
 
   Future<void> _loadUser() async {
+    setState(() => _isLoadingUser = true);
     final user = await _userService.getCurrentUserData();
     if (mounted) {
-      setState(() => _currentUser = user);
+      setState(() {
+        _currentUser = user;
+        _isLoadingUser = false;
+      });
     }
+  }
+
+  String get _enrollmentId {
+    if (courseObj.id.isEmpty) return courseObj.domain;
+    // Combine ID and recommendedCourses to make it unique per sub-course/program
+    return '${courseObj.id}_${courseObj.recommendedCourses}';
   }
 
   @override
@@ -51,10 +64,13 @@ class _TraningCourseDetailsScreenState
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     if (!mounted) return;
 
-    final courseId =
-        widget.course['id'] ??
-        widget.course['title']; // Fallback to title if id missing
-    await _userService.enrollInCourse(courseId);
+    setState(() => _isLoadingUser = true);
+
+    try {
+      await _userService.enrollInCourse(_enrollmentId);
+    } catch (e) {
+      debugPrint('Error enrolling in course: $e');
+    }
 
     if (!mounted) return;
     await _loadUser();
@@ -96,7 +112,7 @@ class _TraningCourseDetailsScreenState
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Successfully enrolled in ${widget.course['title']}',
+                'Successfully enrolled in ${courseObj.recommendedCourses}',
                 style: const TextStyle(fontSize: 13),
               ),
             ),
@@ -108,7 +124,6 @@ class _TraningCourseDetailsScreenState
       ),
     );
 
-    // Navigate back after a delay
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.of(context).pop();
@@ -126,7 +141,7 @@ class _TraningCourseDetailsScreenState
           children: [
             Column(
               children: [
-                // Compact header
+                // Header
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -155,7 +170,6 @@ class _TraningCourseDetailsScreenState
                   ),
                 ),
 
-                // Compact content
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -166,7 +180,7 @@ class _TraningCourseDetailsScreenState
                         Row(
                           children: [
                             CourseAvatar(
-                              title: widget.course['title'],
+                              title: courseObj.recommendedCourses,
                               size: 60,
                             ),
                             const SizedBox(width: 16),
@@ -175,219 +189,210 @@ class _TraningCourseDetailsScreenState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.course['title'],
+                                    courseObj.recommendedCourses,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.typography.xl.copyWith(
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.bold,
                                       color: theme.colors.foreground,
                                       height: 1.1,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  // Course Tags - inline
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 3,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: theme.colors.primary
-                                              .withValues(alpha: 0.1),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          widget.course['category'],
-                                          style: theme.typography.sm.copyWith(
-                                            color: theme.colors.primary,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 3,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.orange.withValues(
-                                            alpha: 0.1,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          widget.course['level'],
-                                          style: theme.typography.sm.copyWith(
-                                            color: Colors.orange,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Course Description
-                        Text(
-                          'Description',
-                          style: theme.typography.lg.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: theme.colors.foreground,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          widget.course['description'],
-                          style: theme.typography.sm.copyWith(
-                            color: theme.colors.mutedForeground,
-                            height: 1.4,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Course Details - simple row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildSimpleDetail(
-                                Icons.access_time,
-                                'Duration',
-                                widget.course['duration'],
-                                const Color(0xFF6366F1),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildSimpleDetail(
-                                Icons.attach_money,
-                                'Cost',
-                                '₹${widget.course['cost']}',
-                                const Color(0xFF10B981),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Tentative Start Date & Free Demo
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: theme.colors.primary.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: theme.colors.primary.withValues(
-                                alpha: 0.1,
-                              ),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today,
-                                    size: 16,
-                                    color: theme.colors.primary,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Tentative Start Date',
-                                        style: theme.typography.xs.copyWith(
-                                          color: theme.colors.mutedForeground,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        widget.course['tentativeStartDate'] ??
-                                            'To be announced',
-                                        style: theme.typography.sm.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colors.foreground,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.play_circle_outline,
-                                    size: 16,
-                                    color: theme.colors.mutedForeground,
-                                  ),
-                                  const SizedBox(width: 8),
                                   Text(
-                                    'This course includes a Free Demo',
+                                    courseObj.domain,
                                     style: theme.typography.sm.copyWith(
-                                      fontWeight: FontWeight.w500,
                                       color: theme.colors.mutedForeground,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: theme.colors.primary.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      courseObj.type,
+                                      style: theme.typography.sm.copyWith(
+                                        color: theme.colors.primary,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 11,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Description Section
+                        Text(
+                          'Course Modules / Topics',
+                          style: theme.typography.lg.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colors.foreground,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Comprehensive training on ${courseObj.recommendedCourses} in ${courseObj.domain}.',
+                          style: theme.typography.sm.copyWith(
+                            color: theme.colors.mutedForeground,
+                            height: 1.5,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
 
-                        const SizedBox(height: 60), // Minimal space for FAB
+                        // Course Specific Details
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDetailCard(
+                                Icons.access_time_filled,
+                                'Duration',
+                                courseObj.duration,
+                                Colors.indigo,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDetailCard(
+                                Icons.payments,
+                                'Course Cost',
+                                '₹${courseObj.cost}',
+                                Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Mode, Days, Timing
+                        _buildSectionHeader(context, 'Schedule Information'),
+                        const SizedBox(height: 8),
+                        _buildInfoRow(
+                          context,
+                          Icons.devices,
+                          'Mode',
+                          courseObj.mode,
+                        ),
+                        _buildInfoRow(
+                          context,
+                          Icons.calendar_month,
+                          'Days',
+                          courseObj.days,
+                        ),
+                        _buildInfoRow(
+                          context,
+                          Icons.query_builder,
+                          'Timing',
+                          courseObj.timing,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Free Demo Highlight
+                        if (courseObj.hasFreeDemo)
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.amber.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.stars, color: Colors.amber),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Free Demo Available!',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.amber,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Only for job oriented courses.',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        const SizedBox(height: 80),
                       ],
                     ),
                   ),
                 ),
               ],
             ),
-            Builder(
-              builder: (context) {
-                final isEnrolled =
-                    _currentUser?.enrolledCourses.contains(
-                      widget.course['id'] ?? widget.course['title'],
-                    ) ??
-                    false;
 
-                return Positioned(
-                  bottom: 12,
-                  left: 20,
-                  right: 20,
-                  child: GestureDetector(
-                    onTap:
-                        isEnrolled
-                            ? null
-                            : () => _showPurchaseDialog(context, widget.course),
-                    child: Container(
-                      height: 48,
+            // Bottom Bar
+            Positioned(
+              bottom: 12,
+              left: 16,
+              right: 16,
+              child: Builder(
+                builder: (context) {
+                  if (_isLoadingUser) {
+                    return Container(
+                      height: 54,
                       decoration: BoxDecoration(
-                        color:
-                            isEnrolled
-                                ? Colors.green.withValues(alpha: 0.8)
-                                : theme.colors.primary,
-                        borderRadius: BorderRadius.circular(8),
+                        color: theme.colors.primary.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final isEnrolled =
+                      _currentUser?.enrolledCourses.contains(_enrollmentId) ??
+                      false;
+
+                  return GestureDetector(
+                    onTap:
+                        isEnrolled ? null : () => _showPurchaseDialog(context),
+                    child: Container(
+                      height: 54,
+                      decoration: BoxDecoration(
+                        color: isEnrolled ? Colors.grey : theme.colors.primary,
+                        borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
                             color: theme.colors.primary.withValues(alpha: 0.2),
-                            blurRadius: 8,
+                            blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
                         ],
@@ -398,27 +403,27 @@ class _TraningCourseDetailsScreenState
                           children: [
                             Icon(
                               isEnrolled ? Icons.check_circle : Icons.school,
-                              size: 18,
-                              color: theme.colors.primaryForeground,
+                              color: Colors.white,
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 12),
                             Text(
                               isEnrolled
-                                  ? 'Enrolled'
-                                  : 'Enroll Now ₹${widget.course['enrollmentFee']}',
-                              style: theme.typography.sm.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: theme.colors.primaryForeground,
-                                fontSize: 14,
+                                  ? 'ENROLLED'
+                                  : 'ENROLL NOW ₹${courseObj.enrollmentFee}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 1.1,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -426,158 +431,139 @@ class _TraningCourseDetailsScreenState
     );
   }
 
-  Widget _buildSimpleDetail(
+  Widget _buildDetailCard(
     IconData icon,
     String label,
     String value,
     Color color,
   ) {
     final theme = context.theme;
-
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: theme.typography.sm.copyWith(
-                    color: theme.colors.mutedForeground,
-                    fontSize: 11,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: theme.typography.sm.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colors.foreground,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
+          Icon(icon, color: color, size: 20),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: theme.typography.xs.copyWith(
+              color: theme.colors.mutedForeground,
             ),
+          ),
+          Text(
+            value,
+            style: theme.typography.sm.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colors.foreground,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
 
-  void _showPurchaseDialog(BuildContext context, Map<String, dynamic> course) {
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    final theme = context.theme;
+    return Text(
+      title,
+      style: theme.typography.base.copyWith(
+        fontWeight: FontWeight.bold,
+        color: theme.colors.foreground,
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
+    final theme = context.theme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: theme.colors.mutedForeground),
+          const SizedBox(width: 8),
+          Text(
+            '$label: ',
+            style: theme.typography.sm.copyWith(
+              color: theme.colors.mutedForeground,
+            ),
+          ),
+          Text(
+            value,
+            style: theme.typography.sm.copyWith(fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPurchaseDialog(BuildContext context) {
     final theme = context.theme;
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 4,
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 350),
-            child: Column(
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: const Text('Enrollment Fee'),
+            content: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Simple header
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Icon(Icons.school, color: theme.colors.primary, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Enrollment Confirmation',
-                        style: theme.typography.lg.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+                Text('You are about to enroll in:'),
+                const SizedBox(height: 4),
+                Text(
+                  courseObj.domain,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-
-                // Simple content
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Course: ${course['title']}',
-                        style: theme.typography.sm.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: theme.colors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Enrollment Fee:',
-                              style: theme.typography.sm.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              '₹${widget.course['enrollmentFee']}',
-                              style: theme.typography.lg.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: theme.colors.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Simple actions
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      FButton(
-                        onPress: () => Navigator.of(context).pop(),
-                        style: FButtonStyle.outline,
-                        child: Text('Cancel'),
-                      ),
-                      const SizedBox(width: 8),
-                      FButton(
-                        onPress: () {
-                          Navigator.of(context).pop();
-                          _processPurchase(course);
-                        },
-                        style: FButtonStyle.primary,
-                        child: Text('Confirm'),
-                      ),
-                    ],
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    'Fee: ₹${courseObj.enrollmentFee}',
+                    style: theme.typography.xl.copyWith(
+                      color: theme.colors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _processPurchase();
+                },
+                child: const Text('Pay & Enroll'),
+              ),
+            ],
           ),
-        );
-      },
     );
   }
 
-  void _processPurchase(Map<String, dynamic> course) async {
+  void _processPurchase() async {
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.user;
 
@@ -588,21 +574,16 @@ class _TraningCourseDetailsScreenState
       return;
     }
 
-    // Try to get more user details if available
     final userModel = await _userService.getUserById(user.uid);
 
     final options = {
       'key': PaymentConfig.razorpayKey,
-      'amount': (widget.course['enrollmentFee'] ?? 0) * 100, // Amount in paise
+      'amount': (courseObj.enrollmentFee * 100).toInt(),
       'name': 'Gradspark Training',
-      'description': 'Enrollment for ${course['title']}',
-      'merchant_id': PaymentConfig.merchantId,
+      'description': 'Enrollment for ${courseObj.recommendedCourses}',
       'prefill': {
         'contact': userModel?.phoneNumber ?? '',
         'email': userModel?.email ?? user.email ?? '',
-      },
-      'external': {
-        'wallets': ['paytm'],
       },
     };
 

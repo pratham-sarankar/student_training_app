@@ -128,16 +128,28 @@ class UserModel {
       bio: map['bio'],
       gender: map['gender'],
       dateOfBirth:
-          map['dateOfBirth'] != null
-              ? (map['dateOfBirth'] is Timestamp
-                  ? (map['dateOfBirth'] as Timestamp).toDate()
-                  : DateTime.parse(map['dateOfBirth']))
-              : null,
+          map['dateOfBirth'] is Timestamp
+              ? (map['dateOfBirth'] as Timestamp).toDate()
+              : (map['dateOfBirth'] is DateTime
+                  ? map['dateOfBirth'] as DateTime
+                  : (map['dateOfBirth'] is String
+                      ? DateTime.tryParse(map['dateOfBirth'])
+                      : null)),
       role: map['role'] ?? 'Student',
       isEmailVerified: map['isEmailVerified'] ?? false,
       isPhoneVerified: map['isPhoneVerified'] ?? false,
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt:
+          map['createdAt'] is Timestamp
+              ? (map['createdAt'] as Timestamp).toDate()
+              : (map['createdAt'] is DateTime
+                  ? map['createdAt'] as DateTime
+                  : DateTime.now()),
+      updatedAt:
+          map['updatedAt'] is Timestamp
+              ? (map['updatedAt'] as Timestamp).toDate()
+              : (map['updatedAt'] is DateTime
+                  ? map['updatedAt'] as DateTime
+                  : DateTime.now()),
       emailNotifications: map['emailNotifications'] ?? true,
       pushNotifications: map['pushNotifications'] ?? true,
 

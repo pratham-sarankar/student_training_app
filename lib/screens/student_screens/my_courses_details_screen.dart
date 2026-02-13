@@ -58,7 +58,7 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            '${widget.course['category'] ?? 'General'} • ${widget.course['level'] ?? 'Beginner'}',
+                            widget.course['category'] ?? 'General',
                             style: theme.typography.sm.copyWith(
                               color: theme.colors.mutedForeground,
                               fontSize: 12,
@@ -159,13 +159,6 @@ class _MyCoursesDetailsScreenState extends State<MyCoursesDetailsScreen> {
                             Icons.timer_outlined,
                             'Duration',
                             widget.course['duration'] ?? 'N/A',
-                          ),
-                          const SizedBox(width: 12),
-                          _buildDetailChip(
-                            context,
-                            Icons.bar_chart,
-                            'Level',
-                            widget.course['level'] ?? 'N/A',
                           ),
                         ],
                       ),

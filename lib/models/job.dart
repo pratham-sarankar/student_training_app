@@ -50,9 +50,19 @@ class Job {
       eligibility: List<String>.from(
         map['eligibility'] ?? map['requirements'] ?? [],
       ),
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt:
+          map['createdAt'] is Timestamp
+              ? (map['createdAt'] as Timestamp).toDate()
+              : (map['createdAt'] is DateTime
+                  ? map['createdAt'] as DateTime
+                  : DateTime.now()),
       isActive: map['isActive'] ?? true,
-      deadline: (map['deadline'] as Timestamp?)?.toDate(),
+      deadline:
+          map['deadline'] is Timestamp
+              ? (map['deadline'] as Timestamp).toDate()
+              : (map['deadline'] is DateTime
+                  ? map['deadline'] as DateTime
+                  : null),
       applyLink: map['applyLink'],
     );
   }

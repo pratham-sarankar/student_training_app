@@ -17,61 +17,8 @@ class CourseService {
                 return Course.fromMap(doc.data(), doc.id);
               }).toList();
 
-          // Sort locally to avoid Firestore index requirements
           courses.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return courses;
-        });
-  }
-
-  // Get courses by category
-  Stream<List<Course>> getCoursesByCategory(String category) {
-    if (category == 'All') {
-      return getCourses();
-    }
-
-    return _firestore
-        .collection(_collection)
-        .where('isActive', isEqualTo: true)
-        .where('category', isEqualTo: category)
-        .snapshots()
-        .map((snapshot) {
-          final courses =
-              snapshot.docs.map((doc) {
-                return Course.fromMap(doc.data(), doc.id);
-              }).toList();
-
-          // Sort locally to avoid Firestore index requirements
-          courses.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return courses;
-        });
-  }
-
-  // Search courses
-  Stream<List<Course>> searchCourses(String query) {
-    return _firestore
-        .collection(_collection)
-        .where('isActive', isEqualTo: true)
-        .snapshots()
-        .map((snapshot) {
-          return snapshot.docs
-              .map((doc) {
-                return Course.fromMap(doc.data(), doc.id);
-              })
-              .where((course) {
-                return course.title.toLowerCase().contains(
-                      query.toLowerCase(),
-                    ) ||
-                    course.description.toLowerCase().contains(
-                      query.toLowerCase(),
-                    ) ||
-                    course.category.toLowerCase().contains(
-                      query.toLowerCase(),
-                    ) ||
-                    course.instructor.toLowerCase().contains(
-                      query.toLowerCase(),
-                    );
-              })
-              .toList();
         });
   }
 
@@ -113,7 +60,7 @@ class CourseService {
     }
   }
 
-  // Delete course (soft delete by setting isActive to false)
+  // Delete course
   Future<bool> deleteCourse(String courseId) async {
     try {
       await _firestore.collection(_collection).doc(courseId).update({
@@ -126,28 +73,95 @@ class CourseService {
     }
   }
 
-  // Get course categories
-  Stream<List<String>> getCourseCategories() {
-    return _firestore
-        .collection(_collection)
-        .where('isActive', isEqualTo: true)
-        .snapshots()
-        .map((snapshot) {
-          final categories =
-              snapshot.docs
-                  .map((doc) => doc.data()['category'] as String)
-                  .where((category) => category.isNotEmpty)
-                  .toSet()
-                  .toList();
+  // Logic to process CSV data and segrigate courses
+  Future<void> uploadCoursesFromCsvData(List<List<dynamic>> csvData) async {
+    // Expected headers: Domain, Recommended Courses, Cost and duration, Mode, Days, Timing
+    if (csvData.isEmpty) return;
 
-          categories.sort();
-          return ['All', ...categories];
-        });
+    // Check if first row is header
+    int startIndex = 0;
+    if (csvData[0][0].toString().toLowerCase().contains('domain')) {
+      startIndex = 1;
+    }
+
+    String currentDomain = '';
+
+    for (int i = startIndex; i < csvData.length; i++) {
+      final row = csvData[i];
+      if (row.length < 6) continue;
+
+      final domainCell = row[0].toString().trim();
+      if (domainCell.isNotEmpty) {
+        currentDomain = domainCell;
+      }
+
+      final recommendedCoursesRaw = row[1].toString().trim();
+      final costAndDuration = row[2].toString().trim();
+      final mode = row[3].toString().trim();
+      final days = row[4].toString().trim();
+      final timing = row[5].toString().trim();
+
+      if (currentDomain.isEmpty || recommendedCoursesRaw.isEmpty) continue;
+
+      // Parse cost and duration: e.g., "3500/4 weeks"
+      final parts = costAndDuration.split('/');
+      double cost = 0;
+      String duration = '';
+
+      if (parts.length >= 2) {
+        cost =
+            double.tryParse(parts[0].replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+        duration = parts[1].trim();
+      } else {
+        duration = costAndDuration;
+      }
+
+      // Segregation Logic
+      // 4 weeks duration is summer traning, any more is job oriented
+      final bool isSummerTraining = duration.toLowerCase().contains('4 weeks');
+      final String type = isSummerTraining ? 'Summer Training' : 'Job Oriented';
+
+      // Both have 500 RS enrollment fee
+      const double enrollmentFee = 500.0;
+
+      // Only job oriented have free demo
+      final bool hasFreeDemo = !isSummerTraining;
+
+      // Split recommended courses if they are comma or slash separated
+      // We use a regex to handle various delimiters (comma, slash with spaces)
+      final List<String> coursesToCreate =
+          recommendedCoursesRaw
+              .split(RegExp(r',|\s/\s|(?<=\s)/(?=\s)'))
+              .map((e) => e.trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
+
+      for (var courseName in coursesToCreate) {
+        if (courseName.isEmpty) continue;
+
+        final course = Course(
+          id: '',
+          domain: currentDomain,
+          recommendedCourses: courseName,
+          cost: cost,
+          duration: duration,
+          mode: mode,
+          days: days,
+          timing: timing,
+          type: type,
+          enrollmentFee: enrollmentFee,
+          hasFreeDemo: hasFreeDemo,
+          createdAt: DateTime.now(),
+          isActive: true,
+        );
+
+        await addCourse(course);
+      }
+    }
   }
 
-  // Initialize sample courses in Firebase
+  // Placeholder for compatibility
   Future<void> initializeSampleCourses() async {
-    // Sample courses initialization removed as per user request
     return;
   }
 }

@@ -51,7 +51,12 @@ class AssessmentResult {
       score: map['score'] ?? 0,
       totalQuestions: map['totalQuestions'] ?? 0,
       selectedAnswers: answers,
-      timestamp: (map['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      timestamp:
+          map['timestamp'] is Timestamp
+              ? (map['timestamp'] as Timestamp).toDate()
+              : (map['timestamp'] is DateTime
+                  ? map['timestamp'] as DateTime
+                  : DateTime.now()),
     );
   }
 }

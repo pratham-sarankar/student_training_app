@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
@@ -7,13 +8,20 @@ enum AuthStatus { initial, authenticated, unauthenticated, loading }
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService;
 
+  StreamSubscription<User?>? _authSubscription;
+  bool _disposed = false;
+
   AuthProvider(this._authService) {
     // Listen to auth state changes
-    _authService.authStateChanges.listen((User? user) {
-      _user = user;
-      _authStatus =
-          user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
-      notifyListeners();
+    _authSubscription = _authService.authStateChanges.listen((User? user) {
+      if (!_disposed) {
+        _user = user;
+        _authStatus =
+            user != null
+                ? AuthStatus.authenticated
+                : AuthStatus.unauthenticated;
+        notifyListeners();
+      }
     });
   }
 
@@ -58,14 +66,18 @@ class AuthProvider extends ChangeNotifier {
   // Set loading state
   void _setLoading(bool loading) {
     _isLoading = loading;
-    notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   // Set error
   void _setError(String error) {
     _errorMessage = error;
     _isLoading = false;
-    notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   // Sign in with email and password
@@ -194,5 +206,12 @@ class AuthProvider extends ChangeNotifier {
       _setError(e.toString());
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _authSubscription?.cancel();
+    super.dispose();
   }
 }

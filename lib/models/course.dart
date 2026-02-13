@@ -2,111 +2,110 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Course {
   final String id;
-  final String title;
-  final String category;
-  final String description;
+  final String domain;
+  final String recommendedCourses;
   final double cost;
   final String duration;
-  final String level;
-  final String tentativeStartDate;
+  final String mode;
+  final String days;
+  final String timing;
+  final String type; // Summer Training or Job Oriented Training
+  final double enrollmentFee;
+  final bool hasFreeDemo;
   final DateTime createdAt;
   final bool isActive;
-  final double enrollmentFee;
-  final String instructor;
-  final List<String> topics;
-  final String requirements;
-  final String outcomes;
+
+  // Compatibility getters for existing UI
+  String get title => domain;
+  String get category => type;
+  String get description => recommendedCourses;
 
   Course({
     required this.id,
-    required this.title,
-    required this.category,
-    required this.description,
+    required this.domain,
+    required this.recommendedCourses,
     required this.cost,
-    required this.enrollmentFee,
     required this.duration,
-    required this.level,
-    required this.tentativeStartDate,
+    required this.mode,
+    required this.days,
+    required this.timing,
+    required this.type,
+    required this.enrollmentFee,
+    required this.hasFreeDemo,
     required this.createdAt,
     required this.isActive,
-    required this.instructor,
-    required this.topics,
-    required this.requirements,
-    required this.outcomes,
   });
 
   factory Course.fromMap(Map<String, dynamic> map, String id) {
     return Course(
       id: id,
-      title: map['title'] ?? '',
-      category: map['category'] ?? '',
-      description: map['description'] ?? '',
+      domain: map['domain'] ?? '',
+      recommendedCourses: map['recommendedCourses'] ?? '',
       cost: (map['cost'] ?? 0.0).toDouble(),
-      enrollmentFee: (map['enrollmentFee'] ?? 0.0).toDouble(),
       duration: map['duration'] ?? '',
-      level: map['level'] ?? '',
-      tentativeStartDate: map['tentativeStartDate'] ?? '',
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      mode: map['mode'] ?? '',
+      days: map['days'] ?? '',
+      timing: map['timing'] ?? '',
+      type: map['type'] ?? '',
+      enrollmentFee: (map['enrollmentFee'] ?? 500.0).toDouble(),
+      hasFreeDemo: map['hasFreeDemo'] ?? false,
+      createdAt:
+          map['createdAt'] is Timestamp
+              ? (map['createdAt'] as Timestamp).toDate()
+              : (map['createdAt'] is DateTime
+                  ? map['createdAt'] as DateTime
+                  : DateTime.now()),
       isActive: map['isActive'] ?? true,
-      instructor: map['instructor'] ?? '',
-      topics: List<String>.from(map['topics'] ?? []),
-      requirements: map['requirements'] ?? '',
-      outcomes: map['outcomes'] ?? '',
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'title': title,
-      'category': category,
-      'description': description,
+      'id': id,
+      'domain': domain,
+      'recommendedCourses': recommendedCourses,
       'cost': cost,
-      'enrollmentFee': enrollmentFee,
       'duration': duration,
-      'level': level,
-      'tentativeStartDate': tentativeStartDate,
+      'mode': mode,
+      'days': days,
+      'timing': timing,
+      'type': type,
+      'enrollmentFee': enrollmentFee,
+      'hasFreeDemo': hasFreeDemo,
       'createdAt': createdAt,
       'isActive': isActive,
-      'instructor': instructor,
-      'topics': topics,
-      'requirements': requirements,
-      'outcomes': outcomes,
     };
   }
 
   Course copyWith({
     String? id,
-    String? title,
-    String? category,
-    String? description,
+    String? domain,
+    String? recommendedCourses,
     double? cost,
-    double? enrollmentFee,
     String? duration,
-    String? level,
-    String? tentativeStartDate,
+    String? mode,
+    String? days,
+    String? timing,
+    String? type,
+    double? enrollmentFee,
+    bool? hasFreeDemo,
     DateTime? createdAt,
     bool? isActive,
-    String? instructor,
-    List<String>? topics,
-    String? requirements,
-    String? outcomes,
   }) {
     return Course(
       id: id ?? this.id,
-      title: title ?? this.title,
-      category: category ?? this.category,
-      description: description ?? this.description,
+      domain: domain ?? this.domain,
+      recommendedCourses: recommendedCourses ?? this.recommendedCourses,
       cost: cost ?? this.cost,
-      enrollmentFee: enrollmentFee ?? this.enrollmentFee,
       duration: duration ?? this.duration,
-      level: level ?? this.level,
-      tentativeStartDate: tentativeStartDate ?? this.tentativeStartDate,
+      mode: mode ?? this.mode,
+      days: days ?? this.days,
+      timing: timing ?? this.timing,
+      type: type ?? this.type,
+      enrollmentFee: enrollmentFee ?? this.enrollmentFee,
+      hasFreeDemo: hasFreeDemo ?? this.hasFreeDemo,
       createdAt: createdAt ?? this.createdAt,
       isActive: isActive ?? this.isActive,
-      instructor: instructor ?? this.instructor,
-      topics: topics ?? this.topics,
-      requirements: requirements ?? this.requirements,
-      outcomes: outcomes ?? this.outcomes,
     );
   }
 }
