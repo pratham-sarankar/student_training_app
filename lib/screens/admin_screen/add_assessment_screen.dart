@@ -88,6 +88,7 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
 
           for (int i = startRow; i < processedRows.length; i++) {
             final row = processedRows[i];
+            // Format: Subtitle, Subtitle Description, Question, Opt 0, Opt 1, Opt 2, Opt 3, Correct Index
             if (row.length < 8) continue;
 
             final subtitle = row[0].toString().trim();
@@ -102,14 +103,18 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
               row[6].toString().trim(),
             ];
 
-            // Correct Index parsing
+            // Correct Index parsing (Supporting 0-indexed, 1-indexed, and letter formats)
             String correctStr = row[7].toString().toLowerCase().trim();
             int correctIndex = 0;
+
             if (RegExp(r'^[0-3]$').hasMatch(correctStr)) {
+              // 0-indexed (0, 1, 2, 3) - Matches user's example
               correctIndex = int.parse(correctStr);
             } else if (RegExp(r'^[1-4]$').hasMatch(correctStr)) {
+              // 1-indexed (1, 2, 3, 4)
               correctIndex = int.parse(correctStr) - 1;
             } else {
+              // Letter format (a, b, c, d)
               switch (correctStr) {
                 case 'a':
                   correctIndex = 0;
@@ -388,7 +393,7 @@ class _AddAssessmentScreenState extends State<AddAssessmentScreen> {
             const SizedBox(height: 24),
 
             const Text(
-              'Format: Subtitle, Description, Question, Opt1, Opt2, Opt3, Opt4, Correct',
+              'Format: Subtitle, Subtitle Description, Question, Opt 0, Opt 1, Opt 2, Opt 3, Correct Index',
               style: TextStyle(fontSize: 12, fontFamily: 'monospace'),
             ),
             const SizedBox(height: 32),
